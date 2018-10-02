@@ -1,0 +1,168 @@
+\documentclass[ack,preface]{diphdthesis}
+
+\usepackage{bookmark}
+\usepackage{epigraph}
+\usepackage[utf8]{inputenc}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%% User-specific configuration %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\doop}{\textsc{Doop}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\javaclass}[1]{\url{#1}}
+\newcommand{\javamethod}[1]{\url{#1}}
+\newcommand{\javasignature}[1]{\url{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%% Required Metadata %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% First name, last name
+%
+\authorFirstGr{Γεώργιος}
+\authorFirstAbrGr{Γ.} % abbreviation of first name
+\authorMiddleGr{Σ.}   % abbreviation of father's first name
+\authorLastGr{Καστρίνης}
+\authorFirstEn{George}
+\authorFirstAbrEn{G.}
+\authorMiddleEn{S.}
+\authorLastEn{Kastrinis}
+
+%
+% The title of the thesis
+%
+\titleGr{Αποδοτική Στατική Ανάλυση Δεικτών με Αξιόπιστα Αποτελέσματα}
+\titleEn{Scalable Static Pointer Analysis with High Confidence Results}
+
+%
+% Month followed by Year
+%
+\dateGr{ΣΕΠΤΕΜΒΡΙΟΣ 2018}
+\dateEn{SEPTEMBER 2018}
+
+%
+% Advisor info
+%
+\advisorGr{Γιάννης Σμαραγδάκης}
+\advisorRankGr{Καθηγητής}
+\advisorOrgGr{ΕΚΠΑ}
+\advisorEn{Yannis Smaragdakis}
+\advisorRankEn{Professor}
+\advisorOrgEn{NKUA}
+%
+% Members of the advisory board 
+% (the first one, will be automatically taken up by the advisor)
+%
+\boardTwoGr{Αλέξης Δελής}
+\boardTwoRankGr{Καθηγητής}
+\boardTwoOrgGr{ΕΚΠΑ}
+\boardTwoEn{Alex Delis}
+\boardTwoRankEn{Professor}
+\boardTwoOrgEn{NKUA}
+
+\boardThreeGr{Παναγιώτης Ροντογιάννης}
+\boardThreeRankGr{Καθηγητής}
+\boardThreeOrgGr{ΕΚΠΑ}
+\boardThreeEn{Panos Rondogiannis}
+\boardThreeRankEn{Professor}
+\boardThreeOrgEn{NKUA}
+%%%%%%%%%%%%%%%%%%%%%%% TEMPORARY START %%%%%%%%%%%%%%%%%%%%%%%
+%
+% 7 Member examination committee
+% (the first three will be taken up by the advisory board)
+%
+\examFourGr{Μέμα Ρουσσοπούλου}
+\examFourRankGr{Αναπληρώτρια Καθηγήτρια}
+\examFourOrgGr{ΕΚΠΑ}
+\examFourEn{Mema Roussopoulos}
+\examFourRankEn{Associate Professor}
+\examFourOrgEn{NKUA}
+
+\examFiveGr{Μανόλης Κουμπαράκης}
+\examFiveRankGr{Καθηγητής}
+\examFiveOrgGr{ΕΚΠΑ}
+\examFiveEn{Manolis Koubarakis}
+\examFiveRankEn{Professor}
+\examFiveOrgEn{NKUA}
+
+\examSixGr{Νικόλαος Παπασπύρου}
+\examSixRankGr{Αναπληρωτής Καθηγητής}
+\examSixOrgGr{ΕΜΠ}
+\examSixEn{Nikolaos Papaspyrou}
+\examSixRankEn{Associate Professor}
+\examSixOrgEn{NTUA}
+
+\examSevenGr{Κωνσταντίνος Σαγώνας}
+\examSevenRankGr{Αναπληρωτής Καθηγητής}
+\examSevenOrgGr{ΕΜΠ}
+\examSevenEn{Konstantinos Sagonas}
+\examSevenRankEn{Associate Professor}
+\examSevenOrgEn{NTUA}
+%
+% The examination date of the thesis
+%
+\examinationDateGr{2 Μαΐου 2017}
+\examinationDateEn{May 2, 2017}
+%%%%%%%%%%%%%%%%%%%%%%% TEMPORARY END %%%%%%%%%%%%%%%%%%%%%%%
+
+
+%
+% Abstract, synopsis, inscription, ack, and preface pages.
+%
+\abstractEn{\input{chapters/abstract-en}}
+\abstractGr{\input{chapters/abstract-gr}}
+\synopsisGr{\input{chapters/synopsis-gr}}
+\acksEn{\input{chapters/acknowledgments}}
+\prefaceEn{}
+
+%
+% Subject area and keywords
+%
+\subjectAreaGr{Γλώσσες Προγραμματισμού, Στατική Ανάλυση}
+\subjectAreaEn{Programming Languages, Static Analysis}
+\keywordsGr{Ανάλυση Δεικτών, Αντικειμενοστρεφής Προγραμματισμός, Ακρίβεια, Απόδοση}
+\keywordsEn{Pointer Analysis; Object-Oriented Programming; Precision; Performance; Context-Sensitivity}
+
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Front Matter  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frontmatter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   Main Matter  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mainmatter
+
+\chapter{Introduction}
+\input{chapters/introduction}
+
+\chapter{Hybrid Context-Sensitivity for Points-To Analysis}
+\input{chapters/hybrid}
+
+\chapter{Introspective Analysis: Context-Sensitivity,
+Across the Board}
+\input{chapters/introspective}
+
+\chapter{Must-Alias Analysis}
+\input{chapters/must}
+
+\chapter{Defensive Points-To Analysis: Effective Soundness via
+Laziness}
+\input{chapters/defensive}
+
+\chapter{Related Work}
+%\input{chapters/related-work}
+
+\chapter{Conclusions and Future Work}
+%\input{chapters/conclusions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   Back Matter  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\backmatter
+
+\end{document}
