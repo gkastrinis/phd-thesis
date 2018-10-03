@@ -3,6 +3,7 @@
 \usepackage{bookmark}
 \usepackage{epigraph}
 \usepackage[utf8]{inputenc}
+\usepackage[defblank]{paralist}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -33,7 +34,7 @@
 % The title of the thesis
 %
 \titleGr{Αποδοτική Στατική Ανάλυση Δεικτών με Αξιόπιστα Αποτελέσματα}
-\titleEn{Scalable Static Pointer Analysis with High Confidence Results}
+\titleEn{Scalable Static Pointer Analysis with High-Confidence Results}
 
 %
 % Month followed by Year
@@ -147,18 +148,21 @@
 Across the Board}
 \input{chapters/introspective}
 
-\chapter{Must-Alias Analysis}
+\chapter{Must-Alias Analysis: Modeling and Data Structures}
 \input{chapters/must}
 
 \chapter{Defensive Points-To Analysis: Effective Soundness via
 Laziness}
 \input{chapters/defensive}
 
+\chapter{paNda: a Datalog compiler}
+\input{chapters/panda.tex}
+
 \chapter{Related Work}
-%\input{chapters/related-work}
+\input{chapters/related}
 
 \chapter{Conclusions and Future Work}
-%\input{chapters/conclusions}
+\input{chapters/conclusions}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   Back Matter  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
