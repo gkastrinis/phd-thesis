@@ -34,13 +34,15 @@
 % The title of the thesis
 %
 \titleGr{Αποδοτική Στατική Ανάλυση Δεικτών με Αξιόπιστα Αποτελέσματα}
+%\titleGr{Αποδοτικότητα και Αξιοπιστία σε Στατική Ανάλυση Δεικτών}
 \titleEn{Scalable Static Pointer Analysis with High-Confidence Results}
+%\titleEn{Scalability and Confidence for Static Pointer Analysis}
 
 %
 % Month followed by Year
 %
-\dateGr{ΣΕΠΤΕΜΒΡΙΟΣ 2018}
-\dateEn{SEPTEMBER 2018}
+\dateGr{ΙΑΝΟΥΑΡΙΟΣ 2018}
+\dateEn{JANUARY 2019}
 
 %
 % Advisor info
@@ -122,8 +124,8 @@
 %
 \subjectAreaGr{Γλώσσες Προγραμματισμού, Στατική Ανάλυση}
 \subjectAreaEn{Programming Languages, Static Analysis}
-\keywordsGr{Ανάλυση Δεικτών, Αντικειμενοστρεφής Προγραμματισμός, Ακρίβεια, Απόδοση}
-\keywordsEn{Pointer Analysis; Object-Oriented Programming; Precision; Performance; Context-Sensitivity}
+\keywordsGr{Ανάλυση Δεικτών, Ανάλυση Συνωνύμων, Αντικειμενοστρεφής Προγραμματισμός, Ακρίβεια, Απόδοση}
+\keywordsEn{Pointer Analysis; Alias Analysis; Object-Oriented Programming; Precision; Performance; Context-Sensitivity}
 
 
 \begin{document}
@@ -141,18 +143,27 @@
 \chapter{Introduction}
 \input{chapters/introduction}
 
-\chapter{Hybrid Context-Sensitivity for Points-To Analysis}
+\chapter{Achieving Scalability}
+
+%\section{Hybrid Context-Sensitivity for Points-To Analysis}
+\section{Hybrid Context-Sensitivity}
 \input{chapters/hybrid}
 
-\chapter{Introspective Analysis: Context-Sensitivity,
-Across the Board}
+%\section{Introspective Analysis: Context-Sensitivity, Across the Board}
+\section{Introspective Analysis}
 \input{chapters/introspective}
 
-\chapter{Must-Alias Analysis: Modeling and Data Structures}
-\input{chapters/must}
+\chapter{Achieving High-Confident Results}
 
-\chapter{Defensive Points-To Analysis: Effective Soundness via
-Laziness}
+%\section{Must-Alias Analysis: Modeling and Data Structures}
+\section{Must-Alias Analysis}
+\subsection{Modeling}
+\input{chapters/must-logic}
+\subsection{Data Structures}
+\input{chapters/must-data}
+
+%\section{Defensive Points-To Analysis: Effective Soundness via Laziness}
+\section{Defensive Points-To Analysis}
 \input{chapters/defensive}
 
 \chapter{paNda: a Datalog compiler}

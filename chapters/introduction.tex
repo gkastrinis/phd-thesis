@@ -2,13 +2,15 @@
 
 \epigraph{Sometimes a scream is better than a thesis.}{\textit{Manfred Eigen}}
 
-Static program analysis is the cornerstone of several modern programming facilities and tools for program development and aided program understanding. Nowadays, it is an umbrella term for many different methodologies (...) all with the ultimate goal of inferring a program's properties, without actually running it. It is routinely employed in many different contexts: compilers, bug detectors, verifiers, security analyzers, IDEs, and a myriad other tools.
+Static program analysis is the cornerstone of several modern programming facilities and tools for program development and aided program understanding. Nowadays, it is an umbrella term for many different methodologies (...) all with the ultimate goal of inferring a program's properties, without the need of an actual execution. It is routinely employed in many different contexts: compilers, bug detectors, verifiers, security analyzers, IDEs, and a myriad other tools.
 
-Pointer analysis (also known as \emph{Points-To analysis}) is a fundamental subcategory of static program analysis that consists of computing some \emph{abstract memory model} for a given program. The essence of such an analysis is to compute a set of possible objects that a program variable or expression may point to during program execution. A straightforward endeavor at first, it quickly gets too complicated in practice due to all of the intricate details one has to take into account and the multitude of different features that mutually depend on each other.
+Pointer analysis (also known as \emph{Points-To analysis}) is a fundamental subdomain of static program analysis that consists of computing some \emph{abstract memory model} for a given program. The essence of such an analysis is to compute a set of possible objects that a program variable or expression may point to during program execution. A straightforward endeavor at first, it quickly gets too complicated in practice due to all of the intricate details one has to take into account and the multitude of different features that mutually depend on each other. Although a challenging task, if implemented correctly and not naively it can bear many significant benefits to client analyses that consume its results to reason about specialized behaviors such as security vulnerabilities or potential optimization opportunities.
+
+A closely related analysis, sometimes wrongfully confused with pointer analysis, is \emph{Alias analysis} in which one computes sets of program expressions that may alias (i.e., point to common objects) with each other. Pointer analysis could --although it is not the only possible alternative-- be used to implement an alias analysis algorithm, and vice versa.
 
 At the same time, programming languages are ever evolving, ever becoming more high-level and more complex. Many abstraction levels are added throughout the years with the aim of making the very task of programming easier for developers allowing them to express more with less effort (e.g., in terms of lines of code). Frequently, new features come with complicated semantics regarding their possible implementations and usually they interact in intricate ways with pre-existing ones.
 
-Additionally, modern software has evolved as well. Complex design patterns have become the norm for experienced developers, immense libraries and frameworks are accepted as a prerequisite for any sophisticated software, and over-involved build tools often make even the task of understanding all of the program's dependencies a challenge.
+Additionally, modern software paradigms have evolved as well. Complex design patterns have become the norm for experienced developers, immense libraries and frameworks are accepted as a prerequisite for any non-trivial software, and over-involved build tools often make even the task of understanding all of the program's dependencies a challenge.
 
 It comes as no surprise that any kind of static analysis has struggled to keep up with this ever-increasing complexity both in programming languages and software. Even the seemingly simple task of computing a program's call-graph (i.e., which program functions can call which others), if one tries to have an approach as general as possible, requires sophisticated analysis in order to achieve the desirable precision. Thus, the main emphasis of pointer analysis algorithms is on combining fairly precise modeling of pointer behavior and memory abstractions with scalability.
 
@@ -17,23 +19,33 @@ It comes as no surprise that any kind of static analysis has struggled to keep u
 It is possible to implement \emph{highly sophisticated} and \emph{precise} static pointer analysis algorithms without forgoing \emph{scalability}. Furthermore, precision and the accompanied \emph{confidence in results} is a spectrum and can be tweaked differently for different parts of the program.
 \end{displayquote}
 
-We provide a couple of different static pointer analysis algorithms with different approaches on attaining the desired scalability while at the same time keeping high levels of precision. In addition, we explore two different directions on achieving highly confident results for portions of the program even if precision is difficult to be maintained for the whole program text.
-
-\section{Pointer Analysis}
-
-Although a challenging task, if implemented correctly and not naively it can bear many significant benefits to client analyses that consume its results to reason about specialized behaviors such as security vulnerabilities or potential optimization opportunities. Throughout the years, pointer analysis has evolved and has been the focus of intense research. It is widely accepted to be among the most standardized and well-understood inter-procedural analyses.
-
-\subsection{Context-Sensitivity}
+We provide a number of techniques for implementing scalable static pointer and alias analyses in the setting of Java programs by configuring precision parameters differently for different code parts. Additionally, we present a couple of defensive algorithms for reporting highly-confident results even in the presence of hostile and/or unknown program points.
 
 
-\section{Impact}
+\section{Context-Sensitivity}
 
-In this section, we will briefly explain the main contributions of this dissertation, from both a scientific and a practical perspective.
+Throughout the years, pointer analysis has evolved and has been the focus of intense research. It is widely accepted to be among the most standardized and well-understood inter-procedural (i.e., reasoning about a property taking into account the flow of code across different program functions) analyses.
 
-\subsection{Scientific Contributions}
+A widely used concept that emerged as a powerful tool for tuning precision while still achieving scalable analyses, is that of \emph{Context-Sensitivity}. Context-sensitivity consists of qualifying interesting components of an analysis, such as program expressions, object abstractions or method invocations, with additional \emph{context} information. The main idea is that the analysis will collapse information (e.g., ``what objects this method argument may point to'') for components that result in the same context, while separating information for different contexts. In essence, qualifying components with additional context is as if each such component is replaced with multiple versions (one for each different context value associated with that component) and the analysis can reason individually for each version.
+
+Two main flavors of context-sensitivity have been explored in past literature: \begin{inparaenum}[(1)]
+\item \emph{call-site sensitivity} in which call-sites are used to qualify variables and other analysis components, essentially re-analyzing a method for different call-sites that target that method, and
+\item \emph{object-sensitivity} in which receiver objects of a call are used instead in a similar manner.
+\end{inparaenum}
+An additional kind of context-sensitivity --known as \emph{type-sensitivity}-- has also been explored as an approximation of object-sensitivity with the aim of preserving high precision at substantially reduced cost. In type-sensitivity upper bounds on the dynamic types of the receiver objects are employed as context elements. 
+
+Furthermore, a context-sensitive analysis has a second axis of parameterization other that the context flavor --that of (max) context depth. Consequently, a common way to describe an analysis is using the following naming scheme: $X$-$FLAVOR$-sensitive+$Y$-heap, e.g., as in 2-object-sensitive+1-heap. Here $FLAVOR$ denotes the kind of context information being employed, and, $X$ and $Y$ denote the context depth limits being used at invocation sites and at object allocations respectively.
 
 
-\subsection{Practical Contributions}
+\section{Scientific Contributions}
+
+In this section, we will briefly explain the main scientific contributions of this dissertation.
+
+Ever since the introduction of object-sensitivity by Milanova et al., there has been increasing evidence that it is the superior context choice for programs expressed in object-oriented languages, yielding high precision relative to cost. Such has been its success that in practice it has almost superseded the use of more traditional call-site sensitive analyses, in regards to object-oriented languages. Nevertheless, a call-site sensitive analysis is not always inferior as there are language features and code patterns that may favor this kind of context abstraction.
+
+Subsequently, a naive approach would be combining both context flavors with the goal of increasing the resulting analysis precision. Truly, such a combination would bear precision benefits but in most cases this is accompanied with an infeasibly high and disproportionate (when compared to the precision improvement) cost.
+
+Our first scientific contribution...
 
 
 \section{Outline}
@@ -49,7 +61,11 @@ The rest of this dissertation is organized as follows:
 
     This chapter presents research previously published in...
 
-\item Chapter~\ref{chapter:must} bla bla
+\item Chapter~\ref{chapter:must-logic} bla bla
+
+    This chapter presents research previously published in...
+
+\item Chapter~\ref{chapter:must-data} bla bla
 
     This chapter presents research previously published in...
 
