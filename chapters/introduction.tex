@@ -19,31 +19,138 @@ It comes as no surprise that any kind of static analysis has struggled to keep u
 It is possible to implement \emph{highly sophisticated} and \emph{precise} static pointer analysis algorithms without forgoing \emph{scalability}. Furthermore, precision and the accompanied \emph{confidence in results} is a spectrum and can be tweaked differently for different parts of the program.
 \end{displayquote}
 
-We provide a number of techniques for implementing scalable static pointer and alias analyses in the setting of Java programs by configuring precision parameters differently for different code parts. Additionally, we present a couple of defensive algorithms for reporting highly-confident results even in the presence of hostile and/or unknown program points.
+We provide a number of techniques for implementing scalable static pointer and alias analyses in the setting of Java programs by configuring the analysis strategy differently for different code parts. Additionally, we present a couple of defensive algorithms for reporting highly-confident results even in the presence of hostile and/or unknown program points.
 
 
 \section{Context-Sensitivity}
 
 Throughout the years, pointer analysis has evolved and has been the focus of intense research. It is widely accepted to be among the most standardized and well-understood inter-procedural (i.e., reasoning about a property taking into account the flow of code across different program functions) analyses.
 
-A widely used concept that emerged as a powerful tool for tuning precision while still achieving scalable analyses, is that of \emph{Context-Sensitivity}. Context-sensitivity consists of qualifying interesting components of an analysis, such as program expressions, object abstractions or method invocations, with additional \emph{context} information. The main idea is that the analysis will collapse information (e.g., ``what objects this method argument may point to'') for components that result in the same context, while separating information for different contexts. In essence, qualifying components with additional context is as if each such component is replaced with multiple versions (one for each different context value associated with that component) and the analysis can reason individually for each version.
+A widely used concept that emerged as a powerful tool for tuning precision while still achieving scalable analyses, is that of \emph{Context-Sensitivity}. It consists of qualifying interesting components of an analysis, such as program expressions, object abstractions or method invocations, with additional \emph{context} information. The core idea being that the analysis will collapse information (e.g., ``what objects this method argument may point to'') for components that result in the same context, while keep separate information for different contexts. In essence, qualifying components with additional context is as if each such component is replaced with multiple versions (one for each different associated context value) and the analysis can reason individually for each version.
 
 Two main flavors of context-sensitivity have been explored in past literature: \begin{inparaenum}[(1)]
-\item \emph{call-site sensitivity} in which call-sites are used to qualify variables and other analysis components, essentially re-analyzing a method for different call-sites that target that method, and
-\item \emph{object-sensitivity} in which receiver objects of a call are used instead in a similar manner.
+\item \emph{call-site sensitivity} (also known as \emph{kCFA}) in which call-sites are used to qualify variables and other analysis components, essentially re-analyzing a method for different call-sites that target that method, and
+\item \emph{object-sensitivity} in which receiver objects of a call are used instead, in a similar manner.
 \end{inparaenum}
-An additional kind of context-sensitivity --known as \emph{type-sensitivity}-- has also been explored as an approximation of object-sensitivity with the aim of preserving high precision at substantially reduced cost. In type-sensitivity upper bounds on the dynamic types of the receiver objects are employed as context elements. 
+Another kind of context-sensitivity, known as \emph{type-sensitivity}, has also been explored as an approximation of object-sensitivity with the aim of preserving high precision at substantially reduced cost. In type-sensitivity, upper bounds on the dynamic types of the receiver objects are employed as context elements. 
 
-Furthermore, a context-sensitive analysis has a second axis of parameterization other that the context flavor --that of (max) context depth. Consequently, a common way to describe an analysis is using the following naming scheme: $X$-$FLAVOR$-sensitive+$Y$-heap, e.g., as in 2-object-sensitive+1-heap. Here $FLAVOR$ denotes the kind of context information being employed, and, $X$ and $Y$ denote the context depth limits being used at invocation sites and at object allocations respectively.
+A context-sensitive analysis has a second axis of parameterization besides context flavor --that of (max) context depth. Consequently, a common way to describe an analysis is using the following naming scheme: $X$-$FLAVOR$-sensitive+$Y$-heap, e.g., as in 3-call-site-sensitive+2-heap. Here $FLAVOR$ denotes the kind of context information being employed, and, $X$ and $Y$ denote the context depth limits being used at invocation sites and at object allocations respectively. In the previous example the analysis is keeping track of the 3 most recent call-stack frames that led to the current method call, in order to annotate local variables. Similarly, the analysis is using the 2 most recent call-stack frames that led to the allocation site of an object to annotate the newly allocated object.
+
+
+\section{Important Design Choices}
+
+There are a few additional interesting design choices that can affect drastically the properties a static analysis will enjoy and the reasoning that each algorithm will need to implement.
+
+\subsection{Flow-Sensitivity} \label{flowSensitivity}
+
+Although, counter-intuitive at first, it is not unusual for a static program analysis to be flow-\emph{insensitive}. A flow-sensitive analysis examines a method's instructions while taking the order they appear in the source code into account. On the contrary, a flow-insensitive analysis examines a method's instructions as if they were in a set, without any particular order (i.e., any instruction could happen before any other). The latter approach leads to analyses that overapproximate the semantics of the actual code --thus suffering in precision-- but it is a common tradeoff when aiming to improve the performance of an analysis.
+
+The penalties on performance for a flow-sensitive analysis mainly stem from the need to keep track of what holds at \emph{every single} program point. Potentially, this could mean that information that remains unchanged will be duplicated on a multitude of instructions. On the contrary, a flow-insensitive analysis will collapse information along all instructions of a method.
+
+{
+\setlength\intextsep{-10pt}
+\begin{wrapfigure}{ht}{.12\textwidth}
+\centering
+\begin{javacodeLines}
+x = 1;
+y = x;
+x = 2;
+\end{javacodeLines}
+\end{wrapfigure}
+
+For the example on the side, a flow-sensitive analysis reasoning about the values of primitive expressions might report that:
+after line 1: ``$x$ has the value 1'',
+after line 2: ``$x$ has the value 1'' and ``$y$ has the value 1'', and
+after line 3: ``$x$ has the value 2'' and ``$y$ has the value 1''.
+
+A flow-insensitive analysis might instead report that:
+``$x$ has either the value 1 or 2'', ``$y$ has either the value 1 or 2'',
+because instructions are examined as if happening in any order.
+}
+
+\subsection{Static Single Assignment Form}
+
+In compiler design, \emph{static single assignment form} (also known as SSA) is a kind of code transformation in which every local variable is assigned only once. Existing local variables in the original source code are split into \emph{versions} (e.g., variable $x$ might be split into $x_1$ and $x_2$) with each version being assigned only once. At program points where the value of the original variable is read and there are multiple valid versions, as in the point where the branches of an \emph{if-else} statement merge, a \emph{phi-node} statement is used. This special statement bears the semantics of somehow `choosing' a specific variable version to read.
+
+\begin{figure}[h]
+\begin{subfigure}{.45\textwidth}
+\begin{javacodeLines}
+if (...) x = 10;
+else x = 20;
+y = x;
+\end{javacodeLines}
+\caption{Original source code}
+\end{subfigure}%
+    \hfill
+\begin{subfigure}{.45\textwidth}
+\begin{javacodeLines}
+if (...) x_1 = 10;
+else x_2 = 20;
+y = phi(x_1, x_2);
+\end{javacodeLines}
+\caption{The equivalent SSA form}
+\end{subfigure}
+\end{figure}
+
+In the context of static analysis, SSA is often used to approximate the benefits of a flow-sensitive analysis, particularly pertaining to the handling of local variables. This is not the case for other, more complicated language features such as heap access and method invocations, but SSA provides an easy way to pick the low-hanging fruit.
+
+\setlength\intextsep{10pt}
+\begin{wrapfigure}{ht}{.12\textwidth}
+    \centering
+\begin{javacodeLines}
+x_1 = 1;
+y = x_1;
+x_2 = 2;
+\end{javacodeLines}
+\end{wrapfigure}
+
+The flow-\emph{insensitive} analysis of \ref{flowSensitivity} will report quite different results when analyzing the SSA form equivalent of the example code, that is given on the side: ``$x_1$ has the value 1'', ``$y$ has the value 1'', and ``$x_2$ has the value 2''. The analysis is still examining instructions without taking order into account, and is unable to answer questions such as ``what is the value of variable $x$ at the end of the method'', but nevertheless it has managed to reclaim some of the precision that was previously lost --i.e., regarding the value of variable $y$.
+
+\color{red}
+\subsection{May vs. Must}
+
+The premise of a static program analysis is to reason about certain program properties under possible executions of a given program. An analysis is a \emph{may}-analysis if what it reports may hold under \emph{some} program executions. In other words, the analysis results conceptually comprise of the union of behaviors exhibited by all possible program executions.
+
+In contrast, a \emph{must}-analysis is one that reports what must hold under \emph{all} program executions. In other word, the analysis results conceptually comprise of the intersection instead of the union of all possible program behaviors.
+
+\section{Soundness \& Completeness}
+
+Often, a term associated with static analysis algorithms is that of \emph{soundness}. The term comes from formal mathematical logic, in which setting there is a \emph{logical} (or \emph{proof}) system and a \emph{model}. The model is some kind of mathematical structure, such as sets over some domain of interest, and, the proof system is a set of rules with which \emph{properties} regarding the model are proven. A system is sound if and only if statements it can prove are indeed true in the model. The converse property is that of \emph{completeness}. A system is complete if and only if what is true in the model can also be proven by the system.
+
+In the setting of static analysis the terms translate as follows. A static analysis algorithm corresponds to the proof system. Behaviors (of interest) exhibited by a given program under all possible executions constitute the model. Properties regarding the model (or program executions) are not proven but rather \emph{claimed} to hold. An analysis is sound if what it claims about the program can also be observed in program executions. Respectively, an analysis is complete if everything that can be observed in program executions is also reported by the analysis. The existence of the model (also known as \emph{ground-truth}) is independent to an analysis's capability of inferring it. In practice, it is usually the case that such inference is intractable for most interesting programs, and as a consequence, interesting static analysis algorithm aim to infer some \emph{approximation} of the ground-truth. A sound analysis will yield an \emph{under-approximation} of the model where a complete analysis will yield an \emph{over-approximation}. A trivially sound analysis could infer the empty set ($\emptyset$), i.e., nothing holds, and a trivially complete one could infer top ($\top$), i.e., everything holds. A sound and complete analysis will effectively infer the model.
+
+If an analysis only makes positive claims in regards to a property (i.e., property $P$ holds) without implicitly implying that the complement of what is reported constitutes negative claims --i.e., property $P$ does \emph{not} hold for the rest-- then it could potentially report \emph{false-positives} (property $P$ does not hold in the ground-truth but the analysis claims it does). If an analysis, implicitly or not, also makes negative claims then it could potentially report \emph{false-negatives} (property $P$ holds in the ground-truth but the analysis claims it does not).
+%It is possible for an analysis to not make any (positive or negative) claims about certain parts of a program. This draws parallels to a logical system not being able to prove (or disprove) some statements. Soundness and completeness only apply to thoses statements that a logical system can prove.
+
+It is noteworthy that the may- or must- modifiers of an analysis pertain to whether some or all program executions are taken into account when making a claim. They are unrelated to the validity of what the analysis actually claims. I.e., reports of a \emph{must}-analysis are not guaranteed to always hold in every program execution. They are \emph{claimed} to always hold, hence a must-analysis is not inherently sound. Respectively, reports of a may-analysis are \emph{claimed} to hold in some executions and thus the analysis is not inherently complete.
+
+\subsection{Precision \& Recall}
+
+As previously mentioned, most interesting static analysis algorithms can neither aim to be sound nor complete as trying to achieve such properties would either yield an intractable solution or one that makes only trivial claims. That is not to say that an analysis should not aim its best to get as close as possible to such properties, even if they themselves are out of grasp. Consequently, there is need for a \emph{quantitative} way to compare two otherwise unsound analyses. It is important to be able to reason about one analysis being \emph{better} than another, in some defined way. Two such useful measures are \emph{precision} and \emph{recall}. Informally, precision indicates how many of the analysis claims are actually correct (present in the ground-truth), whereas recall indicates how many of the actually correct claims are also reported by the analysis. For a formal definition suppose that:
+\begin{itemize}
+    \item $X$ is the number of properties of interest found in the ground-truth
+    \item $T \leq X$ is the number of correct claims made by the analysis
+    \item $F$ is the number of incorrect claims made by the analysis
+\end{itemize}
+Then, an analysis's precision is defined as \( \frac{T}{T + F} \) and its recall as \( \frac{T}{X} \).
+
+A perfect score is 1 and the worst one is 0. A sound analysis will have perfect precision, since it makes no incorrect claims. A complete analysis will have perfect recall, since it at least claims everything that is present in the ground-truth. A practical analysis will have some score in between, for both measures. A \emph{good} analysis will strive to increase both values as close to 1 as possible.
+
+Highly useful as they are, both measures have two major shortcomings. Firstly, these are \emph{empirical} measures in the sense that they measure an analysis's performance in regards to a specific given program. They bear no information about the analysis behavior at a theoretical level and cannot be generalized to other programs. An analysis could be perfect for one program and terrible for another. This could be tackled to some extend with the use of well established benchmarking suites during the analysis's testing, that aim to cover common and interesting code patterns and program behaviors. Secondly, what might be the most challenging issue, it is rarely the case that there is actual knowledge of the ground-truth. Somewhat a chicken-and-egg problem, having an automatic way to retrieve the ground-truth for arbitrary programs is both what a static analysis aims to achieve at its core and also what is needed to evaluate its claims. Usually, one has to resort to observing a limited amount of actual executions for a given program and, making the assumption that the observations are a good enough representative, interpolate to all possible program executions.
+
+\subsection{Soundiness}
+
+A closely related term coined by [..], specific to the context of static program analysis, is that of \emph{soundiness}. Loosely defined, a soundy algorithm handles most classical language features in a sound manner and only fails to do so in a well-defined set of highly \emph{dynamic} language features, e.g., reflection or dynamic loading. A soundy algorithm is not to be confused with one that is simply unsound to some extend. Soundiness is a badge of honor, awarded only to those algorithms that tried their best to be sound and only gave up in certain hard language features, where most other algorithms would have also given up.
+\color{black}
 
 
 \section{Scientific Contributions}
 
 In this section, we will briefly explain the main scientific contributions of this dissertation.
 
-Ever since the introduction of object-sensitivity by Milanova et al., there has been increasing evidence that it is the superior context choice for programs expressed in object-oriented languages, yielding high precision relative to cost. Such has been its success that in practice it has almost superseded the use of more traditional call-site sensitive analyses, in regards to object-oriented languages. Nevertheless, a call-site sensitive analysis is not always inferior as there are language features and code patterns that may favor this kind of context abstraction.
+Ever since the introduction of object-sensitivity by Milanova et al. [..], there has been increasing evidence that it is the superior context choice for programs expressed in object-oriented languages, yielding a high precision to cost ratio. Such has been its success that in practice it has almost superseded the use of more traditional call-site sensitive analyses in regards to object-oriented languages. Nevertheless, a call-site sensitive analysis is not always inferior as there are language features and code patterns that may favor this kind of context abstraction --at least in certain program points.
 
-Subsequently, a naive approach would be combining both context flavors with the goal of increasing the resulting analysis precision. Truly, such a combination would bear precision benefits but in most cases this is accompanied with an infeasibly high and disproportionate (when compared to the precision improvement) cost.
+Subsequently, a naive approach would be combining both context flavors with the goal of increasing the resulting analysis precision. Truly, such a combination would bear precision benefits but in most cases it is accompanied by an infeasibly high and disproportionate cost.
 
 Our first scientific contribution...
 

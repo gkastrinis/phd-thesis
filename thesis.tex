@@ -1,9 +1,22 @@
 \documentclass[ack,preface]{diphdthesis}
 
 \usepackage{bookmark}
+\usepackage{caption}
 \usepackage{epigraph}
 \usepackage[utf8]{inputenc}
+\usepackage{minted}
 \usepackage[defblank]{paralist}
+\usepackage[skip=0cm,list=true,labelfont=it]{subcaption}
+\usepackage{wrapfig}
+
+\usepackage{styles/languages}
+
+%%% Black background %%%
+\usepackage{xcolor}
+\usepackage{pagecolor}
+%\pagecolor{black}
+%\color{white}
+%%% Black background %%%
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -18,9 +31,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%% Required Metadata %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% First name, last name
-%
 \authorFirstGr{Γεώργιος}
 \authorFirstAbrGr{Γ.} % abbreviation of first name
 \authorMiddleGr{Σ.}   % abbreviation of father's first name
@@ -30,19 +40,14 @@
 \authorMiddleEn{S.}
 \authorLastEn{Kastrinis}
 
-%
-% The title of the thesis
-%
 \titleGr{Αποδοτική Στατική Ανάλυση Δεικτών με Αξιόπιστα Αποτελέσματα}
 %\titleGr{Αποδοτικότητα και Αξιοπιστία σε Στατική Ανάλυση Δεικτών}
 \titleEn{Scalable Static Pointer Analysis with High-Confidence Results}
 %\titleEn{Scalability and Confidence for Static Pointer Analysis}
 
-%
 % Month followed by Year
-%
-\dateGr{ΙΑΝΟΥΑΡΙΟΣ 2018}
-\dateEn{JANUARY 2019}
+\dateGr{ΜΑΡΤΙΟΣ 2019}
+\dateEn{MARCH 2019}
 
 %
 % Advisor info
@@ -109,19 +114,14 @@
 \examinationDateEn{May 2, 2017}
 %%%%%%%%%%%%%%%%%%%%%%% TEMPORARY END %%%%%%%%%%%%%%%%%%%%%%%
 
-
-%
 % Abstract, synopsis, inscription, ack, and preface pages.
-%
 \abstractEn{\input{chapters/abstract-en}}
 \abstractGr{\input{chapters/abstract-gr}}
 \synopsisGr{\input{chapters/synopsis-gr}}
 \acksEn{\input{chapters/acknowledgments}}
 \prefaceEn{}
 
-%
 % Subject area and keywords
-%
 \subjectAreaGr{Γλώσσες Προγραμματισμού, Στατική Ανάλυση}
 \subjectAreaEn{Programming Languages, Static Analysis}
 \keywordsGr{Ανάλυση Δεικτών, Ανάλυση Συνωνύμων, Αντικειμενοστρεφής Προγραμματισμός, Ακρίβεια, Απόδοση}
