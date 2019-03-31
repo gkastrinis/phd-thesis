@@ -2,11 +2,13 @@
 
 \epigraph{Sometimes a scream is better than a thesis.}{\textit{Manfred Eigen}}
 
-Static program analysis is the cornerstone of several modern programming facilities and tools for program development and aided program understanding. Nowadays, it is an umbrella term for many different methodologies (...) all with the ultimate goal of inferring a program's properties, without the need of an actual execution. It is routinely employed in many different contexts: compilers, bug detectors, verifiers, security analyzers, IDEs, and a myriad other tools.
+Static program analysis is the cornerstone of several modern programming facilities and tools for program development and aided program understanding. Nowadays, it is an umbrella term for many different methodologies (...) all with the ultimate goal of inferring a program's properties, without the need of an actual execution. It is routinely employed in many different contexts: compilers, bug detectors, verifiers, security analyzers, IDEs, and a myriad other tools. 
 
-Pointer analysis (also known as \emph{Points-To analysis}) is a fundamental subdomain of static program analysis that consists of computing some \emph{abstract memory model} for a given program. The essence of such an analysis is to compute a set of possible objects that a program variable or expression may point to during program execution. A straightforward endeavor at first, it quickly gets too complicated in practice due to all of the intricate details one has to take into account and the multitude of different features that mutually depend on each other. Although a challenging task, if implemented correctly and not naively it can bear many significant benefits to client analyses that consume its results to reason about specialized behaviors such as security vulnerabilities or potential optimization opportunities.
+The main intention of any \emph{static} program analysis algorithm is to reason about the set of all feasible behaviors (under some abstraction of behaviors) that a given program might exhibit under all possible executions. For example, could this method throw a runtime exception, or is that type cast possible to fail under some program input, etc.
 
-A closely related analysis, sometimes wrongfully confused with pointer analysis, is \emph{Alias analysis} in which one computes sets of program expressions that may alias (i.e., point to common objects) with each other. Pointer analysis could --although it is not the only possible alternative-- be used to implement an alias analysis algorithm, and vice versa.
+Pointer analysis (also known as \emph{points-to analysis}) is a fundamental subdomain of static program analysis that consists of computing some \emph{abstract memory model} for a given program. The essence of such an analysis is to compute a set of possible objects that a program variable or expression may point to during program execution. A straightforward endeavor at first, it quickly gets too complicated in practice due to all of the intricate details one has to take into account and the multitude of different features that mutually depend on each other. Although a challenging task, if implemented correctly and not naively it can bear many significant benefits to client analyses that consume its results to reason about specialized behaviors such as security vulnerabilities or potential optimization opportunities.
+
+A closely related analysis, sometimes wrongfully confused with pointer analysis, is \emph{alias analysis} in which one computes sets of program expressions that may alias (i.e., point to common objects) with each other. Pointer analysis could --although it is not the only possible alternative-- be used to implement an alias analysis algorithm, and vice versa.
 
 At the same time, programming languages are ever evolving, ever becoming more high-level and more complex. Many abstraction levels are added throughout the years with the aim of making the very task of programming easier for developers allowing them to express more with less effort (e.g., in terms of lines of code). Frequently, new features come with complicated semantics regarding their possible implementations and usually they interact in intricate ways with pre-existing ones.
 
@@ -26,7 +28,7 @@ We provide a number of techniques for implementing scalable static pointer and a
 
 Throughout the years, pointer analysis has evolved and has been the focus of intense research. It is widely accepted to be among the most standardized and well-understood inter-procedural (i.e., reasoning about a property taking into account the flow of code across different program functions) analyses.
 
-A widely used concept that emerged as a powerful tool for tuning precision while still achieving scalable analyses, is that of \emph{Context-Sensitivity}. It consists of qualifying interesting components of an analysis, such as program expressions, object abstractions or method invocations, with additional \emph{context} information. The core idea being that the analysis will collapse information (e.g., ``what objects this method argument may point to'') for components that result in the same context, while keep separate information for different contexts. In essence, qualifying components with additional context is as if each such component is replaced with multiple versions (one for each different associated context value) and the analysis can reason individually for each version.
+A widely used concept that emerged as a powerful tool for tuning precision while still achieving scalable analyses, is that of \emph{context-sensitivity}. It consists of qualifying interesting components of an analysis, such as program expressions, object abstractions or method invocations, with additional \emph{context} information. The core idea being that the analysis will collapse information (e.g., ``what objects this method argument may point to'') for components that result in the same context, while keep separate information for different contexts. In essence, qualifying components with additional context is as if each such component is replaced with multiple versions (one for each different associated context value) and the analysis can reason individually for each version.
 
 Two main flavors of context-sensitivity have been explored in past literature: \begin{inparaenum}[(1)]
 \item \emph{call-site sensitivity} (also known as \emph{kCFA}) in which call-sites are used to qualify variables and other analysis components, essentially re-analyzing a method for different call-sites that target that method, and
@@ -37,9 +39,17 @@ Another kind of context-sensitivity, known as \emph{type-sensitivity}, has also 
 A context-sensitive analysis has a second axis of parameterization besides context flavor --that of (max) context depth. Consequently, a common way to describe an analysis is using the following naming scheme: $X$-$FLAVOR$-sensitive+$Y$-heap, e.g., as in 3-call-site-sensitive+2-heap. Here $FLAVOR$ denotes the kind of context information being employed, and, $X$ and $Y$ denote the context depth limits being used at invocation sites and at object allocations respectively. In the previous example the analysis is keeping track of the 3 most recent call-stack frames that led to the current method call, in order to annotate local variables. Similarly, the analysis is using the 2 most recent call-stack frames that led to the allocation site of an object to annotate the newly allocated object.
 
 
-\section{Important Design Choices}
+\section{Design Choices}
 
-There are a few additional interesting design choices that can affect drastically the properties a static analysis will enjoy and the reasoning that each algorithm will need to implement.
+There are a few important design choices that can affect drastically the properties a static program analysis algorithm will enjoy and the reasoning that each one will need to implement.
+
+\subsection{Whole-Program vs. Partial Analyses}
+
+Different static program analyses may define differently the parts of the program that are of interest. A \emph{whole}-program analysis examines every part of the program, including any external dependencies that the code may have, and reasons about the effects each part has on the rest of the program. In the setting of Java for example, a whole-program analysis such as an analysis regarding \emph{thrown exceptions} not only reasons about the application code but additionally about any third-party library used by the program (e.g., from external Java Archives --JARs) and also about code run by the Java Runtime Environment --i.e, library code provided by the language itself.
+
+On the other hand, a \emph{partial}-analysis only focuses on specific parts of the program and ignores the effects of the rest. Multiple analyses commonly found in a classical compiler, such as \emph{type-checking} or the computation of \emph{live-ranges} for program expressions are well-known examples of partial static program analyses.
+
+A partial-analysis algorithm usually may afford to implement more complex, more expensive reasoning than a whole-program one, since it only focuses on a very localized part of the program. On the contrary, a whole-program analysis has to constantly balance the complexity of its logic,  any potential precision gains but also any scalability penalties. The rest of this dissertation will only focus on a few interesting whole-program analyses.
 
 \subsection{Flow-Sensitivity} \label{flowSensitivity}
 
@@ -64,13 +74,13 @@ after line 2: ``$x$ has the value 1'' and ``$y$ has the value 1'', and
 after line 3: ``$x$ has the value 2'' and ``$y$ has the value 1''.
 
 A flow-insensitive analysis might instead report that:
-``$x$ has either the value 1 or 2'', ``$y$ has either the value 1 or 2'',
+``$x$ has either the value 1 or 2'' and ``$y$ has either the value 1 or 2'',
 because instructions are examined as if happening in any order.
 }
 
 \subsection{Static Single Assignment Form}
 
-In compiler design, \emph{static single assignment form} (also known as SSA) is a kind of code transformation in which every local variable is assigned only once. Existing local variables in the original source code are split into \emph{versions} (e.g., variable $x$ might be split into $x_1$ and $x_2$) with each version being assigned only once. At program points where the value of the original variable is read and there are multiple valid versions, as in the point where the branches of an \emph{if-else} statement merge, a \emph{phi-node} statement is used. This special statement bears the semantics of somehow `choosing' a specific variable version to read.
+In compiler design, \emph{static single assignment form} (also known as SSA) is a kind of code transformation in which every local variable is assigned only once. Existing local variables in the original source code are split into \emph{versions} (e.g., variable $x$ might be split into $x_1$ and $x_2$) with each version being assigned only once. At program points where the value of the original variable is read and there are multiple valid versions, as in the point where the branches of an \emph{if-else} statement merge, a \emph{phi-node} statement is used. This special statement bears the semantics of somehow ``choosing'' a specific variable version to read.
 
 \begin{figure}[h]
 \begin{subfigure}{.45\textwidth}
@@ -92,7 +102,7 @@ y = phi(x_1, x_2);
 \end{subfigure}
 \end{figure}
 
-In the context of static analysis, SSA is often used to approximate the benefits of a flow-sensitive analysis, particularly pertaining to the handling of local variables. This is not the case for other, more complicated language features such as heap access and method invocations, but SSA provides an easy way to pick the low-hanging fruit.
+In the context of static program analysis, SSA is often used to approximate the benefits of a flow-sensitive analysis, particularly pertaining to the handling of local variables. This is not the case for other, more complicated language features such as heap accesses and method invocations, but SSA provides an easy way to pick the low-hanging fruit.
 
 \setlength\intextsep{10pt}
 \begin{wrapfigure}{ht}{.12\textwidth}
@@ -106,13 +116,20 @@ x_2 = 2;
 
 The flow-\emph{insensitive} analysis of \ref{flowSensitivity} will report quite different results when analyzing the SSA form equivalent of the example code, that is given on the side: ``$x_1$ has the value 1'', ``$y$ has the value 1'', and ``$x_2$ has the value 2''. The analysis is still examining instructions without taking order into account, and is unable to answer questions such as ``what is the value of variable $x$ at the end of the method'', but nevertheless it has managed to reclaim some of the precision that was previously lost --i.e., regarding the value of variable $y$.
 
+\subsection{May vs. Must Analyses}
+
+Given an abstraction of behaviors (e.g., exceptions that are potentially thrown) one can define two sets of interest regarding the potential behaviors that a given program will exhibit. Set $Any(P)$ is defined as containing all possible behaviors that a program $P$ \emph{will} exhibit in \emph{some} program execution (e.g., method $m1$ will throw exception $e1$ in one execution and exception $e2$ in another). Respectively, set $All(P)$ is defined as containing behaviors that will appear in \emph{every} program execution (e.g., method $m2$ will always throw exception $e3$ during every execution). I.e.,
+\[
+Any(P) := \bigcup_{e \in Executions} Behaviors(P, e)
+\quad \textrm{and} \quad
+All(P) := \bigcap_{e \in Executions} Behaviors(P, e)
+\]
+
+Both sets are a mathematical ideal, an answer only an oracle could provide. But, for any realistic analysis such an endeavor is an undecidable problem. Thus, a practical static program analysis will aim to compute an approximation of one of the two sets.
+
+Under that definition, analyses are split mainly into two groups depending the kind of approximation they try to achieve. On one hand, a \emph{may}-analysis is one that aims to \emph{over}-approximate $Any(P)$. On the other hand, a \emph{must}-analysis is one that aims to \emph{under}-approximate $All(P)$.
+
 \color{red}
-\subsection{May vs. Must}
-
-The premise of a static program analysis is to reason about certain program properties under possible executions of a given program. An analysis is a \emph{may}-analysis if what it reports may hold under \emph{some} program executions. In other words, the analysis results conceptually comprise of the union of behaviors exhibited by all possible program executions.
-
-In contrast, a \emph{must}-analysis is one that reports what must hold under \emph{all} program executions. In other word, the analysis results conceptually comprise of the intersection instead of the union of all possible program behaviors.
-
 \section{Soundness \& Completeness}
 
 Often, a term associated with static analysis algorithms is that of \emph{soundness}. The term comes from formal mathematical logic, in which setting there is a \emph{logical} (or \emph{proof}) system and a \emph{model}. The model is some kind of mathematical structure, such as sets over some domain of interest, and, the proof system is a set of rules with which \emph{properties} regarding the model are proven. A system is sound if and only if statements it can prove are indeed true in the model. The converse property is that of \emph{completeness}. A system is complete if and only if what is true in the model can also be proven by the system.
