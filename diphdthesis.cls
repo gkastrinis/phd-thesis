@@ -17,7 +17,7 @@
 % sample.tex
 %		A sample document demonstrating the use of this class file
 %
-% emblems/
+% assets/
 %		A directory containing three colored versions of the official emblem of
 %		the National and Kapodistrian University of Athens.
 %
@@ -397,7 +397,7 @@ publications}\gdef\@lopfileinternal{#1}}
 %
 \def\@frontpage{
 \begin{center}
-\includegraphics{emblems/athena-black}
+\includegraphics{assets/athena-black}
 \end{center}
 \begin{minipage}[t]{\textwidth}
     \begin{center}

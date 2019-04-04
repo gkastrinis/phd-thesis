@@ -171,48 +171,71 @@ At the same time, many academic publications make claims of soundness and may ev
 
 The term \emph{soundiness}, specific to the context of static program analysis, was coined by [..] for such a purpose. A \emph{soundy} analysis handles most classical, core language features in a sound manner (i.e., overapproximates) and may only fail to do so (i.e., underapproximates) in a small well-accepted subset of highly \emph{dynamic features}, specific to each language. Such features include uses of \emph{reflection} or \emph{native code} in Java, \emph{eval} in Javascript, and \emph{pointer arithmetic} in C/C++.
 
+\subsection{}
+
+\begin{figure}[htb]
+\centering
+\includegraphics[scale=.7]{assets/chart-soundness}
+\caption{Various kinds of static program analysis algorithms}
+\label{fig:soundness}
+\end{figure}
+
+Figure \ref{fig:soundness} attempts to portray how different kinds of static program analysis relate to each other and to the mathematical ideals. Each purple set represents all behaviors exhibited under a single actual program execution. Any static program analysis will collapse different executions into a single set and will make claims about the given program in general. The ideal $Any(P)$ is represented by the union of all sets and $Any(P)$ by the intersection, respectively. Subsequently, any sound may-analysis will result in a superset of $Any(P)$, whereas any sound must-analysis will result in a subset of $All(P)$. Any unsound analysis will result in a set with no specific properties; not entirely covering its appropriate mathematical ideal but also including unrelated elements. Finally, a soundy analysis will result in a set that starts as a superset of $Any(P)$ but misses some hard (i.e., costly) to overapproximate behaviors in well-known cases.
+
+% A graph portraying how different kinds of static program analyses relate to each other and to the mathematical ideals might be of interest. Suppose that each set of program behaviors (examined by the given analysis) is mapped to some integer value. Indeed, such a mapping is possible since the set of all potential behaviors is \emph{countably infinite} (?) and any partial order on its subsets can allow a mapping to integers. Those integer values bear no actual semantics; they are just an easy way to \emph{visualize} different subsets. Under that assumption, figure \ref{fig:soundness} makes such an attempt. The x-axis represents different program inputs (i.e., different program executions), and the y-axis represents the exhibited behaviors in each execution. All static program analyses make claims regarding program behaviors in all potential executions, and thus their results are visualized as a constant straight line.
+
 
 \section{Scientific Contributions}
 
-In this section, we will briefly explain the main scientific contributions of this dissertation.
+In this section, we will briefly explain the main scientific contributions of this dissertation. The exploration happens in the context of analyzing Java programs \footnote{More specifically, the presented algorithms operate on Java Bytecode --the lower-level intermediate representation used in the Java Virtual Machine-- and thus they could, in theory, be applied to any programming language that targets the Java VM.}, although it is not that far-fetched to generalize results to other languages that offer similar features.  
 
-Ever since the introduction of object-sensitivity by Milanova et al. [..], there has been increasing evidence that it is the superior context choice for programs expressed in object-oriented languages, yielding a high precision to cost ratio. Such has been its success that in practice it has almost superseded the use of more traditional call-site sensitive analyses in regards to object-oriented languages. Nevertheless, a call-site sensitive analysis is not always inferior as there are language features and code patterns that may favor this kind of context abstraction --at least in certain program points.
+Ever since the introduction of object-sensitivity by Milanova et al. [..], there has been increasing evidence that it is the superior context choice for programs expressed in object-oriented languages, yielding a high precision to cost ratio. Such has been its success that in practice it has almost superseded the use of more traditional call-site sensitive analyses, when focusing on object-oriented languages. Nevertheless, a call-site sensitive analysis is not always inferior as there are language features and code patterns that may partially favor this kind of context abstraction.
 
-Subsequently, a naive approach would be combining both context flavors with the goal of increasing the resulting analysis precision. Truly, such a combination would bear precision benefits but in most cases it is accompanied by an infeasibly high and disproportionate cost.
+Subsequently, one might consider an approach where both context flavors are --naively-- combined in every program point with the goal of increasing the precision of the end result. Truly, such a combination would bear some precision benefits but in most cases it would be accompanied by an infeasibly high and disproportionate cost.
 
-Our first scientific contribution...
+Our first scientific contribution is a step towards a more sophisticated handling aiming to achieve a beneficial combination of both context flavors. We propose a \emph{hybrid} context flavor for defining a family of analyses where classical contexts are mixed and combined only in those program points where it is profitable for the analysis. The resulting selective combination of both context kinds vastly outperforms not only analyses following the naive non-selective combination approach, but also their ``normal'' object-sensitive counterparts.
+
+The second scientific contribution tries to tackle an oft-reported issue with context-sensitive analyses, in that they mostly operate in two extremes: either the analysis is precise enough that it manipulates only manageable sets of data, and thus scales impressively well, or the analysis gets quickly derailed at the first sign of --massive-- imprecision and becomes orders-of-magnitude more expensive than would be expected given the program's size. Currently, there is no approach for a \emph{precise} context-\emph{sensitive} (of any context flavor) analysis that would scale across the board at a level comparable to that of a context-\emph{insensitive} one. Instead, we propose a two step process by means of \emph{introspective analysis}: the approach uniformly scales context-sensitive analyses by eliminating the performance-detrimental behavior, only at a small precision expense.
+
+Introspective analysis employs an common adaptive pattern: it first performs a context-insensitive analysis and then it uses the results to selectively refine (i.e., analyze context-sensitively) only those program elements that are expected not to cause an explosion in the running time or memory space.
 
 
 \section{Outline}
 
 The rest of this dissertation is organized as follows:
-\begin{itemize}%[--]
-\item Chapter~\ref{chapter:hybrid} bla blaasda
+\begin{itemize}[$\bullet$]
+\item Chapter~\ref{chapter:hybrid} examines how a naive combination of object sensitivity and call-site sensitivity into a single analysis can be massively penalizing in terms of performance. Following that, we presents a hybrid context-sensitive approach for implementing points-to analyses that leverage the benefits of combining both object- and a call-site- sensitivity while avoiding to pay most of the cost of a naive combination.
 
-    This chapter presents research previously published in...
-  %\emph{\citetitle{foo}} \cite{foo}.
+This chapter presents research previously published in... %\emph{\citetitle{foo}} \cite{foo}.
 
-\item Chapter~\ref{chapter:introspective} bla bla
+\item Chapter~\ref{chapter:introspective} examines a well-known bi-modal nature of classical static program points-to analyses in regards to scalability; they are either quite scalable or no scalable at all. In order to counter that discrepancy, we propose an adaptive approach in introspective analysis, where an imprecise analysis is used as a stepping stone in order to fine-tune program points in which a more precise handling is both beneficial and not detrimental to the overall analysis's performance.
 
-    This chapter presents research previously published in...
+This chapter presents research previously published in...
+\end{itemize}
 
+Both the aforementioned contributions are aimed towards..
+
+\begin{itemize}[$\bullet$]
 \item Chapter~\ref{chapter:must-logic} bla bla
 
-    This chapter presents research previously published in...
+This chapter presents research previously published in...
 
 \item Chapter~\ref{chapter:must-data} bla bla
 
-    This chapter presents research previously published in...
+This chapter presents research previously published in...
 
 \item Chapter~\ref{chapter:defensive} bla bla
 
-    This chapter presents research previously published in...
-    
+This chapter presents research previously published in...
+\end{itemize}
+
+The last three scientific contributions aim ...
+
+\begin{itemize}[$\bullet$]
 \item Chapter~\ref{chapter:panda} bla bla
 
-\item Chapter~\ref{chapter:related} first discusses related work that
-  is specific to the previous chapters, and then expands to various
-  other interesting subjects in the broader realm of static analysis.
+\item Chapter~\ref{chapter:related} first discusses related work that is specific to previous chapters, and then expands to various other interesting subjects in the broader realm of static analysis.
+
 %   Some parts of this chapter are based on the aforementioned papers
 %   \cite{structsens,reflection,jphantom}, and some on the survey
 %   \emph{\citetitle{survey}} \cite{survey}.
