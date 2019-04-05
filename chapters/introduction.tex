@@ -84,22 +84,23 @@ In compiler design, \emph{static single assignment form} (also known as SSA) is 
 
 \begin{figure}[h]
 \begin{subfigure}{.45\textwidth}
-\begin{javacodeLines}
-if (...) x = 10;
-else x = 20;
-y = x;
-\end{javacodeLines}
-\caption{Original source code}
+    \begin{javacodeLines}
+    if (...) x = 10;
+    else x = 20;
+    y = x;
+    \end{javacodeLines}
+    \caption{Original source code}
 \end{subfigure}%
-    \hfill
+\hfill
 \begin{subfigure}{.45\textwidth}
-\begin{javacodeLines}
-if (...) x_1 = 10;
-else x_2 = 20;
-y = phi(x_1, x_2);
-\end{javacodeLines}
-\caption{The equivalent SSA form}
+    \begin{javacodeLines}
+    if (...) x_1 = 10;
+    else x_2 = 20;
+    y = phi(x_1, x_2);
+    \end{javacodeLines}
+    \caption{The equivalent SSA form}
 \end{subfigure}
+\caption{Example code before and after an SSA transformation}
 \end{figure}
 
 In the context of static program analysis, SSA is often used to approximate the benefits of a flow-sensitive analysis, particularly pertaining to the handling of local variables. This is not the case for other, more complicated language features such as heap accesses and method invocations, but SSA provides an easy way to pick the low-hanging fruit.
@@ -134,7 +135,7 @@ May(P) \supseteq Any(P) \quad \textrm{and} \quad Must(P) \subseteq All(P)
 
 The term \emph{soundness} (and its converse \emph{completeness}) originate from formal mathematical logic where it is used in order to evaluate a \emph{proof} system under a given \emph{model}. The model is some kind of mathematical structure, such as sets over some domain of interest and the proof system is a set of rules with which \emph{properties} regarding the model are proven. A system is sound if and only if statements it can prove are indeed true in the model (concisely given as ``claim implies truth''). A system is complete if and only if what is true in the model can also be proven by the system (concisely given as ``truth implies claim'').
 
-In the context of static program analysis the most relevant and widely used term is that of soundness. In this setting, the analysis is making claims regarding potential program behaviors under any program execution and the validity of those claims constitutes whether the analysis is sound or not. More specifically, a may-analysis is sound whenever what it claims is actually true --i.e., the computed behaviors are an overapproximation of $Any(P)$. Respectively, a must-analysis is sound whenever the computed behaviors are an underapproximation of $All(P)$. A trivially sound may-analysis could simply infer top ($\top$), i.e., every possible behavior. A trivially sound must-analysis could simply infer the empty set ($\emptyset$), i.e., no behavior at all.
+In the context of static program analysis the most relevant and widely used term is that of soundness. In this setting, the analysis is making claims regarding potential program behaviors under any program execution and the validity of those claims constitutes whether the analysis is sound or not. More specifically, a may-analysis is sound whenever what it claims is actually true --i.e., the computed behaviors are an overapproximation of $Any(P)$. Respectively, a must-analysis is sound whenever the computed behaviors are an underapproximation of $All(P)$. A trivially sound-may analysis could simply infer top ($\top$), i.e., every possible behavior. A trivially sound-must analysis could simply infer the empty set ($\emptyset$), i.e., no behavior at all.
 
 Contrary to the prevalent use of soundness for evaluating static program analysis algorithms, completeness is scarcely referenced --if ever. One can easily find ``proofs of soundness'' on many publications but not the analogous ``proofs of completeness''. This is mainly because of the way analyses (may- or must-) are defined as aiming to compute an \emph{approximation} of potential behaviors. For example, what would the meaning of a complete may-analysis be? Such an analysis has to abide by the definition of ``truth implies claim''. In this case ``truth'' is any overapproximation of $Any(P)$. Consequencently, a ``complete'' may-analysis would need to compute all possible overapproximations of $Any(P)$, and thus, the term is less relevant in the domain of static program analysis.
 
@@ -157,7 +158,7 @@ Precision(P) = \frac{T}{T + F}
 Recall(P) = \frac{T}{X}
 \]
 
-A value of 1 is a perfect score, and a value of 0 is the worst one. A sound may-analysis will have perfect recall, since it at least claims any behavior that is actually true. A sound must-analysis will have perfect precision, since it makes no incorrect claims (it does not report any behavior that can not actually occur).
+A value of 1 is a perfect score, and a value of 0 is the worst one. A sound-may analysis will have perfect recall, since it at least claims any behavior that is actually true. A sound-must analysis will have perfect precision, since it makes no incorrect claims (it does not report any behavior that can not actually occur).
 
 Highly useful as they are, both measures have two major shortcomings. Firstly, these are \emph{empirical} measures in the sense that they measure an analysis's performance in regards to a specific given program. They bear no information about the analysis behavior at a theoretical level and cannot be generalized to other programs. An analysis could be perfect for one program and terrible for another. This could be tackled to some extend with the use of well established benchmarking suites during the testing phase, that aim to cover common and interesting code patterns and program behaviors.
 
@@ -171,18 +172,47 @@ At the same time, many academic publications make claims of soundness and may ev
 
 The term \emph{soundiness}, specific to the context of static program analysis, was coined by [..] for such a purpose. A \emph{soundy} analysis handles most classical, core language features in a sound manner (i.e., overapproximates) and may only fail to do so (i.e., underapproximates) in a small well-accepted subset of highly \emph{dynamic features}, specific to each language. Such features include uses of \emph{reflection} or \emph{native code} in Java, \emph{eval} in Javascript, and \emph{pointer arithmetic} in C/C++.
 
-\subsection{}
+\subsection{A Static Program Analysis Mind Map}
 
-\begin{figure}[htb]
-\centering
-\includegraphics[scale=.7]{assets/chart-soundness}
-\caption{Various kinds of static program analysis algorithms}
+\begin{figure}[htb!]
+\begin{subfigure}{.47\textwidth}
+    \includegraphics[scale=.45]{assets/venn-soundness-a.pdf}
+    \caption{Behavior sets of actual program executions}
+    \label{fig:soundness-a}
+\end{subfigure}
+\hfill
+\begin{subfigure}{.47\textwidth}
+    \includegraphics[scale=.45]{assets/venn-soundness-b.pdf}
+    \caption{Mathematical ideals $Any(P)$ (union) and $All(P)$ (intersection)}
+    \label{fig:soundness-b}
+\end{subfigure}
+\begin{subfigure}{.47\textwidth}
+    \includegraphics[scale=.45]{assets/venn-soundness-c.pdf}
+    \caption{Any sound-may analysis (green) in relation to $Any(P)$}
+    \label{fig:soundness-c}
+\end{subfigure}
+\hfill
+\begin{subfigure}{.47\textwidth}
+    \includegraphics[scale=.45]{assets/venn-soundness-d.pdf}
+    \caption{Any sound-must analysis (red) in relation to $All(P)$}
+    \label{fig:soundness-d}
+\end{subfigure}
+\begin{subfigure}{.47\textwidth}
+    \includegraphics[scale=.45]{assets/venn-soundness-e.pdf}
+    \caption{Any unsound analysis (orange) in relation to both ideals}
+    \label{fig:soundness-e}
+\end{subfigure}
+\hfill
+\begin{subfigure}{.47\textwidth}
+    \includegraphics[scale=.45]{assets/venn-soundness-f.pdf}
+    \caption{Any \emph{soundy} analysis (blue) in relation to both ideals}
+    \label{fig:soundness-f}
+\end{subfigure}
+\caption{Venn diagrams visualizing the relations of different static program analysis flavors to each other and to real behaviors}
 \label{fig:soundness}
 \end{figure}
 
-Figure \ref{fig:soundness} attempts to portray how different kinds of static program analysis relate to each other and to the mathematical ideals. Each purple set represents all behaviors exhibited under a single actual program execution. Any static program analysis will collapse different executions into a single set and will make claims about the given program in general. The ideal $Any(P)$ is represented by the union of all sets and $Any(P)$ by the intersection, respectively. Subsequently, any sound may-analysis will result in a superset of $Any(P)$, whereas any sound must-analysis will result in a subset of $All(P)$. Any unsound analysis will result in a set with no specific properties; not entirely covering its appropriate mathematical ideal but also including unrelated elements. Finally, a soundy analysis will result in a set that starts as a superset of $Any(P)$ but misses some hard (i.e., costly) to overapproximate behaviors in well-known cases.
-
-% A graph portraying how different kinds of static program analyses relate to each other and to the mathematical ideals might be of interest. Suppose that each set of program behaviors (examined by the given analysis) is mapped to some integer value. Indeed, such a mapping is possible since the set of all potential behaviors is \emph{countably infinite} (?) and any partial order on its subsets can allow a mapping to integers. Those integer values bear no actual semantics; they are just an easy way to \emph{visualize} different subsets. Under that assumption, figure \ref{fig:soundness} makes such an attempt. The x-axis represents different program inputs (i.e., different program executions), and the y-axis represents the exhibited behaviors in each execution. All static program analyses make claims regarding program behaviors in all potential executions, and thus their results are visualized as a constant straight line.
+Figure \ref{fig:soundness} attempts to shed some light on how different kinds of static program analysis relate to each other and to the mathematical ideals. Each set in figure \ref{fig:soundness-a} represents all behaviors exhibited under a single actual program execution. Any static program analysis will collapse different executions into a single set and will make claims about the given program in general. In figure \ref{fig:soundness-b}, the ideal $Any(P)$ is represented by the union of all sets and that of $Any(P)$ by the intersection, respectively. Any sound-may analysis will result in a superset of $Any(P)$ (figure \ref{fig:soundness-c}), whereas any sound-must analysis will result in a subset of $All(P)$ (figure \ref{fig:soundness-d}). Finally, any unsound analysis (figure \ref{fig:soundness-e}) will result in a set with no apparent properties; not entirely covering its appropriate mathematical ideal but also including unrelated elements. More specifically though, as illustrated in figure \ref{fig:soundness-f}, a soundy analysis will result in a set that starts as a superset of $Any(P)$ but misses some hard (i.e., costly) to overapproximate behaviors in well-known cases.
 
 
 \section{Scientific Contributions}
