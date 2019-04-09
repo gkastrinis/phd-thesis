@@ -217,17 +217,34 @@ Figure \ref{fig:soundness} attempts to shed some light on how different kinds of
 
 \section{Scientific Contributions}
 
-In this section, we will briefly explain the main scientific contributions of this dissertation. The exploration happens in the context of analyzing Java programs \footnote{More specifically, the presented algorithms operate on Java Bytecode --the lower-level intermediate representation used in the Java Virtual Machine-- and thus they could, in theory, be applied to any programming language that targets the Java VM.}, although it is not that far-fetched to generalize results to other languages that offer similar features.  
+In this section, we will briefly explain the main scientific contributions of this dissertation. The exploration happens in the context of analyzing Java programs \footnote{More specifically, the soon-to-be presented algorithms operate on Java Bytecode --the lower-level intermediate representation used in the Java Virtual Machine-- and thus they could, in theory, be applied to any programming language that targets the Java VM.}, although it is not that far-fetched to generalize results to other languages that offer similar features. Additionally, most of our following contributions are expressed and evaluated as part of the \doop{} framework [..], which offers several analyses targeting the Java bytecode using Datalog specifications.
 
 Ever since the introduction of object-sensitivity by Milanova et al. [..], there has been increasing evidence that it is the superior context choice for programs expressed in object-oriented languages, yielding a high precision to cost ratio. Such has been its success that in practice it has almost superseded the use of more traditional call-site sensitive analyses, when focusing on object-oriented languages. Nevertheless, a call-site sensitive analysis is not always inferior as there are language features and code patterns that may partially favor this kind of context abstraction.
 
 Subsequently, one might consider an approach where both context flavors are --naively-- combined in every program point with the goal of increasing the precision of the end result. Truly, such a combination would bear some precision benefits but in most cases it would be accompanied by an infeasibly high and disproportionate cost.
 
-Our first scientific contribution is a step towards a more sophisticated handling aiming to achieve a beneficial combination of both context flavors. We propose a \emph{hybrid} context flavor for defining a family of analyses where classical contexts are mixed and combined only in those program points where it is profitable for the analysis. The resulting selective combination of both context kinds vastly outperforms not only analyses following the naive non-selective combination approach, but also their ``normal'' object-sensitive counterparts.
+Our first scientific contribution is a step towards a more sophisticated handling aiming to achieve a beneficial combination of both context flavors. We propose a \emph{hybrid} context flavor for defining a family of analyses where classical contexts are mixed and combined only in those program points where it is profitable for the analysis. The resulting selective combination of both context kinds vastly outperforms not only analyses following the naive non-selective combination approach, but also their ``normal'' object-sensitive counterparts. This result holds for a large array of analyses (e.g., 1-object-sensitive, 2-object-sensitive with a context-sensitive heap, etc.) establishing a new set of performance/precision sweet spots.
 
 The second scientific contribution tries to tackle an oft-reported issue with context-sensitive analyses, in that they mostly operate in two extremes: either the analysis is precise enough that it manipulates only manageable sets of data, and thus scales impressively well, or the analysis gets quickly derailed at the first sign of --massive-- imprecision and becomes orders-of-magnitude more expensive than would be expected given the program's size. Currently, there is no approach for a \emph{precise} context-\emph{sensitive} (of any context flavor) analysis that would scale across the board at a level comparable to that of a context-\emph{insensitive} one. Instead, we propose a two step process by means of \emph{introspective analysis}: the approach uniformly scales context-sensitive analyses by eliminating the performance-detrimental behavior, only at a small precision expense.
 
-Introspective analysis employs an common adaptive pattern: it first performs a context-insensitive analysis and then it uses the results to selectively refine (i.e., analyze context-sensitively) only those program elements that are expected not to cause an explosion in the running time or memory space.
+Introspective analysis employs a common adaptive pattern: it first performs a context-insensitive analysis and then it uses the results to selectively refine (i.e., analyze context-sensitively) only those program elements that are expected not to cause an explosion in running time or memory space. The technical challenge is to appropriately identify such program elements. We show that a simple but principled approach can be remarkably effective, achieving scalability (often with dramatic speedup) for benchmarks previously completely out-of-reach for deep context-sensitive analyses.
+
+For the last two contributions, we shift our attention towards analyses that aim for the highest confidence in their claims. Although quite reluctant and conservative in making a claim, when they actually do they make certain that it is the correct decision.
+
+The next, third contribution features a different flavor of static program analysis. Instead of the more commonly researched paradigm of \emph{may}-analyses, we chose to explore the alternative approach of a \emph{must}-analysis. More specifically, we focus on an instance of a \emph{must-alias} (also known as \emph{definite-alias}) analysis that aims to infer aliasing relationships among program expressions that are guaranteed to always hold. \footnote{As previously mentioned, a must-analysis will aim to compute an underapproximation of behaviors that will happen in every possible program execution.} The applications of a must-alias analysis are manifold:
+\begin{inparaenum}[(1)]
+\item it is useful for enabling optimizations such as constant folding and register allocation,
+\item it can increase the precision of bug detectors, e.g. greatly benefiting a null-reference detector and a non-termination detector [..], and
+\item it can be used internally as part of more complex analyses, e.g. one that can reason correctly about ``strong-updates'' at instructions that modify the heap.
+\end{inparaenum}
+
+Our proposed modeling is \emph{declarative}, expressed in the Datalog language and thus it has the side effect of being executable out-of-the-box. In order to compute high-confident results that at the same time are non-trivial, the analysis needs to be flow-sensitive, i.e., compute information at each program point and propagate it forward while respecting the control-flow of the program.
+
+Furthermore, we observe that a must-alias analysis exhibits certain properties that can be exploited in order to achieve a more efficient algorithm without any compromise in the precision or the validity of its results. We present a custom specialized \emph{data structure} that speeds up a must-alias analysis by nearly two orders of magnitude. The data structure achieves its efficiency by encoding multiple alias sets in a single linked structure, and compactly representing the aliasing relations of arbitrarily long program expressions. Under this approach, must-alias analysis can be performed efficiently, over large Java benchmarks, in under half a minute, making the analysis cost acceptable for most practical uses.
+
+For our last contribution, we revisit the setting of a may-analysis but this time while aiming to explore the potential of a truly \emph{sound} --instead of just soundy-- yet \emph{practical} analysis. We present such an approach in a \emph{defensive} may-points-to analysis, which can guarantee soundness even in the presence of arbitrary opaque code \footnote{Code that cannot be analyzed such as dynamically generated or native code, or dynamic language features such as reflection, \code{invokedynamic}, etc.}. A key design tenet of our approach is \emph{laziness}: the analysis computes points-to relationships only for program expressions that are guaranteed to never escape into opaque code.
+
+The defensive nature of our analysis means that it might miss some valid inferences, but because of its laziness it will never waste work to compute sets that are not ``complete'', i.e. that may be missing elements due to opaque code. This frugal approach is what enables the great efficiency of our algorithm, allowing for a highly precise points-to analysis (such as a 5-call-site-sensitive, flow-sensitive analysis). Despite its conservative nature, our analysis yields sound, actionable results for a large subset of the program code, achieving (under worst-case assumptions) 34-74\% of the program coverage of an unsound state-of-the-art analysis for real-world programs.
 
 
 \section{Outline}
@@ -238,37 +255,31 @@ The rest of this dissertation is organized as follows:
 
 This chapter presents research previously published in... %\emph{\citetitle{foo}} \cite{foo}.
 
-\item Chapter~\ref{chapter:introspective} examines a well-known bi-modal nature of classical static program points-to analyses in regards to scalability; they are either quite scalable or no scalable at all. In order to counter that discrepancy, we propose an adaptive approach in introspective analysis, where an imprecise analysis is used as a stepping stone in order to fine-tune program points in which a more precise handling is both beneficial and not detrimental to the overall analysis's performance.
+\item Chapter~\ref{chapter:introspective} examines a well-known bi-modal nature of classical static program points-to analyses in regards to scalability; they are either quite scalable or not scalable at all. In order to counter that discrepancy, we propose an adaptive approach in introspective analysis, where an imprecise analysis is used as a stepping stone in order to fine-tune program points in which a more precise handling is both beneficial and not detrimental to the overall analysis's performance.
 
 This chapter presents research previously published in...
 \end{itemize}
 
-Both the aforementioned contributions are aimed towards..
+Both aforementioned contributions aim for more scalable analyses that achieve superior performance without foregoing precision. The next three contributions aim for analyses that although more restrained on what they report, they do so with much more confidence in the accuracy of their claims.
 
 \begin{itemize}[$\bullet$]
-\item Chapter~\ref{chapter:must-logic} bla bla
+\item Chapter~\ref{chapter:must-logic} examines how to compose a declarative model of a rich family of must-alias analyses, with emphasis on a careful and compact modeling, while at the same time exposing the key points where the algorithm's inference power can be adjusted.
 
 This chapter presents research previously published in...
 
-\item Chapter~\ref{chapter:must-data} bla bla
+\item Chapter~\ref{chapter:must-data} builds upon the previous chapter and goes forth to provide a specialized data structure that by exploiting the nature of a must-alias analysis it achieves high performance without any sacrifice on the accuracy of its results. We explore the data structure's performance in both an imperative (implemented in Java) and a declarative (implemented in Datalog) setting and contrast it extensively with prior techniques.
 
 This chapter presents research previously published in...
 
-\item Chapter~\ref{chapter:defensive} bla bla
+\item Chapter~\ref{chapter:defensive} examines how a defensive reasoning in the presence of opaque code can be combined along with computational laziness in order to produce a highly efficient, highly precise and truly sound may-points-to analysis.
 
 This chapter presents research previously published in...
 \end{itemize}
 
-The last three scientific contributions aim ...
-
 \begin{itemize}[$\bullet$]
-\item Chapter~\ref{chapter:panda} bla bla
+\item Chapter~\ref{chapter:panda} bla bla (paNda?)
 
 \item Chapter~\ref{chapter:related} first discusses related work that is specific to previous chapters, and then expands to various other interesting subjects in the broader realm of static analysis.
-
-%   Some parts of this chapter are based on the aforementioned papers
-%   \cite{structsens,reflection,jphantom}, and some on the survey
-%   \emph{\citetitle{survey}} \cite{survey}.
 
 \item Chapter~\ref{chapter:conclusions} concludes this dissertation by assessing our initial thesis and discussing future work.
 \end{itemize}
