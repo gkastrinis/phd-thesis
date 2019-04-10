@@ -1,6 +1,6 @@
 \documentclass[ack,preface]{diphdthesis}
 
-% \usepackage{amsfonts,amsmath,amssymb,latexsym}
+\usepackage[backend=biber,sorting=ynt]{biblatex}
 \usepackage{bookmark}
 \usepackage{caption}
 \usepackage{epigraph}
@@ -12,7 +12,7 @@
 \usepackage[skip=0cm,list=true,labelfont=it]{subcaption}
 \usepackage{wrapfig}
 
-\usepackage{styles/languages}
+\usepackage{styles}
 
 %%%% TEMPORARY %%%%
 \usepackage{xcolor}
@@ -53,6 +53,8 @@
 \keywordsEn{Pointer Analysis; Alias Analysis; Object-Oriented Programming; Precision; Performance; Context-Sensitivity}
 %%%% Metadata END %%%%
 
+\addbibresource{biblio/ptranalysis.bib}
+
 
 \begin{document}
 
@@ -77,5 +79,11 @@
 \input{chapters/conclusions}
 
 \backmatter
+
+%%%% Bibliography Section %%%%
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{REFERENCES}
+\printbibliography
 
 \end{document}

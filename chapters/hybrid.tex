@@ -417,53 +417,53 @@ information), output relations, and constructors of contexts.}
 \begin{tabular}{l}
 %\cline{1-1}
 \pred{InterProcAssign}{to, calleeCtx, from, callerCtx} $\leftarrow$ \\
-\hspace{2 mm} \pred{CallGraph}{invo, callerCtx, meth, calleeCtx}, \\
-\hspace{2 mm} \pred{FormalArg}{meth, i, to}, \pred{ActualArg}{invo, i, from}. \\
+\tab \pred{CallGraph}{invo, callerCtx, meth, calleeCtx}, \\
+\tab \pred{FormalArg}{meth, i, to}, \pred{ActualArg}{invo, i, from}. \\
 \\
 
 \pred{InterProcAssign}{to, callerCtx, from, calleeCtx} $\leftarrow$ \\
-\hspace{2 mm} \pred{CallGraph}{invo, callerCtx, meth, calleeCtx}, \\
-\hspace{2 mm} \pred{FormalReturn}{meth, from}, \pred{ActualReturn}{invo, to}. \\
+\tab \pred{CallGraph}{invo, callerCtx, meth, calleeCtx}, \\
+\tab \pred{FormalReturn}{meth, from}, \pred{ActualReturn}{invo, to}. \\
 \\
 \\
 \cons{Record}{heap, ctx}{hctx}, \\
 \pred{VarPointsTo}{var, ctx, heap, hctx} $\leftarrow$ \\
-\hspace{2 mm} \pred{Reachable}{meth, ctx}, \pred{Alloc}{var, heap, meth}. \\
+\tab \pred{Reachable}{meth, ctx}, \pred{Alloc}{var, heap, meth}. \\
 \\
 
 \pred{VarPointsTo}{to, ctx, heap, hctx} $\leftarrow$ \\
-\hspace{2 mm} \pred{Move}{to, from}, \pred{VarPointsTo}{from, ctx, heap, hctx}. \\
+\tab \pred{Move}{to, from}, \pred{VarPointsTo}{from, ctx, heap, hctx}. \\
 \\
 
 \pred{VarPointsTo}{to, toCtx, heap, hctx} $\leftarrow$ \\
-\hspace{2 mm} \pred{InterProcAssign}{to, toCtx, from, fromCtx}, \\
-\hspace{2 mm} \pred{VarPointsTo}{from, fromCtx, heap, hctx}. \\
+\tab \pred{InterProcAssign}{to, toCtx, from, fromCtx}, \\
+\tab \pred{VarPointsTo}{from, fromCtx, heap, hctx}. \\
 \\
 
 \pred{VarPointsTo}{to, ctx, heap, hctx} $\leftarrow$ \\
-\hspace{2 mm} \pred{Load}{to, base, fld}, \pred{VarPointsTo}{base, ctx, baseH, baseHCtx}, \\
-\hspace{2 mm} \pred{FldPointsTo}{baseH, baseHCtx, fld, heap, hctx}. \\
+\tab \pred{Load}{to, base, fld}, \pred{VarPointsTo}{base, ctx, baseH, baseHCtx}, \\
+\tab \pred{FldPointsTo}{baseH, baseHCtx, fld, heap, hctx}. \\
 \\
 
 \pred{FldPointsTo}{baseH, baseHCtx, fld, heap, hctx} $\leftarrow$ \\
-\hspace{2 mm} \pred{Store}{base, fld, from}, \pred{VarPointsTo}{from, ctx, heap, hctx},\\
-\hspace{2 mm} \pred{VarPointsTo}{base, ctx, baseH, baseHCtx}. \\
+\tab \pred{Store}{base, fld, from}, \pred{VarPointsTo}{from, ctx, heap, hctx},\\
+\tab \pred{VarPointsTo}{base, ctx, baseH, baseHCtx}. \\
 \\
 \\
 \cons{Merge}{heap, hctx, invo, callerCtx}{calleeCtx}, \\
 \pred{Reachable}{toMeth, calleeCtx}, \\
 \pred{VarPointsTo}{this, calleeCtx, heap, hctx}, \\
 \pred{CallGraph}{invo, callerCtx, toMeth, calleeCtx} $\leftarrow$ \\
-\hspace{2 mm} \pred{VCall}{base, sig, invo, inMeth}, \pred{Reachable}{inMeth, callerCtx}, \\
-\hspace{2 mm} \pred{VarPointsTo}{base, callerCtx, heap, hctx},\\
-\hspace{2 mm} \pred{HeapType}{heap, heapT}, \pred{Lookup}{heapT, sig, toMeth},\\
-\hspace{2 mm} \pred{ThisVar}{toMeth, this}. \\
-
+\tab \pred{VCall}{base, sig, invo, inMeth}, \pred{Reachable}{inMeth, callerCtx}, \\
+\tab \pred{VarPointsTo}{base, callerCtx, heap, hctx},\\
+\tab \pred{HeapType}{heap, heapT}, \pred{Lookup}{heapT, sig, toMeth},\\
+\tab \pred{ThisVar}{toMeth, this}. \\
 \\
+
 \cons{MergeStatic}{invo, callerCtx}{calleeCtx}, \\
 \pred{Reachable}{toMeth, calleeCtx}, \\
 \pred{CallGraph}{invo, callerCtx, toMeth, calleeCtx} $\leftarrow$ \\
-\hspace{2 mm} \pred{SCall}{toMeth, invo, inMeth}, \pred{Reachable}{inMeth, callerCtx}. \\
+\tab \pred{SCall}{toMeth, invo, inMeth}, \pred{Reachable}{inMeth, callerCtx}. \\
 %\cline{1-1}
 \end{tabular}
 %\end{center}
