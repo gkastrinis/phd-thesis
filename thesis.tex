@@ -1,26 +1,28 @@
 \documentclass[ack,preface]{diphdthesis}
 
+% \usepackage{amsfonts,amsmath,amssymb,latexsym}
 \usepackage{bookmark}
 \usepackage{caption}
 \usepackage{epigraph}
+\usepackage{graphicx}
 \usepackage[utf8]{inputenc}
 \usepackage{minted}
+\usepackage{multirow}
 \usepackage[defblank]{paralist}
 \usepackage[skip=0cm,list=true,labelfont=it]{subcaption}
 \usepackage{wrapfig}
-%%% Custom styles %%%
+
 \usepackage{styles/languages}
 
-%%% (Temp) Black background %%%
+%%%% TEMPORARY %%%%
 \usepackage{xcolor}
 \usepackage{pagecolor}
 %\pagecolor{black}
 %\color{white}
-%%% (Temp) Black background %%%
+%%%% TEMPORARY %%%%
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%% Required Metadata %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%% Metadata START %%%%
 \authorFirstGr{Γεώργιος}
 \authorFirstAbrGr{Γ.} % abbreviation of first name
 \authorMiddleGr{Σ.}   % abbreviation of father's first name
@@ -35,139 +37,45 @@
 \titleEn{Scalable Static Pointer Analysis with High-Confidence Results}
 %\titleEn{Scalability and Confidence for Static Pointer Analysis}
 
-% Month followed by Year
-\dateGr{ΜΑΡΤΙΟΣ 2019}
-\dateEn{MARCH 2019}
+\input{committee}
 
-%
-% Advisor info
-%
-\advisorGr{Γιάννης Σμαραγδάκης}
-\advisorRankGr{Καθηγητής}
-\advisorOrgGr{ΕΚΠΑ}
-\advisorEn{Yannis Smaragdakis}
-\advisorRankEn{Professor}
-\advisorOrgEn{NKUA}
-%
-% Members of the advisory board 
-% (the first one, will be automatically taken up by the advisor)
-%
-\boardTwoGr{Αλέξης Δελής}
-\boardTwoRankGr{Καθηγητής}
-\boardTwoOrgGr{ΕΚΠΑ}
-\boardTwoEn{Alex Delis}
-\boardTwoRankEn{Professor}
-\boardTwoOrgEn{NKUA}
-
-\boardThreeGr{Παναγιώτης Ροντογιάννης}
-\boardThreeRankGr{Καθηγητής}
-\boardThreeOrgGr{ΕΚΠΑ}
-\boardThreeEn{Panos Rondogiannis}
-\boardThreeRankEn{Professor}
-\boardThreeOrgEn{NKUA}
-%%%%%%%%%%%%%%%%%%%%%%% TEMPORARY START %%%%%%%%%%%%%%%%%%%%%%%
-%
-% 7 Member examination committee
-% (the first three will be taken up by the advisory board)
-%
-\examFourGr{Μέμα Ρουσσοπούλου}
-\examFourRankGr{Αναπληρώτρια Καθηγήτρια}
-\examFourOrgGr{ΕΚΠΑ}
-\examFourEn{Mema Roussopoulos}
-\examFourRankEn{Associate Professor}
-\examFourOrgEn{NKUA}
-
-\examFiveGr{Μανόλης Κουμπαράκης}
-\examFiveRankGr{Καθηγητής}
-\examFiveOrgGr{ΕΚΠΑ}
-\examFiveEn{Manolis Koubarakis}
-\examFiveRankEn{Professor}
-\examFiveOrgEn{NKUA}
-
-\examSixGr{Νικόλαος Παπασπύρου}
-\examSixRankGr{Αναπληρωτής Καθηγητής}
-\examSixOrgGr{ΕΜΠ}
-\examSixEn{Nikolaos Papaspyrou}
-\examSixRankEn{Associate Professor}
-\examSixOrgEn{NTUA}
-
-\examSevenGr{Κωνσταντίνος Σαγώνας}
-\examSevenRankGr{Αναπληρωτής Καθηγητής}
-\examSevenOrgGr{ΕΜΠ}
-\examSevenEn{Konstantinos Sagonas}
-\examSevenRankEn{Associate Professor}
-\examSevenOrgEn{NTUA}
-%
-% The examination date of the thesis
-%
-\examinationDateGr{2 Μαΐου 2017}
-\examinationDateEn{May 2, 2017}
-%%%%%%%%%%%%%%%%%%%%%%% TEMPORARY END %%%%%%%%%%%%%%%%%%%%%%%
-
-% Abstract, synopsis, inscription, ack, and preface pages.
+%%%% Abstract, synopsis, inscription, ack, and preface pages %%%%
 \abstractEn{\input{chapters/abstract-en}}
 \abstractGr{\input{chapters/abstract-gr}}
 \synopsisGr{\input{chapters/synopsis-gr}}
 \acksEn{\input{chapters/acknowledgments}}
 \prefaceEn{}
 
-% Subject area and keywords
+%%%% Subject area and keywords %%%%
 \subjectAreaGr{Γλώσσες Προγραμματισμού, Στατική Ανάλυση}
 \subjectAreaEn{Programming Languages, Static Analysis}
 \keywordsGr{Ανάλυση Δεικτών, Ανάλυση Συνωνύμων, Αντικειμενοστρεφής Προγραμματισμός, Ακρίβεια, Απόδοση}
 \keywordsEn{Pointer Analysis; Alias Analysis; Object-Oriented Programming; Precision; Performance; Context-Sensitivity}
+%%%% Metadata END %%%%
 
 
 \begin{document}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Front Matter  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frontmatter
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   Main Matter  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mainmatter
 
-\chapter{Introduction}
 \input{chapters/introduction}
 
-\chapter{Achieving Scalability}
-
-%\section{Hybrid Context-Sensitivity for Points-To Analysis}
-\section{Hybrid Context-Sensitivity}
+\part{Achieving Scalability}
 \input{chapters/hybrid}
-
-%\section{Introspective Analysis: Context-Sensitivity, Across the Board}
-\section{Introspective Analysis}
 \input{chapters/introspective}
 
-\chapter{Achieving High-Confident Results}
-
-%\section{Must-Alias Analysis: Modeling and Data Structures}
-\section{Must-Alias Analysis}
-\subsection{Modeling}
+\part{Achieving High-Confident Results}
 \input{chapters/must-logic}
-\subsection{Data Structures}
 \input{chapters/must-data}
-
-%\section{Defensive Points-To Analysis: Effective Soundness via Laziness}
-\section{Defensive Points-To Analysis}
 \input{chapters/defensive}
 
-\chapter{paNda: a Datalog compiler}
+\part{Epilogue}
 \input{chapters/panda.tex}
-
-\chapter{Related Work}
 \input{chapters/related}
-
-\chapter{Conclusions and Future Work}
 \input{chapters/conclusions}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   Back Matter  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \backmatter
 
 \end{document}

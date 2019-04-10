@@ -1,5 +1,4 @@
-LATEX        := pdflatex
-LATEX        += -shell-escape -interaction=nonstopmode -file-line-error
+LATEX        := pdflatex -shell-escape -interaction=nonstopmode -file-line-error
 BIBTEX       := bibtex -min-crossrefs=9000
 PS2PDF       := ps2pdf -dEPSCrop
 DOT          := dot
@@ -11,8 +10,8 @@ INKSCAPE     ?= inkscape
 class.cls    := diphdthesis.cls
 #biblio.bib   := $(wildcard bib/*.bib)
 #biblio.bib   += $(wildcard bib/pointer-analysis/*.bib)
-#styles.sty   := $(wildcard styles/*.sty)
-sources.tex  := $(wildcard *.tex)
+styles.sty   := $(wildcard styles/*.sty)
+sources.tex  := $(wildcard thesis.tex)
 sources.tex  += $(wildcard chapters/*.tex)
 #algo.tex     := $(shell find algorithms/ -type f -name '*.tex')
 
@@ -135,16 +134,3 @@ clean:
 #--------------------------
 
 $(thesis.pdf): $(dependencies)
-
-
-#--------------------------
-# Git submodules
-#--------------------------
-
-.PHONY: setup
-setup:
-	git submodule update --init
-
-.PHONY: update-submodules
-update-submodules:
-	git submodule update --remote --merge
