@@ -30,10 +30,10 @@ precision that naturally results in any static analysis from
 conflating information from different dynamic program paths. Two main
 kinds of context-sensitivity have been explored in the literature:
 \emph{call-site-sensitivity}
-\cite{Sharir:Interprocedural,Shivers:1991:diss} and
-%Shivers:1988:CFA} 
+\cite{Sharir:Interprocedural,thesis:Shivers} and
+%Shivers:1988:CFA}
 \emph{object-sensitivity}
-\cite{issta/MilanovaRR02,1044835,pointsto-popl11}.
+\cite{issta:2002:Milanova,article:2005:Milanova,popl:2011:Smaragdakis}.
 
 A call-site-sensitive/$k$CFA analysis uses method call-sites (i.e.,
 labels of instructions that may call the method) as context elements.
@@ -120,7 +120,7 @@ widely, to several variants of analyses. Accordingly, this outcome
 establishes new sweet spots for the analyses most relevant for
 practical applications: 1-object-sensitive, 2-object-sensitive with a
 1-context-sensitive heap, and analogous type-sensitive
-\cite{pointsto-popl11} analyses. For all of them, a selective hybrid
+\cite{popl:2011:Smaragdakis} analyses. For all of them, a selective hybrid
 context is typically both more precise and faster than the original
 analysis. 
 
@@ -135,10 +135,10 @@ analysis.
 %clear. Call-site-sensitivity has a long history, dating to at least
 %the '80s. For a long time, call-site-sensitivity was considered
 %synonymous with context-sensitivity as a whole. Object-sensitivity was
-%introduced in 2002 \cite{Milanova:2002:POS:566172.566174} and within a
+%introduced in 2002 \cite{issta:2002:Milanova} and within a
 %decade it has become the overwhelming choice of context-sensitivity
 %for object-oriented programs. Multiple studies
-%\cite{NaikAikenWhaley2006,DBLP:conf/paste/LiangPH05,Lhotak:2006:PAU,1391987,BS-OOPSLA09}
+%\cite{NaikAikenWhaley2006,DBLP:conf/paste/LiangPH05,thesis:Lhotak,article:2008:tosem:Lhotak,oopsla:2009:Bravenboer}
 %have found object-sensitive analyses to yield excellent precision/cost
 %tradeoffs. Compared to call-site-sensitive/$k$CFA analyses, an
 %object-sensitive analysis of the same context depth has always been
@@ -151,7 +151,7 @@ analysis.
 %precision. To achieve the same precision target as an object-sensitive
 %analysis, call-site-sensitive analyses have to suffer much higher
 %cost.  Additionally, coarser approximations of object-sensitivity,
-%such as \emph{type-sensitivity} \cite{pointsto-popl11} have filled the
+%such as \emph{type-sensitivity} \cite{popl:2011:Smaragdakis} have filled the
 %performance gap and offered fast options for cases when a full
 %object-sensitive analysis is too expensive.
 
@@ -176,7 +176,7 @@ In all, our paper makes the following contributions:
   keeping only one.
 
 \item We implement our approach in the \doop{} framework
-  by Bravenboer et al. \cite{BS-OOPSLA09} and apply it to a large
+  by Bravenboer et al. \cite{oopsla:2009:Bravenboer} and apply it to a large
   variety of algorithms with varying context depth.
 
 \item We show experimentally, over large Java benchmarks and the Java
@@ -225,7 +225,7 @@ follow in Section~\ref{sec:evaluation}, before describing related work
 % design space, while the choice of context made in past actual
 % implementations 
 % %(mainly of the \textsc{Paddle} framework
-% %\cite{Lhotak:2006:PAU,1377494}) 
+% %\cite{thesis:Lhotak,1377494}) 
 % is sub-optimal and results in substantial loss of
 % precision. Concretely, a practical outcome of our work is to establish
 % a 2-full-object-sensitive analysis with a 1-object-sensitive heap
@@ -277,7 +277,7 @@ recursive cycle, or other non-monotonic logic constructs, resulting in
 a declarative specification: the order of evaluation of rules or
 examination of clauses cannot affect the final result. The same
 abstract model applies to a wealth of analyses. We use it to model a
-context-insensitive Andersen-style \cite{dvanhorn:andersen-phd94}
+context-insensitive Andersen-style \cite{thesis:Andersen}
 analysis, as well as several context-sensitive analyses, both
 call-site-sensitive and object-sensitive.
 
@@ -293,13 +293,13 @@ the Java bytecode representation, but also other high-level
 intermediate languages.  (It does not, however, model languages such
 as C or C++ that can create pointers through an address-of
 operator. The techniques used in that space are fairly
-different---e.g., \cite{antgrasshopper,1480911}---although our main
+different---e.g., \cite{pldi:2007:Hardekopf,popl:2009:Hardekopf}---although our main
 hybrid approach is likely to be applicable. Also, even though we
 model regular object fields and static methods, we omit static fields.
 Their treatment is a mere engineering complexity, as it does not
 interact with context choice.) The specification of our points-to
 analysis as well as the input language are in line with those in past
-literature \cite{Guarnieri:2009:GMS:1855768.1855778,livshits12},
+literature \cite{uss:2009:Guarnieri,sigsoft:2013:Madsen},
 although we also integrate elements such as on-the-fly call-graph
 construction, static calls, and field-sensitivity.
 
@@ -307,10 +307,10 @@ Specifying the analysis logically as Datalog rules has the advantage
 that the specification is close to the actual implementation.  Datalog
 has been the basis of several implementations of program analyses,
 both low-level
-\cite{repsdb,DBLP:conf/aplas/WhaleyACL05,1065169,996859,BS-OOPSLA09}
-and high-level \cite{1368142,codequest}. Indeed, the analysis we show
+\cite{repsdb,aplas:2005:Whaley,pods:2005:Lam,pldi:2004:Whaley,oopsla:2009:Bravenboer}
+and high-level \cite{icse:2008:Eichberg,ecoop:2006:Hajiyev}. Indeed, the analysis we show
 is a faithful model of the implementation in the \doop{}
-framework~\cite{BS-OOPSLA09}, upon which our work builds. Our
+framework~\cite{oopsla:2009:Bravenboer}, upon which our work builds. Our
 specification of the analysis
 (Figures~\ref{fig:input}-\ref{fig:baserules}) is an abstraction of the
 actual implementation in the following ways:
@@ -327,7 +327,7 @@ actual implementation in the following ways:
   here. (Note, however, that these few rules are the most crucial for
   points-to analysis. They also correspond fairly closely to the
   algorithms specified in other formalizations of points-to analyses
-  in the literature~\cite{kcfa-pldi10,pointsto-popl11}.)
+  in the literature~\cite{pldi:2010:Might,popl:2011:Smaragdakis}.)
 
 \item The implementation also reflects considerations for efficient
   execution. The most important is that of defining indexes for the
@@ -536,7 +536,7 @@ We explain the contents of both figures in more detail below:
   depth. These aspects are completely hidden behind constructor
   functions \consname{Record}, \consname{Merge}, and
   \consname{MergeStatic}. The first two follow the usage and naming
-  convention of Smaragdakis et al.~\cite{pointsto-popl11}, while
+  convention of Smaragdakis et al.~\cite{popl:2011:Smaragdakis}, while
   \consname{MergeStatic} is new and used to differentiate the
   treatment of static calls---this is a crucial element of our approach.
 
@@ -732,7 +732,7 @@ calls just copy the context of the caller method.
 
 Although there can be other definitions of the \consname{Merge}
 function, yielding alternative 2-obj+H analyses, it has been shown
-\cite{pointsto-popl11} that the above is the most precise and
+\cite{popl:2011:Smaragdakis} that the above is the most precise and
 scalable. In intuitive terms, we use as method context the most
 precise abstraction of the receiver object available to the analysis.
 
@@ -750,7 +750,7 @@ instructions) a type-sensitive analysis uses the name of the class
 containing the allocation site. In this way, all allocation sites in
 methods declared in the same class (though not inherited methods) are
 merged. This approximation was introduced by Smaragdakis et
-al. \cite{pointsto-popl11} and yields much more scalable analyses at
+al. \cite{popl:2011:Smaragdakis} and yields much more scalable analyses at
 the expense of moderate precision loss (as we also determine in our
 experiments).
 
@@ -825,7 +825,7 @@ compared to the overwhelming cost.
 \item When there is a choice between keeping an object-context or a
 call-site-context, the former is typically more profitable. This is
 well validated in extensive past measurements by Lhot\'{a}k and
-Hendren \cite{1391987}, comparing call-site-sensitive and
+Hendren \cite{article:2008:tosem:Lhotak}, comparing call-site-sensitive and
 object-sensitive analyses of various depths. In other words,
 call-site-sensitivity is best added as \emph{extra} context over an
 object-sensitive analysis and will almost never pay off as a
@@ -1114,7 +1114,7 @@ as a heap context.
 \label{sec:evaluation}
 
 We implemented and evaluated all aforementioned analyses using the
-\doop{} framework \cite{BS-OOPSLA09}. There are interesting and
+\doop{} framework \cite{oopsla:2009:Bravenboer}. There are interesting and
 subtle aspects in our measurements, but the executive summary is
 clear: uniform hybrid analyses are typically not good choices in
 practice: their precision is offset by a very high performance cost.
@@ -1134,11 +1134,11 @@ a Xeon X5650 2.67GHz machine with only one thread running at a time
 and 24GB of RAM (i.e., ample for the analyses studied). We analyze the
 DaCapo benchmark programs (v.2006-10-MR2) under JDK 1.6.0\_37. (This
 is a much larger set of libraries than earlier work
-\cite{BS-OOPSLA09,pointsto-popl11}, which also results in differences
+\cite{oopsla:2009:Bravenboer,popl:2011:Smaragdakis}, which also results in differences
 in measurements, since the numbers shown integrate application- and
 library-level metrics.) (All numbers shown are medians of three runs.)
 All runtime numbers are medians of three runs. As in other published
-work \cite{pointsto-popl11,lhotak-callgraph12}, jython and hsqldb are
+work \cite{popl:2011:Smaragdakis,ecoop:2012:Ali}, jython and hsqldb are
 analyzed with reflection disabled and hsqldb has its entry point set
 manually in a special harness.
 
@@ -1394,9 +1394,9 @@ a points-to analysis, and typically correlates well with time, for
 analyses of the same flavor.  Note that analysis implementations that
 fundamentally differ from ours also try hard to minimize this metric
 in order to achieve peak performance: Lhot\'{a}k's \textsc{Paddle}
-framework \cite{Lhotak:2006:PAU} is using binary decision diagrams
+framework \cite{thesis:Lhotak} is using binary decision diagrams
 (BDDs) for representing relations. The best BDD variable ordering
-(yielding ``impressive results'' \cite{DBLP:conf/pldi/BerndlLQHU03})
+(yielding ``impressive results'' \cite{pldi:2003:Berndl})
 is one that minimizes the total size of context-sensitive points-to
 sets. In short, it is reasonable to expect that improvements in this
 internal metric reinforce the verdict of which analysis yields better
@@ -1511,7 +1511,7 @@ the past, but have required manual identification of classes to be
 treated separately (e.g., Java collection classes, or library factory
 methods). An excellent representative is the TAJ work for taint
 analysis of Java web applications
-\cite{Tripp:2009:TET:1542476.1542486}. In contrast, we have sought to
+\cite{pldi:2009:Tripp}. In contrast, we have sought to
 map the space and identify interesting hybrids for general application
 of context-sensitivity, over the entire program.
 
@@ -1522,10 +1522,10 @@ of the program. This is easy to do with a mere flag setting on the
 \doop{} framework. However, the impact of the SSA transformation
 on the input is minimal. The default intermediate language used as
 input in \doop{} (the Jimple representation of the Soot
-framework \cite{vall99soot,valleerai00optimizing}) is already close to
+framework \cite{cascon:1999:Vall,cc:2000:Vall}) is already close to
 SSA form, although it does not guarantee that every variable is
 strictly single-assignment without requesting it explicitly.  Recent
-work by Lhot\'{a}k and Chung \cite{Lhotak:2011:PAE} has shown that
+work by Lhot\'{a}k and Chung \cite{popl:2011:Lhotak} has shown that
 much of the benefit of flow-sensitivity derives from the ability to do
 strong updates of the points-to information. Lhot\'{a}k and Chung then
 exploited this insight to derive analyses with similar benefit to a
@@ -1533,13 +1533,13 @@ full flow-sensitive analysis at lower cost.
 
 A demand-driven evaluation strategy reduces the cost of an analysis by
 computing only those results that are necessary for a client program
-analysis~\cite{1094817,1134027,1328464,378802}. This is a useful
+analysis~\cite{oopsla:2005:Sridharan,pldi:2006:Sridharan,popl:2008:Zheng,pldi:2001:Heintze}. This is a useful
 approach for client analyses that focus on specific locations in a
 program, but if the client needs results from the entire program, then
 demand-driven analysis is typically slower than an exhaustive
 analysis.
 
-Reps~\cite{727424} showed how to use the standard magic-sets
+Reps~\cite{cc:1994:Reps} showed how to use the standard magic-sets
 optimization to automatically derive a demand-driven analysis
 from an exhaustive analysis (like ours). This optimization
 combines the benefits of top-down and bottom-up evaluation of
@@ -1547,7 +1547,7 @@ logic programs by adding side-conditions to rules that limit
 the computation to just the required data.
 
 An interesting recent approach to demand-driven analyses was
-introduced by Liang and Naik \cite{Liang:2011:SAR:1993498.1993567}.
+introduced by Liang and Naik \cite{pldi:2011:Liang}.
 Their ``pruning'' approach consists of first computing a coarse
 over-approximation of the points-to information, while keeping the
 provenance of this derivation, i.e., recording which input facts have
@@ -1594,5 +1594,5 @@ contexts this remains a challenge, as it is hard to reason about how
 context elements affect precision. (E.g., past work had to offer
 involved arguments for why the allocator object of the receiver object
 of a method is a better context element than the caller object 
-\cite{pointsto-popl11}.) This challenge is, however, worth addressing
+\cite{popl:2011:Smaragdakis}.) This challenge is, however, worth addressing
 for the next level of benefit in context-sensitive points-to analysis.

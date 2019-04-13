@@ -1,6 +1,11 @@
 \documentclass[ack,preface]{diphdthesis}
 
-\usepackage[backend=biber,bibencoding=ascii,style=numeric-comp]{biblatex}
+\usepackage[
+    backend=biber,
+    bibencoding=ascii,
+    style=numeric-comp,
+    mincrossrefs=20
+]{biblatex}
 \usepackage{bookmark}
 \usepackage{caption}
 \usepackage{epigraph}
@@ -54,7 +59,7 @@
 %%%% Metadata END %%%%
 
 \addbibresource{biblio/proceedings.bib}
-\addbibresource{biblio/ptranalysis.bib}
+\addbibresource{biblio/thesis.bib}
 
 
 \begin{document}
@@ -81,7 +86,6 @@
 
 \backmatter
 
-%%%% Bibliography Section %%%%
 \cleardoublepage
 \phantomsection
 \addcontentsline{toc}{chapter}{REFERENCES}
