@@ -1,0 +1,49 @@
+\newcommand{\doop}{\textsc{Doop}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+\setminted[java]{style=friendly}
+\newminted[javacode]{java}{%
+    mathescape,
+    % autogobble,
+    tabsize=4,
+    fontsize=\footnotesize,
+    xleftmargin=20pt,
+    linenos
+}
+
+\newminted[javacodeNoLines]{java}{%
+    mathescape,
+    % autogobble,
+    tabsize=4,
+    fontsize=\footnotesize,
+    xleftmargin=20pt
+}
+
+
+\newcommand{\args}[1]{\textit{\small{#1}}}
+\newcommand{\predname}[1]{\textsc{\small{#1}}}
+\newcommand{\pred}[2]{\predname{#1} (\args{#2})}
+\newcommand{\consname}[1]{\textbf{\predname{#1}}}
+\newcommand{\cons}[3]{\consname{#1} (\args{#2}) = \textbf{\args{#3}}}
+
+\newcommand{\predMay}[2]{\textsc{\underline{#1}}(\args{#2})}
+\newcommand{\prednameMay}[1]{\textsc{\underline{#1}}}
+\newcommand{\rightrulearrow}{{\large \textbf{$\rightarrow$}}}
+\newcommand{\funcapp}[2]{\textsc{\textbf{#1}}(\args{#2})}
+
+\newcommand{\rulearrow}{{\large \textbf{$\leftarrow$}}}
+\newcommand{\tab}{\hspace{5 mm}}
+
+% \newenvironment{rules}{%
+% \vspace{1mm}%
+%   \hspace{0mm}          % Add vertical and horizontal space
+%   \begin{minipage}{\columnwidth} % begin minipage
+%     \hrule\vspace{2mm}               % add beginning horizontal rule
+%     \begin{tabular}{l}               % begin tabular
+% }{
+%     \end{tabular}               % end tabular
+%   \vspace{2mm}\hrule            % add ending horizontal rule
+%   \end{minipage}                % end minipage
+% \vspace{1mm}                    % add vertical space
+% }
+\newcommand{\stdparagraph}[1]{\vspace{1mm}\noindent\textbf{#1}}

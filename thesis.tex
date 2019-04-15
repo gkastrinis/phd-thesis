@@ -1,46 +1,46 @@
 \documentclass[ack,preface]{diphdthesis}
 
-\usepackage[
-    backend=biber,
-    bibencoding=ascii,
-    style=numeric-comp,
-    mincrossrefs=20
-]{biblatex}
+\usepackage[backend=biber,bibencoding=ascii,style=numeric-comp,mincrossrefs=20]{biblatex}
 \usepackage{bookmark}
+\usepackage{booktabs}            % toprule, etc
 \usepackage{caption}
 \usepackage{epigraph}
 \usepackage{graphicx}
 \usepackage[utf8]{inputenc}
 \usepackage{minted}
 \usepackage{multirow}
-\usepackage[defblank]{paralist}
+\usepackage[defblank]{paralist}  % inparaenum
 \usepackage[skip=0cm,list=true,labelfont=it]{subcaption}
 \usepackage{wrapfig}
+\usepackage{xparse}              % NewDocumentCommand
 
-\usepackage{styles}
+\usepackage{definitions/instructions}
+\usepackage{definitions/languages}
+\usepackage{definitions/math}
+\usepackage{definitions/mathpar} % inference rules
 
 %%%% TEMPORARY %%%%
-\usepackage{xcolor}
-\usepackage{pagecolor}
-%\pagecolor{black}
-%\color{white}
+\usepackage{comment}
+\usepackage{hhline}              % double lines, instead of \cline
+% \usepackage{xcolor}
+% \usepackage{pagecolor}
+% \pagecolor{black}
+% \color{white}
 %%%% TEMPORARY %%%%
 
 
 %%%% Metadata START %%%%
-\authorFirstGr{Γεώργιος}
-\authorFirstAbrGr{Γ.} % abbreviation of first name
-\authorMiddleGr{Σ.}   % abbreviation of father's first name
-\authorLastGr{Καστρίνης}
 \authorFirstEn{George}
-\authorFirstAbrEn{G.}
-\authorMiddleEn{S.}
+\authorFirstAbrEn{G.} % abbreviation of first name
+\authorMiddleEn{S.}   % abbreviation of father's first name
 \authorLastEn{Kastrinis}
+\authorFirstGr{Γεώργιος}
+\authorFirstAbrGr{Γ.}
+\authorMiddleGr{Σ.}
+\authorLastGr{Καστρίνης}
 
-\titleGr{Αποδοτική Στατική Ανάλυση Δεικτών με Αξιόπιστα Αποτελέσματα}
-%\titleGr{Αποδοτικότητα και Αξιοπιστία σε Στατική Ανάλυση Δεικτών}
 \titleEn{Scalable Static Pointer Analysis with High-Confidence Results}
-%\titleEn{Scalability and Confidence for Static Pointer Analysis}
+\titleGr{Αποδοτική Στατική Ανάλυση Δεικτών με Αξιόπιστα Αποτελέσματα}
 
 \input{committee}
 
@@ -52,10 +52,11 @@
 \prefaceEn{}
 
 %%%% Subject area and keywords %%%%
-\subjectAreaGr{Γλώσσες Προγραμματισμού, Στατική Ανάλυση}
 \subjectAreaEn{Programming Languages, Static Analysis}
-\keywordsGr{Ανάλυση Δεικτών, Ανάλυση Συνωνύμων, Αντικειμενοστρεφής Προγραμματισμός, Ακρίβεια, Απόδοση}
 \keywordsEn{Pointer Analysis; Alias Analysis; Object-Oriented Programming; Precision; Performance; Context-Sensitivity}
+
+\subjectAreaGr{Γλώσσες Προγραμματισμού, Στατική Ανάλυση}
+\keywordsGr{Ανάλυση Δεικτών, Ανάλυση Συνωνύμων, Αντικειμενοστρεφής Προγραμματισμός, Ακρίβεια, Απόδοση}
 %%%% Metadata END %%%%
 
 \addbibresource{biblio/proceedings.bib}
@@ -74,7 +75,7 @@
 \input{chapters/hybrid}
 \input{chapters/introspective}
 
-\part{Achieving High-Confident Results}
+\part{Achieving High-Confidence Results}
 \input{chapters/must-logic}
 \input{chapters/must-data}
 \input{chapters/defensive}
