@@ -446,9 +446,9 @@ The model is interesting in a few different ways:
 %% Datalog rules infer more facts
 %% from combinations of previously established facts, with variables
 %% implicitly quantified existentially.  A rule of the form
-%% ``\pred{Head}{x,y} \rulearrow{} \pred{P}{x,z}, \pred{Q}{y,z}.''  means
-%% that if values for \args{x,y,z} can be found so that \pred{P}{x,z} and
-%% \pred{Q}{y,z} are simultaneously true, then \pred{Head}{x,y} is
+%% ``\rel{Head}{x,y} \rulearrow{} \rel{P}{x,z}, \rel{Q}{y,z}.''  means
+%% that if values for \args{x,y,z} can be found so that \rel{P}{x,z} and
+%% \rel{Q}{y,z} are simultaneously true, then \rel{Head}{x,y} is
 %% inferred. Syntactically, the left arrow symbol (\rulearrow) separates
 %% the inferred facts (i.e., the \emph{head} of the rule) from the
 %% previously established facts (i.e., the \emph{body} of the rule). For
@@ -513,35 +513,35 @@ represented well in the minimal language.
 \hhline{=}
 \hspace{-3mm}
 \begin{tabular}{l l}
-%\pred{Alloc}{i: I, var: V, heap: H, inMeth: M}  & \args{\# i: var = new ...} \\
-\pred{Move}{i: I, to: V, from: V}                & \args{\# i: to = from} \\
-\pred{Load}{i: I, to: V, base: V, fld: F}       & \args{\# i: to = base.fld}\\
-\pred{Store}{i: I, base: V, fld: F, from: V} & \args{\# i: base.fld = from} \\
-\pred{Call}{i: I, base: V, sig: S}              & \args{\# i: base.sig(..)}   \\
-\pred{Phi}{i: I, to: V, from1: V, \ldots}       & \args{\# i: to = $\phi$(from1, \ldots)}\\
-\pred{Next}{i: I, j: I}   & \args{\# j is CFG successor of i}\\
+%\rel{Alloc}{i: I, var: V, heap: H, inMeth: M}  & \args{\# i: var = new ...} \\
+\rel{Move}{i: I, to: V, from: V}                & \args{\# i: to = from} \\
+\rel{Load}{i: I, to: V, base: V, fld: F}       & \args{\# i: to = base.fld}\\
+\rel{Store}{i: I, base: V, fld: F, from: V} & \args{\# i: base.fld = from} \\
+\rel{Call}{i: I, base: V, sig: S}              & \args{\# i: base.sig(..)}   \\
+\rel{Phi}{i: I, to: V, from1: V, \ldots}       & \args{\# i: to = $\phi$(from1, \ldots)}\\
+\rel{Next}{i: I, j: I}   & \args{\# j is CFG successor of i}\\
 \end{tabular}\\
 %\cline{1-1}
 %\hhline{=}
 \\
 \hspace{-3mm}
 \begin{tabular}{l}
-  \pred{FormalArg}{meth: M, n: $\mathbb{N}$, arg: V}\\
-  \pred{ActualArg}{invo: I, n: $\mathbb{N}$, arg: V} \\ 
-  \pred{FormalRet}{instr: I, meth: M, ret: V} \\
-%  \pred{ActualRet}{invo: I, var: V} \\ 
-  \pred{ThisVar}{meth: M, this: V} \\
-  \pred{LookUp}{type: T, sig: S, meth: M} \\
-  \pred{InMethod}{instr: I, meth: M} \\
-  \predMay{Resolved}{var: V, type: T} \\
-  \predMay{RootMethod}{meth: M} \\
+  \rel{FormalArg}{meth: M, n: $\mathbb{N}$, arg: V}\\
+  \rel{ActualArg}{invo: I, n: $\mathbb{N}$, arg: V} \\ 
+  \rel{FormalRet}{instr: I, meth: M, ret: V} \\
+%  \rel{ActualRet}{invo: I, var: V} \\ 
+  \rel{ThisVar}{meth: M, this: V} \\
+  \rel{LookUp}{type: T, sig: S, meth: M} \\
+  \rel{InMethod}{instr: I, meth: M} \\
+  \altrel{Resolved}{var: V, type: T} \\
+  \altrel{RootMethod}{meth: M} \\
 \end{tabular}
 \\
 \hhline{=}
 %\cline{1-1}
-\pred{MustAlias}{inst: I, ctx: C, ap1: A, ap2: A} \\
-\pred{MustCallGraphEdge}{invo: I, ctx: C, toMth: M, toCtx: C} \\
-\pred{Reachable}{ctx: C, meth: M} \\
+\rel{MustAlias}{inst: I, ctx: C, ap1: A, ap2: A} \\
+\rel{MustCallGraphEdge}{invo: I, ctx: C, toMth: M, toCtx: C} \\
+\rel{Reachable}{ctx: C, meth: M} \\
 \hhline{=}
 \cons{AP}{access path expression}{ap: A} \\
 \cons{PrimeAP}{ap: A}{newAp: A} \\
@@ -549,24 +549,24 @@ represented well in the minimal language.
 \cons{NewContext}{invo: I, ctx: C}{newCtx: C} \\
 %% \hhline{=}
 %% \begin{tabular}{llll}
-%% \predMay{Resolved}{var: V, type: T} &&& \predMay{MayAlias}{var1: V, var2: V} \\
-%% \predMay{CallMayStoreToField}{invo: I, fld: F} &&& \predMay{RootMethod}{meth: M} \\
+%% \altrel{Resolved}{var: V, type: T} &&& \altrel{MayAlias}{var1: V, var2: V} \\
+%% \altrel{CallMayStoreToField}{invo: I, fld: F} &&& \altrel{RootMethod}{meth: M} \\
 %% \end{tabular}
 %\\
 %\cline{1-1}
 \end{tabular}
 %\end{center}
-%% \caption[]{Our domain, input relations (\predname{Move}, ...),
-%%   computed relations (\predname{MustAlias}, ...), and constructors
+%% \caption[]{Our domain, input relations (\relname{Move}, ...),
+%%   computed relations (\relname{MustAlias}, ...), and constructors
 %%   (\consname{AP}, ...). 
-%% %% and configuration predicates (\predMay{Resolved}, ...).  
+%% %% and configuration predicates (\altrel{Resolved}, ...).  
 %%   The input relations are of two kinds:
 %%   relations encoding program instructions
 %% %%(the form of the instruction is shown in a comment)
 %%   and relations encoding type system and other environment
 %%   information.}
-\caption[]{Our domain, input relations (\predname{Move}, ...),
-  computed relations (\predname{MustAlias}, ...), and constructors
+\caption[]{Our domain, input relations (\relname{Move}, ...),
+  computed relations (\relname{MustAlias}, ...), and constructors
   (\consname{AP}, ...).}
 \label{fig:input}
 \end{figure}
@@ -579,14 +579,14 @@ three different groups of relations.
 %%%SPACE
 %(These relations are explained in
 %more detail below, but their declarations and type signatures can be
-%handy for reference.)  The first group (starting with \predname{Move})
+%handy for reference.)  The first group (starting with \relname{Move})
 %contains relations representing the input language instructions and
 %other program text information, such as types and member lookup.  The
-%second group (starting with \predname{MustAlias}) contains relations
+%second group (starting with \relname{MustAlias}) contains relations
 %computed by our algorithm. The third group (starting with
 %\consname{AP}) contains functions that produce new objects, either
 %contexts or access paths. The fourth group (starting with
-%\prednameMay{Resolved}) also lists input relations, but of a different
+%\altrelname{Resolved}) also lists input relations, but of a different
 %kind. These are expected to either be supplied by the user for
 %analysis configuration purposes, or to be computed by an earlier-run
 %may-analysis.
@@ -595,45 +595,45 @@ three different groups of relations.
 The input relations correspond to our intermediate language features.  They are
 logically grouped into relations that represent instructions and relations that
 represent name-and-type information.
-%% For instance, the \predname{Move}
+%% For instance, the \relname{Move}
 %% relation represents instructions that assign a local variable to another. There
-%% are similar input relations for other instruction types (\predname{Load},
-%% \predname{Store}, and \predname{Call}, for reading/writing heap object fields
+%% are similar input relations for other instruction types (\relname{Load},
+%% \relname{Store}, and \relname{Call}, for reading/writing heap object fields
 %% and for virtual calls, respectively).
-In particular, the \predname{Phi} relation captures
+In particular, the \relname{Phi} relation captures
 $\phi$ instructions, for the SSA form of our intermediate language. The
-\predname{Next} relation expresses directed edges in the control-flow graph
-(CFG): \pred{Next}{i,j} means that \args{i} is a CFG predecessor of \args{j}.
+\relname{Next} relation expresses directed edges in the control-flow graph
+(CFG): \rel{Next}{i,j} means that \args{i} is a CFG predecessor of \args{j}.
 
 Similarly, there are relations that encode type system, symbol table, and
-program environment information---e.g., \predname{FormalArg}, \predname{ActualArg},
-\predname{FormalRet}, \predname{ThisVar}. 
+program environment information---e.g., \relname{FormalArg}, \relname{ActualArg},
+\relname{FormalRet}, \relname{ThisVar}. 
 %% %% These are mostly straightforward. 
-%% For instance, \predname{FormalArg} shows which variable is a formal argument of
+%% For instance, \relname{FormalArg} shows which variable is a formal argument of
 %% a given method at a certain index (i.e., the $n$-th argument).
 %% %The relation is a function from the first two arguments to the third.
-%% \predname{ActualArg} is
-%% similar, but at a method invocation site.  \predname{FormalRet} combines
+%% \relname{ActualArg} is
+%% similar, but at a method invocation site.  \relname{FormalRet} combines
 %% information on the return variable of a function with the index of the return
 %% instruction. 
-%% %  \predname{ActualRet} is a function of its first argument (a method
+%% %  \relname{ActualRet} is a function of its first argument (a method
 %% %  invocation site) and returns the local variable at the call site
 %%   %  that receives the method call's return value.
-%% \predname{ThisVar} returns the \code{this} variable of a method.
+%% \relname{ThisVar} returns the \code{this} variable of a method.
 The input intermediate language program is assumed to
 be in a single-return form, for each method.
-\predname{LookUp}
+\relname{LookUp}
 %is a function from its first two arguments to the third. It
 matches a method signature to the actual method definition inside a
-type.  \predname{InMethod} is a function from instructions to their
-containing methods. \predname{Resolved} is a predicate that can be
+type.  \relname{InMethod} is a function from instructions to their
+containing methods. \relname{Resolved} is a predicate that can be
 computed by an external call-graph or may-point-to analysis: it holds
 variables that are determined to only point to objects with a unique
 dynamic type, so that virtual method calls are resolved. (Note that
 the form of the predicate is context-insensitive, yet the analysis
 that computes it may be context-sensitive, for increased
 precision---the contexts are merely projected out.)  Finally,
-\predname{RootMethod} is a predicate over methods, used to start
+\relname{RootMethod} is a predicate over methods, used to start
 must-alias reasoning from a user-selected set of methods.
 %% As we will see, our analysis algorithm will venture beyond these root methods
 %% only to the extent that its context constructor allows.
@@ -641,9 +641,9 @@ must-alias reasoning from a user-selected set of methods.
 \paragraph{Computed Relations.}
 
 Figure~\ref{fig:input} also shows the computed relations of our must-alias
-analysis. The first relation, \predname{MustAlias}, is also the main output of
+analysis. The first relation, \relname{MustAlias}, is also the main output of
 the analysis. The relation is defined on access paths, i.e., expressions of the
-form ``\args{var}(\args{.fld})*''.  The meaning of \pred{MustAlias}{i, ctx,
+form ``\args{var}(\args{.fld})*''.  The meaning of \rel{MustAlias}{i, ctx,
 ap1, ap2} is that access path \args{ap1} aliases access path \args{ap2} (i.e.,
 they are guaranteed to point to the same heap object, or to both be \code{null})
 right after program instruction \args{i}, executed under context \args{ctx},
@@ -658,9 +658,9 @@ run-time. The two access paths are said to form an \emph{alias pair}.
 %% Section~\ref{sec:configurability}.
 
 Other computed relations represent intermediate results of the analysis.
-\predname{MustCallGraphEdge} holds information for fully-resolved virtual
+\relname{MustCallGraphEdge} holds information for fully-resolved virtual
 calls: invocation site \args{invo} will call method \args{toMth} under the
-given contexts.  \predname{Reachable} computes which methods and under what
+given contexts.  \relname{Reachable} computes which methods and under what
 context are of interest to the must-alias analysis.
 
 \paragraph{Constructors.}
@@ -706,13 +706,13 @@ by bounding their length. %, and similarly for contexts.
 
 %% \paragraph{Configuration Predicates.}
 %% The last four elements of Figure~\ref{fig:input} show input predicates that can
-%% be used to configure the must-alias analysis.  Predicates \predname{Resolved},
-%% \predname{MayAlias}, and \predname{CallMayStoreToField} are expected to be
+%% be used to configure the must-alias analysis.  Predicates \relname{Resolved},
+%% \relname{MayAlias}, and \relname{CallMayStoreToField} are expected to be
 %% computed by a \emph{may-point-to} analysis, running as a preprocessing step.
-%% \predname{Resolved} holds variables that are determined to only point to
-%% objects with a unique dynamic type. \predname{MayAlias} reflects whether two
+%% \relname{Resolved} holds variables that are determined to only point to
+%% objects with a unique dynamic type. \relname{MayAlias} reflects whether two
 %% variables (in the same method) may point to the same object.
-%% \predname{CallMayStoreToField} does a transitive search of all methods that may
+%% \relname{CallMayStoreToField} does a transitive search of all methods that may
 %% be called at an invocation site, \args{invo}, looking for store instructions to
 %% field \args{fld}.
 %%SPACE
@@ -736,12 +736,12 @@ employed some syntactic sugar:
 	evaluation. We also permit multiple predicates in a rule head, as syntactic
 	sugar for replicating the rule body.%% an equal number of times.
 
-\item We use the shorthand \predname{P*} for the reflexive, symmetric,
-	transitive closure of relation \predname{P}, which is assumed to be binary.
+\item We use the shorthand \relname{P*} for the reflexive, symmetric,
+	transitive closure of relation \relname{P}, which is assumed to be binary.
 	For larger arities, underscore (\_) variables are used to distinguish
 	variables of a relation that are affected by the closure rule.
-	Specifically, \pred{MustAlias*}{i, ctx, \_, \_} denotes the reflexive,
-	symmetric, transitive closure of relation \predname{MustAlias} with respect
+	Specifically, \rel{MustAlias*}{i, ctx, \_, \_} denotes the reflexive,
+	symmetric, transitive closure of relation \relname{MustAlias} with respect
 	to its last two variables.
 
 \item We introduce $\forall$: syntactic sugar that hides a Datalog pattern for
@@ -751,15 +751,15 @@ employed some syntactic sugar:
 % In practice, this is not a restriction:
     An arbitrary ordering relation (e.g., by internal id of facts as assigned by
 	the implementation) can be imposed on all our domains.} An expression
-	``$\forall$\args{i}: \pred{P}{i} \rightrulearrow{} \pred{Q}{i,...}''  is
-	true if \pred{Q}{i,...} holds for all \args{i} such that \pred{P}{i} holds.
+	``$\forall$\args{i}: \rel{P}{i} \ruleforall{} \rel{Q}{i,...}''  is
+	true if \rel{Q}{i,...} holds for all \args{i} such that \rel{P}{i} holds.
 	Such an expression can be used in a rule body, as a condition for the
 	rule's firing. Multiple variables can be quantified by a $\forall$. Variables
 	not bound by $\forall$ remain implicitly existentially
 	quantified, as in conventional Datalog. However, the existential quantifier
 	is interpreted as being outside the universal one. For instance,
-	``$\forall$\args{i,j}: \pred{P}{i,j,k} \rightrulearrow{}
-	\pred{Q}{i,j,k,l}'' is interpreted as ``there exist \args{k,l} such that
+	``$\forall$\args{i,j}: \rel{P}{i,j,k} \ruleforall{}
+	\rel{Q}{i,j,k,l}'' is interpreted as ``there exist \args{k,l} such that
 	for all \args{i,j} ...''.
 \end{itemize}
 
@@ -776,97 +776,97 @@ employed some syntactic sugar:
 %\begin{center}
 \begin{tabular}{l}
 %\cline{1-1}
-\pred{Reachable}{ctx,m} \rulearrow{} \predMay{RootMethod}{m}, \args{ctx} = \consname{All}.\\
+\rel{Reachable}{ctx,m} \rulearrow{} \altrel{RootMethod}{m}, \args{ctx} = \consname{All}.\\
 \rule{-2pt}{3ex}
 
-\pred{MustAlias}{i, ctx, \funcapp{AP}{from}, \funcapp{AP}{to}} \rulearrow{} \\
-\tab \pred{Move}{i, to, from}, \pred{InMethod}{i, m}, \pred{Reachable}{ctx,m}. \\
+\rel{MustAlias}{i, ctx, \consapp{AP}{from}, \consapp{AP}{to}} \rulearrow{} \\
+\tab \rel{Move}{i, to, from}, \rel{InMethod}{i, m}, \rel{Reachable}{ctx,m}. \\
 \rule{-2pt}{3ex}
 
-\pred{MustAlias}{i, ctx, ap, \consname{AP}(\args{to})} \rulearrow{} \\
-\tab ($\forall$\args{from}: \pred{Phi}{i, to, \ldots, from, \ldots} \rightrulearrow{} \\
-\tab \tab \tab              \pred{MustAlias}{i, ctx, \funcapp{AP}{from}, ap}),\\
-\tab \pred{InMethod}{i, m}, \pred{Reachable}{ctx,m}. \\
+\rel{MustAlias}{i, ctx, ap, \consname{AP}(\args{to})} \rulearrow{} \\
+\tab ($\forall$\args{from}: \rel{Phi}{i, to, \ldots, from, \ldots} \ruleforall{} \\
+\tab \tab \tab              \rel{MustAlias}{i, ctx, \consapp{AP}{from}, ap}),\\
+\tab \rel{InMethod}{i, m}, \rel{Reachable}{ctx,m}. \\
 \rule{-2pt}{3ex}
 
-\pred{MustAlias}{i, ctx, \funcapp{AP}{to}, \consname{AP}(\args{base.fld})} \rulearrow{} \\
-\tab \pred{Load}{i, to, base, fld}, \\
-\tab \pred{InMethod}{i, m}, \pred{Reachable}{ctx,m}. \\
+\rel{MustAlias}{i, ctx, \consapp{AP}{to}, \consname{AP}(\args{base.fld})} \rulearrow{} \\
+\tab \rel{Load}{i, to, base, fld}, \\
+\tab \rel{InMethod}{i, m}, \rel{Reachable}{ctx,m}. \\
 \rule{-2pt}{3ex}
 
-\pred{MustAlias}{i, ctx, \funcapp{AP}{from}, \consname{AP}(\args{base.fld})} \rulearrow{} \\
-\tab \pred{Store}{i, base, fld, from}, \\
-\tab \pred{InMethod}{i, m}, \pred{Reachable}{ctx,m}. \\
+\rel{MustAlias}{i, ctx, \consapp{AP}{from}, \consname{AP}(\args{base.fld})} \rulearrow{} \\
+\tab \rel{Store}{i, base, fld, from}, \\
+\tab \rel{InMethod}{i, m}, \rel{Reachable}{ctx,m}. \\
 \rule{-2pt}{3ex}
 
-\pred{MustAlias}{i, ctx, \_, \_} \rulearrow{} \pred{MustAlias*}{i, ctx, \_, \_}. \\
+\rel{MustAlias}{i, ctx, \_, \_} \rulearrow{} \rel{MustAlias*}{i, ctx, \_, \_}. \\
 
 \hhline{=}
 %\rule{-2pt}{3ex}
 
-\pred{MustCallGraphEdge}{i, ctx, toMth, toCtx}, \\
-\pred{Reachable}{toCtx, toMth} \rulearrow{} \\
-\tab \pred{Call}{i, base, sig}, \\
-\tab \pred{InMethod}{i, m}, \pred{Reachable}{ctx,m}, \\ 
-\tab \predMay{Resolved}{base, type}, \pred{LookUp}{type, sig, toMth}, \\
+\rel{MustCallGraphEdge}{i, ctx, toMth, toCtx}, \\
+\rel{Reachable}{toCtx, toMth} \rulearrow{} \\
+\tab \rel{Call}{i, base, sig}, \\
+\tab \rel{InMethod}{i, m}, \rel{Reachable}{ctx,m}, \\ 
+\tab \altrel{Resolved}{base, type}, \rel{LookUp}{type, sig, toMth}, \\
 \tab \cons{NewContext}{i,ctx}{toCtx}. \\
 \rule{-2pt}{3ex}
 
 
-\pred{MustAlias}{firstInstr, toCtx, ap1, ap2} \rulearrow{} \\
-\tab \pred{MustCallGraphEdge}{i, ctx, toMth, toCtx}, \\
-\tab \pred{InMethod}{firstInstr, toMth}, 
-     ($\forall$\args{k} \rightrulearrow{} !\pred{Next}{k, firstInstr}), \\
-\tab ((\pred{FormalArg}{toMth, n, toVar}, \pred{ActualArg}{i, n, var}); \\
-\tab \tab (\pred{ThisVar}{toMth, toVar}, \pred{Call}{i, var, \_})), \\
-\tab \cons{PrimeAP}{\funcapp{AP}{var}}{ap1}, \cons{AP}{toVar}{ap2}. \\
+\rel{MustAlias}{firstInstr, toCtx, ap1, ap2} \rulearrow{} \\
+\tab \rel{MustCallGraphEdge}{i, ctx, toMth, toCtx}, \\
+\tab \rel{InMethod}{firstInstr, toMth}, 
+     ($\forall$\args{k} \ruleforall{} !\rel{Next}{k, firstInstr}), \\
+\tab ((\rel{FormalArg}{toMth, n, toVar}, \rel{ActualArg}{i, n, var}); \\
+\tab \tab (\rel{ThisVar}{toMth, toVar}, \rel{Call}{i, var, \_})), \\
+\tab \cons{PrimeAP}{\consapp{AP}{var}}{ap1}, \cons{AP}{toVar}{ap2}. \\
 \rule{-2pt}{3ex}
 
 
-\pred{MustAlias}{firstInstr, toCtx, ap1, ap2} \rulearrow{} \\
-\tab \pred{MustCallGraphEdge}{i, ctx, toMth, toCtx}, \\
-\tab \pred{InMethod}{firstInstr, toMth}, 
-     ($\forall$\args{k} \rightrulearrow{} !\pred{Next}{k, firstInstr}), \\
-\tab ($\forall$\args{j}: \pred{Next}{j, i} \rightrulearrow{} \\
-\tab \tab \tab           \pred{MustAlias}{j, ctx, callerAp1, callerAp2}),\\
+\rel{MustAlias}{firstInstr, toCtx, ap1, ap2} \rulearrow{} \\
+\tab \rel{MustCallGraphEdge}{i, ctx, toMth, toCtx}, \\
+\tab \rel{InMethod}{firstInstr, toMth}, 
+     ($\forall$\args{k} \ruleforall{} !\rel{Next}{k, firstInstr}), \\
+\tab ($\forall$\args{j}: \rel{Next}{j, i} \ruleforall{} \\
+\tab \tab \tab           \rel{MustAlias}{j, ctx, callerAp1, callerAp2}),\\
 \tab \cons{PrimeAP}{callerAp1}{ap1}, \cons{PrimeAP}{callerAp2}{ap2}.\\
 \rule{-2pt}{3ex}
 
-\pred{MustAlias}{i, ctx, ap1, ap2} \rulearrow{} \\
-\tab \pred{MustCallGraphEdge}{i, ctx, toMth, toCtx}, \\
-\tab \pred{FormalRet}{reti, toMth, \_}, \\
-\tab (\pred{MustAlias}{reti, toCtx, calleeAp1, calleeAp2}; \\
-\tab \tab \pred{MustAlias}{reti, \consname{All}, calleeAp1, calleeAp2}), \\
+\rel{MustAlias}{i, ctx, ap1, ap2} \rulearrow{} \\
+\tab \rel{MustCallGraphEdge}{i, ctx, toMth, toCtx}, \\
+\tab \rel{FormalRet}{reti, toMth, \_}, \\
+\tab (\rel{MustAlias}{reti, toCtx, calleeAp1, calleeAp2}; \\
+\tab \tab \rel{MustAlias}{reti, \consname{All}, calleeAp1, calleeAp2}), \\
 \tab \cons{UnprimeAP}{calleeAp1}{ap1}, \\
 \tab \cons{UnprimeAP}{calleeAp2}{ap2}.\\
 \hhline{=}
 
 %\cline{1-1}
-%\pred{Reachable}{ctx, meth}, \pred{Reachable}{toCtx, toMeth} \rulearrow{} \\
-%\tab \pred{MustCallGraphEdge}{i, ctx, toMeth, toCtx}, \\
-%\tab \pred{InMethod}{i, meth}. \\
+%\rel{Reachable}{ctx, meth}, \rel{Reachable}{toCtx, toMeth} \rulearrow{} \\
+%\tab \rel{MustCallGraphEdge}{i, ctx, toMeth, toCtx}, \\
+%\tab \rel{InMethod}{i, meth}. \\
 %\rule{-2pt}{3ex}
 
-%\pred{MustAlias}{i, ctx, ap1, ap2} \rulearrow{} \\
-%\tab \pred{MustAlias}{i, \consname{All}, ap1, ap2}, \pred{InMethod}{i, meth}, \pred{Reachable}{ctx, meth}. \\
+%\rel{MustAlias}{i, ctx, ap1, ap2} \rulearrow{} \\
+%\tab \rel{MustAlias}{i, \consname{All}, ap1, ap2}, \rel{InMethod}{i, meth}, \rel{Reachable}{ctx, meth}. \\
 %\rule{-2pt}{3ex}
 
-\pred{MustAlias}{i, ctx, ap3, ap4} \rulearrow{} \\
-\tab \pred{MustAlias}{i, ctx, ap1, ap2}, \\
+\rel{MustAlias}{i, ctx, ap3, ap4} \rulearrow{} \\
+\tab \rel{MustAlias}{i, ctx, ap1, ap2}, \\
 \tab \cons{AP}{ap1.fld}{ap3}, \cons{AP}{ap2.fld}{ap4}. \\
 \hhline{=}
 %\cline{1-1}
-\pred{MustAlias}{i, ctx, ap1, ap2} \rulearrow{} \\
-\tab !\pred{Store}{i, \_, \_, \_}, !\pred{Call}{i, \_, \_},\\
-\tab ($\forall$\args{j}: \pred{Next}{j, i} \rightrulearrow{} 
-        \pred{MustAlias}{j, ctx, ap1, ap2}).\\
+\rel{MustAlias}{i, ctx, ap1, ap2} \rulearrow{} \\
+\tab !\rel{Store}{i, \_, \_, \_}, !\rel{Call}{i, \_, \_},\\
+\tab ($\forall$\args{j}: \rel{Next}{j, i} \ruleforall{} 
+        \rel{MustAlias}{j, ctx, ap1, ap2}).\\
 \rule{-2pt}{3ex}
 
 %% SPACE!
-%\pred{MustAlias}{i, ctx, ap1, ap2} \rulearrow{} \\
-%\tab \pred{Call}{i, \_, \_}, 
-%     ($\forall$\args{j}: \pred{Next}{j, i} \rightrulearrow{} 
-%      \pred{MustAlias}{j, ctx, ap1, ap2}), \\
+%\rel{MustAlias}{i, ctx, ap1, ap2} \rulearrow{} \\
+%\tab \rel{Call}{i, \_, \_}, 
+%     ($\forall$\args{j}: \rel{Next}{j, i} \ruleforall{} 
+%      \rel{MustAlias}{j, ctx, ap1, ap2}), \\
 %\tab \cons{AP}{var1}{ap1}, \cons{AP}{var2}{ap2}.\\
 %\rule{-2pt}{3ex}
 %\cline{1-1}
@@ -882,46 +882,46 @@ employed some syntactic sugar:
 %% \begin{tabular}{l}
 %% %\cline{1-1}
 
-%% \pred{MustAlias}{i, ctx, \_, \_} \rulearrow{} \pred{MustAlias*}{i, ctx, \_, \_}. \\
+%% \rel{MustAlias}{i, ctx, \_, \_} \rulearrow{} \rel{MustAlias*}{i, ctx, \_, \_}. \\
 %% \hhline{=}
 %% %\cline{1-1}
-%% \pred{Reachable}{ctx, meth}, \pred{Reachable}{toCtx, toMeth} \rulearrow{} \\
-%% \tab \pred{MustCallGraphEdge}{i, ctx, toMeth, toCtx}, \pred{InMethod}{i, meth}. \\
+%% \rel{Reachable}{ctx, meth}, \rel{Reachable}{toCtx, toMeth} \rulearrow{} \\
+%% \tab \rel{MustCallGraphEdge}{i, ctx, toMeth, toCtx}, \rel{InMethod}{i, meth}. \\
 %% \rule{-2pt}{3ex}
 
-%% \pred{MustAlias}{i, ctx, ap1, ap2} \rulearrow{} \\
-%% \tab \pred{MustAlias}{i, \consname{All}, ap1, ap2}, \pred{InMethod}{i, meth}, \pred{Reachable}{ctx, meth}. \\
+%% \rel{MustAlias}{i, ctx, ap1, ap2} \rulearrow{} \\
+%% \tab \rel{MustAlias}{i, \consname{All}, ap1, ap2}, \rel{InMethod}{i, meth}, \rel{Reachable}{ctx, meth}. \\
 %% \rule{-2pt}{3ex}
 
-%% \pred{MustAlias}{i, ctx, ap3, ap4} \rulearrow{} \\
-%% \tab \pred{MustAlias}{i, ctx, ap1, ap2}, \cons{AP}{ap1.fld}{ap3}, \cons{AP}{ap2.fld}{ap4}. \\
+%% \rel{MustAlias}{i, ctx, ap3, ap4} \rulearrow{} \\
+%% \tab \rel{MustAlias}{i, ctx, ap1, ap2}, \cons{AP}{ap1.fld}{ap3}, \cons{AP}{ap2.fld}{ap4}. \\
 %% \hhline{=}
 %% %\cline{1-1}
-%% \pred{MustAlias}{i, ctx, ap1, ap2} \rulearrow{} \\
-%% \tab !\pred{Store}{i, \_, \_, \_}, !\pred{Call}{i, \_, \_},
-%%      ($\forall$\args{j}: \pred{Next}{j, i} \rightrulearrow{} 
-%%         \pred{MustAlias}{j, ctx, ap1, ap2}).\\
+%% \rel{MustAlias}{i, ctx, ap1, ap2} \rulearrow{} \\
+%% \tab !\rel{Store}{i, \_, \_, \_}, !\rel{Call}{i, \_, \_},
+%%      ($\forall$\args{j}: \rel{Next}{j, i} \ruleforall{} 
+%%         \rel{MustAlias}{j, ctx, ap1, ap2}).\\
 %% \rule{-2pt}{3ex}
 
-%% \pred{MustAlias}{i, ctx, ap1, ap2} \rulearrow{} \\
-%% \tab \pred{Call}{i, \_, \_}, 
-%%      ($\forall$\args{j}: \pred{Next}{j, i} \rightrulearrow{} 
-%%       \pred{MustAlias}{j, ctx, ap1, ap2}), \\
+%% \rel{MustAlias}{i, ctx, ap1, ap2} \rulearrow{} \\
+%% \tab \rel{Call}{i, \_, \_}, 
+%%      ($\forall$\args{j}: \rel{Next}{j, i} \ruleforall{} 
+%%       \rel{MustAlias}{j, ctx, ap1, ap2}), \\
 %% \tab \cons{AP}{var1}{ap1}, \cons{AP}{var2}{ap2}.\\
 %% \rule{-2pt}{3ex}
 
-%% %% \pred{MustAlias}{i, ctx, ap1, ap2} \rulearrow{} \\
-%% %% \tab \pred{Call}{i, \_, \_}, ($\forall$\args{j}: \pred{Next}{j, i} \rightrulearrow{}
-%% %%                                                  \pred{MustAlias}{j, ctx, ap1, ap2}), \\
-%% %% \tab ($\forall$\args{fld}: (\cons{AP}{\_.fld.\_}{ap1}; \cons{AP}{\_.fld.\_}{ap2}) \rightrulearrow{} 
-%% %%       !\predMay{CallMayStoreToField}{i, fld}).\\
+%% %% \rel{MustAlias}{i, ctx, ap1, ap2} \rulearrow{} \\
+%% %% \tab \rel{Call}{i, \_, \_}, ($\forall$\args{j}: \rel{Next}{j, i} \ruleforall{}
+%% %%                                                  \rel{MustAlias}{j, ctx, ap1, ap2}), \\
+%% %% \tab ($\forall$\args{fld}: (\cons{AP}{\_.fld.\_}{ap1}; \cons{AP}{\_.fld.\_}{ap2}) \ruleforall{} 
+%% %%       !\altrel{CallMayStoreToField}{i, fld}).\\
 %% %% \rule{-2pt}{3ex}
 
-%% %% \pred{MustAlias}{i, ctx, ap1, ap2} \rulearrow{} \\
-%% %% \tab \pred{Store}{i, base, fld, \_}, ($\forall$\args{j}: \pred{Next}{j, i} \rightrulearrow{}
-%% %%                                            \pred{MustAlias}{j, ctx, ap1, ap2}), \\
-%% %% \tab (!\cons{AP}{\_.fld.\_}{ap1}; (\cons{AP}{var1.fld}{ap1}, !\predMay{MayAlias}{var1, base})), \\
-%% %% \tab (!\cons{AP}{\_.fld.\_}{ap2}; (\cons{AP}{var2.fld}{ap2}, !\predMay{MayAlias}{var2, base})). \\
+%% %% \rel{MustAlias}{i, ctx, ap1, ap2} \rulearrow{} \\
+%% %% \tab \rel{Store}{i, base, fld, \_}, ($\forall$\args{j}: \rel{Next}{j, i} \ruleforall{}
+%% %%                                            \rel{MustAlias}{j, ctx, ap1, ap2}), \\
+%% %% \tab (!\cons{AP}{\_.fld.\_}{ap1}; (\cons{AP}{var1.fld}{ap1}, !\altrel{MayAlias}{var1, base})), \\
+%% %% \tab (!\cons{AP}{\_.fld.\_}{ap2}; (\cons{AP}{var2.fld}{ap2}, !\altrel{MayAlias}{var2, base})). \\
 %% %\hhline{=}
 %% %\cline{1-1}
 %% \end{tabular}
@@ -933,7 +933,7 @@ employed some syntactic sugar:
 
 The top part of Figure~\ref{fig:rules-must-1} lists six rules: one to
 initialize interesting analysis contexts and five for must-alias inferences.
-The former rule employs configuration predicate \predname{RootMethod}. This
+The former rule employs configuration predicate \relname{RootMethod}. This
 predicate designates methods that are to be analyzed unconditionally: the
 inference is made under the special context value \consname{All}.  For a
 non-root method, aliasing inferences can only be made under a specific context,
@@ -950,15 +950,15 @@ for which the method has been computed to be reachable.
 %% The context mechanism is then used to explore other code, but only to the
 %% extent that such exploration benefits the root methods intended for analysis.
 
-The next four \predname{MustAlias} rules handle one instruction kind each:
-\predname{Move}, \predname{Phi}, \predname{Load}, and \predname{Store}. The
-\predname{Move} rule merely establishes an aliasing relationship between the
+The next four \relname{MustAlias} rules handle one instruction kind each:
+\relname{Move}, \relname{Phi}, \relname{Load}, and \relname{Store}. The
+\relname{Move} rule merely establishes an aliasing relationship between the
 two assigned variables, at the point of the move instruction. The
-\predname{Phi} rule promotes aliasing relationships that hold for all the
+\relname{Phi} rule promotes aliasing relationships that hold for all the
 right-hand sides of a $\phi$ instruction to its left hand side. The
-\predname{Load} and \predname{Store} rules establish aliases between the
+\relname{Load} and \relname{Store} rules establish aliases between the
 loaded/stored expression, \args{base.fld}, and the local variable used.  The
-last \predname{MustAlias} rule makes the \predname{MustAlias} relation
+last \relname{MustAlias} rule makes the \relname{MustAlias} relation
 symmetrically and transitively closed.
 
 
@@ -968,11 +968,11 @@ The second part of Figure~\ref{fig:rules-must-1} presents four rules
 responsible for the inter-procedural propagation of access path aliasing.
 
 The first rule continues the handling of program instructions with a treatment
-of \predname{Call}. At a \predname{Call} instruction, for method signature
+of \relname{Call}. At a \relname{Call} instruction, for method signature
 \args{sig} over object \args{base}, if \args{base} has a unique (resolved)
-type, then the method is looked up in that type, a \predname{MustCallGraphEdge}
+type, then the method is looked up in that type, a \relname{MustCallGraphEdge}
 is inferred from the invocation instruction to the target method and the method
-is also marked as \predname{Reachable} with a callee context computed using
+is also marked as \relname{Reachable} with a callee context computed using
 constructor \consname{NewContext}. Recall that the \consname{NewContext}
 function may fail to return a new context (e.g., because \args{ctx} has already
 reached the maximum depth and \args{toCtx} would exceed it) in which case the
@@ -993,7 +993,7 @@ aliasing for the base variable of the method call and the
 pseudo-variable \code{this} inside the receiver method. (Note how the
 first instruction of the called method is computed as the only
 instruction in the method that has no CFG predecessors:
-$\forall$\args{k} \rightrulearrow{} !\pred{Next}{k, firstInstr}.  This
+$\forall$\args{k} \ruleforall{} !\rel{Next}{k, firstInstr}.  This
 convention is assumed to hold for our input intermediate language.)
 
 The third rule (again, in the second part of Figure~\ref{fig:rules-must-1})
@@ -1013,7 +1013,7 @@ alias pairs (e.g., among local variables of the callee) do not propagate to the
 caller.
 
 Crucially, the handling of a method return is the \emph{only} point where a context can
-become stronger. \predname{MustAlias} facts that were inferred to hold under
+become stronger. \relname{MustAlias} facts that were inferred to hold under
 the more specific \args{toCtx} are now established, modulo unpriming, under
 \args{ctx}.
 
@@ -1032,7 +1032,7 @@ rule does not spur infinite creation of access paths.
 %The second rule in this group is a context weakening rule: any
 %must-alias fact that holds for an \consname{All} context also holds
 %for any specific context and method of interest (i.e., in
-%\predname{Reachable}).
+%\relname{Reachable}).
 
 %% We discuss the issue of the space of access paths and how to populate
 %% it efficiently in Section~\ref{sec:configurability}.
@@ -1088,14 +1088,14 @@ complexities do not affect the discussion of our model.
 %% alias pair over a call, as long as no field contained in either access path is
 %% invalidated by any method transitively reachable from the call site.  The
 %% latter condition is established by configuration predicate
-%% \predname{CallMayStoreToField}, supplied by a prior may-analysis.
+%% \relname{CallMayStoreToField}, supplied by a prior may-analysis.
 
 %% The very last rule propagates alias pairs over a store instruction, as long as,
 %% for both access paths, either the stored field is not in the access path or the
 %% access path is of the simple form \args{var}.\args{fld} and \args{var} cannot
 %% be aliased to the base of the store. This reasoning again employs the results
 %% of a prior may-alias analysis, encoded in configuration predicate
-%% \predname{MayAlias}.
+%% \relname{MayAlias}.
 
 
 
@@ -1122,7 +1122,7 @@ pertain. This enables producing more alias pairs, however, their
 validity is conditional on the context used.
 %% Still, this conditional information can be used for further
 %% inferences. For
-%% instance, \predname{MustAlias} inferences can be combined with
+%% instance, \relname{MustAlias} inferences can be combined with
 %% allocation instructions (allocation sites can be viewed as global
 %% access paths) in order to determine, when possible, which objects an
 %% access path must point to. In turn, this can inform virtual method
@@ -1159,28 +1159,28 @@ onto \args{ctx} and return the result.
 %% our other rules---for instance:
 
 %% \begin{rules}
-%% \pred{MustAlias}{firstInstr, toCtx, ap1, ap2} \rulearrow{} \\
-%% \tab \pred{MustCallGraphEdge}{i, ctx, toMth, toCtx}, \\
-%% \tab \pred{InMethod}{firstInstr, toMth}, 
-%%      ($\forall$\args{k} \rightrulearrow{} !\pred{Next}{k, firstInstr}), \\
-%% \tab ($\forall$\args{j}: \pred{Next}{j, i} \rightrulearrow{} \\
-%% \tab \tab \tab           \pred{MustAlias}{j, ctx, callerAp1, callerAp2}),\\
+%% \rel{MustAlias}{firstInstr, toCtx, ap1, ap2} \rulearrow{} \\
+%% \tab \rel{MustCallGraphEdge}{i, ctx, toMth, toCtx}, \\
+%% \tab \rel{InMethod}{firstInstr, toMth}, 
+%%      ($\forall$\args{k} \ruleforall{} !\rel{Next}{k, firstInstr}), \\
+%% \tab ($\forall$\args{j}: \rel{Next}{j, i} \ruleforall{} \\
+%% \tab \tab \tab           \rel{MustAlias}{j, ctx, callerAp1, callerAp2}),\\
 %% \tab \cons{PrimeAP}{callerAp1}{ap1}, \cons{PrimeAP}{callerAp2}{ap2}.\\
 %% %%
-%% %% \pred{MustAlias}{firstInstr, toCtx, ap1, ap2} \rulearrow{} \\
-%% %% \tab \pred{MustCallGraphEdge}{i, ctx, toMth, toCtx}, \\
-%% %% \tab \pred{InMethod}{firstInstr, toMth}, 
-%% %%      ($\forall$\args{k} \rightrulearrow{} !\pred{Next}{k, firstInstr}), \\
-%% %% \tab ((\pred{FormalArg}{toMth, n, toVar}, \pred{ActualArg}{i, n, var}); \\
-%% %% \tab \tab (\pred{ThisVar}{toMth, toVar}, \pred{Call}{i, var, \_})), \\
-%% %% \tab \cons{PrimeAP}{\funcapp{AP}{var}}{ap1}, \cons{AP}{toVar}{ap2}. \\
+%% %% \rel{MustAlias}{firstInstr, toCtx, ap1, ap2} \rulearrow{} \\
+%% %% \tab \rel{MustCallGraphEdge}{i, ctx, toMth, toCtx}, \\
+%% %% \tab \rel{InMethod}{firstInstr, toMth}, 
+%% %%      ($\forall$\args{k} \ruleforall{} !\rel{Next}{k, firstInstr}), \\
+%% %% \tab ((\rel{FormalArg}{toMth, n, toVar}, \rel{ActualArg}{i, n, var}); \\
+%% %% \tab \tab (\rel{ThisVar}{toMth, toVar}, \rel{Call}{i, var, \_})), \\
+%% %% \tab \cons{PrimeAP}{\consapp{AP}{var}}{ap1}, \cons{AP}{toVar}{ap2}. \\
 %% \end{rules}
 
-%% In the above, \predname{MustAlias} inferences from (all predecessors
+%% In the above, \relname{MustAlias} inferences from (all predecessors
 %% of) call site \args{i} under context \args{ctx} are transmitted to the
 %% first instruction of \args{toMth}, under context \args{toCtx}. 
 
-The analysis then propagates \predname{MustAlias} pairs from (all
+The analysis then propagates \relname{MustAlias} pairs from (all
 predecessors of) call site \args{invo} under context \args{ctx} to the
 first instruction of a called method, \args{toMth}, under context
 \args{newCtx}. Thus, \args{newCtx} should be enough to establish that
@@ -1191,7 +1191,7 @@ contexts).\footnote{One could imagine doing so under the premise that
   beginning of the callee function. However, this is unlikely to arise
   often in practice.}
 
-The requirement that \funcapp{NewContext}{invo,ctx} produce contexts that
+The requirement that \consapp{NewContext}{invo,ctx} produce contexts that
 uniquely identify both \args{invo} and \args{ctx} means that context can
 only grow from an original source in our
 analysis. Consider a set of three methods, \code{meth1}, \code{meth2}, and
@@ -1210,7 +1210,7 @@ source of a similar propagation.
 
 \paragraph{Representation of Equivalence Classes.}
 
-\predname{MustAlias} encodes equivalence classes on access paths. Datalog
+\relname{MustAlias} encodes equivalence classes on access paths. Datalog
 inherently has no such notion and any attempt to compute a must-alias relation
 has to explicitly encode all aliasing pairs. E.g., if variable \code{v1} is an
 alias for variable \code{v2}, and \code{v2} of variable \code{v3}, we have to
@@ -1233,14 +1233,14 @@ relations.
 %% above rule, we get:
 
 %% \begin{rules}
-%% \pred{MustAlias}{firstInstr, toCtx, ap1, ap2} \rulearrow{} \\
-%% \tab ($\forall$\args{i, ctx}: \pred{MustCallGraphEdge}{i, ctx, toMth, toCtx} \rightrulearrow{} \\
-%% \tab \tab \pred{InMethod}{firstInstr, toMth}, 
-%%        ($\forall$\args{k} \rightrulearrow{} !\pred{Next}{k, firstInstr}), \\
-%% \tab \tab ($\forall$\args{j}: \pred{Next}{j, i} \rightrulearrow{}
-%%               \pred{MustAlias}{j, ctx, callerAp1, callerAp2}), \\
-%% \tab \tab \pred{RebaseAtCall}{i, ctx, var1, toVar1}, \cons{RebaseAP}{callerAp1, var1, toVar1}{ap1}, \\
-%% \tab \tab \pred{RebaseAtCall}{i, ctx, var2, toVar2}, \cons{RebaseAP}{callerAp2, var2, toVar2}{ap2}). \\
+%% \rel{MustAlias}{firstInstr, toCtx, ap1, ap2} \rulearrow{} \\
+%% \tab ($\forall$\args{i, ctx}: \rel{MustCallGraphEdge}{i, ctx, toMth, toCtx} \ruleforall{} \\
+%% \tab \tab \rel{InMethod}{firstInstr, toMth}, 
+%%        ($\forall$\args{k} \ruleforall{} !\rel{Next}{k, firstInstr}), \\
+%% \tab \tab ($\forall$\args{j}: \rel{Next}{j, i} \ruleforall{}
+%%               \rel{MustAlias}{j, ctx, callerAp1, callerAp2}), \\
+%% \tab \tab \rel{RebaseAtCall}{i, ctx, var1, toVar1}, \cons{RebaseAP}{callerAp1, var1, toVar1}{ap1}, \\
+%% \tab \tab \rel{RebaseAtCall}{i, ctx, var2, toVar2}, \cons{RebaseAP}{callerAp2, var2, toVar2}{ap2}). \\
 %% \end{rules}
 
 %% That is, the first premise of the rule becomes the guard of a
@@ -1287,11 +1287,11 @@ relations.
 %% %%% on must information, it will become clear.
 %% %  The above general rule is not translatable to Datalog because
 %% %  its inference is not monotonic. A computed relation
-%% %  (\predname{MustCallGraphEdge}) is used in the guard of a $\forall$.
+%% %  (\relname{MustCallGraphEdge}) is used in the guard of a $\forall$.
 %% %  This is a negated position (the left hand side of an implication) in
 %% %  the rule body. Intuitively, the problem is that in order to
-%% %  establish a \predname{MustAlias} fact, we need to have established
-%% %  a related fact for all sites that have a \predname{MustCallGraphEdge}
+%% %  establish a \relname{MustAlias} fact, we need to have established
+%% %  a related fact for all sites that have a \relname{MustCallGraphEdge}
 %% %  to the original. 
 
 
@@ -1413,7 +1413,7 @@ relations.
 %% by employing the rule:
 
 %% \begin{rules}
-%% \cons{AP}{ap2.fld}{newAp} \rulearrow{} \pred{MustAlias}{i, ctx, ap1, ap2}, \cons{AP}{ap1.fld}{\_}. \\
+%% \cons{AP}{ap2.fld}{newAp} \rulearrow{} \rel{MustAlias}{i, ctx, ap1, ap2}, \cons{AP}{ap1.fld}{\_}. \\
 %% \end{rules}
 
 %% Note that one use of the constructor \consname{AP} is in the head of
@@ -1448,13 +1448,13 @@ relations.
 %%\paragraph{Representing Equivalence Relations.} The first observation
 %%regarding the must-alias relation is that it is an equivalence
 %%relation.  Consider our earlier rule, which establishes that
-%%\predname{MustAlias} is reflexively, symmetrically, and transitively
+%%\relname{MustAlias} is reflexively, symmetrically, and transitively
 %%closed:
 %%
 %%\begin{small}
 %%\noindent\begin{tabular}{l}
 %%\rule{-2pt}{3ex}
-%%\pred{MustAlias}{i, ctx, \_, \_} \rulearrow{} \pred{MustAlias*}{i, ctx, \_, \_}. \\
+%%\rel{MustAlias}{i, ctx, \_, \_} \rulearrow{} \rel{MustAlias*}{i, ctx, \_, \_}. \\
 %%\rule{-2pt}{3ex}
 %%\end{tabular}
 %%\end{small}
@@ -1475,7 +1475,7 @@ relations.
 %%points-to sets of \args{ap2} and \args{ap3}.
 %%
 %%
-%%Since \predname{MustAlias} is an equivalence relation, it induces a
+%%Since \relname{MustAlias} is an equivalence relation, it induces a
 %%partitioning of the space of access paths: every access path can only
 %%belong in one alias (equivalence) class. This means that we can
 %%represent the contents of each class compactly, by grouping together
@@ -1493,8 +1493,8 @@ relations.
 %%\begin{small}
 %%\noindent\begin{tabular}{l}
 %%\rule{-2pt}{3ex}
-%%\pred{MustAlias}{i, ctx, ap3, ap4} \rulearrow{} \\
-%%\tab \pred{MustAlias}{i, ctx, ap1, ap2}, \\
+%%\rel{MustAlias}{i, ctx, ap3, ap4} \rulearrow{} \\
+%%\tab \rel{MustAlias}{i, ctx, ap1, ap2}, \\
 %%\tab \cons{AP}{ap1.fld}{ap3}, \cons{AP}{ap2.fld}{ap4}.\\
 %%\rule{-2pt}{3ex}
 %%\end{tabular}
@@ -1529,10 +1529,10 @@ relations.
 %%\begin{small}
 %%\noindent\begin{tabular}{l}
 %%\rule{-2pt}{3ex}
-%%\pred{MustAlias}{i, ctx, ap1, ap2} \rulearrow{} \\
-%%\tab !\pred{Store}{i, \_, \_, \_}, !\pred{Call}{i, \_, \_}, \\
-%%\tab ($\forall$\args{j}: \pred{Next}{j, i} \rightrulearrow{} 
-%%        \pred{MustAlias}{j, ctx, ap1, ap2}).\\
+%%\rel{MustAlias}{i, ctx, ap1, ap2} \rulearrow{} \\
+%%\tab !\rel{Store}{i, \_, \_, \_}, !\rel{Call}{i, \_, \_}, \\
+%%\tab ($\forall$\args{j}: \rel{Next}{j, i} \ruleforall{} 
+%%        \rel{MustAlias}{j, ctx, ap1, ap2}).\\
 %%\rule{-2pt}{3ex}
 %%\end{tabular}
 %%\end{small}
@@ -1583,10 +1583,10 @@ relations.
 %%\end{figure}
 %%
 %%Aliasing can be induced by various program operations (e.g.,
-%%\predname{Move}, \predname{Load}, and \predname{Store}), as seen in
+%%\relname{Move}, \relname{Load}, and \relname{Store}), as seen in
 %%our earlier model. Since we are interested in must-alias, two
 %%aliased variables have to point to the same object---their nodes
-%%can be merged if a \predname{Move} instruction, \code{x = y}, is
+%%can be merged if a \relname{Move} instruction, \code{x = y}, is
 %%encountered:
 %%
 %%\begin{figure}[h]
@@ -1599,11 +1599,11 @@ relations.
 %%%    \label{fig/alias-graph}
 %%\end{figure}
 %%
-%%%That is, the new graph \emph{after} the \predname{Move} instruction will
+%%%That is, the new graph \emph{after} the \relname{Move} instruction will
 %%%contain the collapsed node.
 %%
-%%If the next instruction is a \predname{Store}, \code{x.f = z}, the
-%%previous graph will get propagated. Subsequently, the \predname{Store}
+%%If the next instruction is a \relname{Store}, \code{x.f = z}, the
+%%previous graph will get propagated. Subsequently, the \relname{Store}
 %%will add an edge to the graph, signifying that the field, \code{f}, of
 %%the object pointed by \code{x} will point to the object that \code{z}
 %%points to:
@@ -1618,7 +1618,7 @@ relations.
 %%%    \label{fig/alias-graph}
 %%\end{figure}
 %%
-%%A subsequent \predname{Load} operation, \code{z =
+%%A subsequent \relname{Load} operation, \code{z =
 %%  y.g},\footnote{Strictly speaking, this exact scenario will never arise for
 %%  our SSA input, since \texttt{z} has had its value read earlier and its
 %%  single assignment has to dominate its use.}
@@ -1641,7 +1641,7 @@ relations.
 %%%    \label{fig/alias-graph}
 %%\end{figure}
 %%
-%%The \predname{Load} operation shows that our alias graph, although
+%%The \relname{Load} operation shows that our alias graph, although
 %%intended to abstractly represent a real heap, behaves quite
 %%differently: a load from a field can introduce new objects, as well as
 %%update fields of existing objects.
@@ -1810,7 +1810,7 @@ relations.
 %%
 %%The data structure description we have seen so far considers this
 %%update to be a destructive operation. For instance, after a
-%%\predname{Move} instruction, we saw the nodes of two variables getting
+%%\relname{Move} instruction, we saw the nodes of two variables getting
 %%merged. Similar merging can be induced by information that the
 %%analysis discovers while it is executing (i.e., not directly induced
 %%by the semantics of the current instruction)---e.g., propagated from
@@ -1852,7 +1852,7 @@ relations.
 %%as squares, to avoid confusion.)
 %%
 %%Since we no longer have destructive updates, variables can point
-%%to multiple abstract objects. For instance, after a \predname{Move} instruction,
+%%to multiple abstract objects. For instance, after a \relname{Move} instruction,
 %%\code{x = y}, we have:
 %%
 %%%\begin{figure}[h]
@@ -1872,7 +1872,7 @@ relations.
 %%variables \code{x} and \code{y} are aliased, in the usual sense: they both
 %%point to the same abstract object.
 %%
-%%If the next operation is another \predname{Move}, \code{z = x}, variable
+%%If the next operation is another \relname{Move}, \code{z = x}, variable
 %%\code{z} is made to point to both abstract objects that \code{x} points to:
 %%
 %%\begin{figure}[h]
@@ -2230,8 +2230,8 @@ relations.
 %% %% time of this analysis. We also include the execution time for the
 %% %% preparatory computation over the may-analysis results (``must
 %% %% pre-analysis'' column)---i.e., the time to compute our
-%% %% required input predicates, \prednameMay{Resolved},
-%% %% \prednameMay{MayAlias} and \prednameMay{CallMayStoreToField}.
+%% %% required input predicates, \altrelname{Resolved},
+%% %% \altrelname{MayAlias} and \altrelname{CallMayStoreToField}.
 %% 
 %% %% %% \begin{figure}[t]
 %% %% %%   \small
@@ -2393,16 +2393,16 @@ relations.
 %% %% must-alias reasoning but invalidates access paths by employing the
 %% %% inter-procedural may-alias analysis. That is, of the three predicates
 %% %% computed by the may-analysis, the intra-procedural$^{+\text{may}}$
-%% %% analysis does \emph{not} use predicate \prednameMay{Resolved} to do
+%% %% analysis does \emph{not} use predicate \altrelname{Resolved} to do
 %% %% virtual method resolution, but \emph{does} use predicates
-%% %% \prednameMay{MayAlias} and \prednameMay{CallMayStoreToField}, in order
+%% %% \altrelname{MayAlias} and \altrelname{CallMayStoreToField}, in order
 %% %% to decide when to invalidate access paths at call and store
 %% %% instructions. 
 %% %% %
 %% %% Conversely, the inter-procedural$_{-\text{may}}$ analysis \emph{does}
-%% %% use predicate \prednameMay{Resolved} to do virtual method resolution,
-%% %% but does \emph{not} use predicates \prednameMay{MayAlias} and
-%% %% \prednameMay{CallMayStoreToField}, instead invalidating alias
+%% %% use predicate \altrelname{Resolved} to do virtual method resolution,
+%% %% but does \emph{not} use predicates \altrelname{MayAlias} and
+%% %% \altrelname{CallMayStoreToField}, instead invalidating alias
 %% %% information conservatively at store and call instructions.
 %% 
 %% %% These variations of settings give us a picture of the separate benefit
@@ -2485,8 +2485,8 @@ relations.
 %% %% %%SPACE
 %% %% % (Recall that much of
 %% %% %the time shown is spent computing queries over the \emph{may-}
-%% %% %analysis, in order to populate input tables \prednameMay{Resolved},
-%% %% %\prednameMay{MayAlias}, and \prednameMay{CallMayStoreToField}, and not
+%% %% %analysis, in order to populate input tables \altrelname{Resolved},
+%% %% %\altrelname{MayAlias}, and \altrelname{CallMayStoreToField}, and not
 %% %% %on the must-alias analysis itself.)
 %% 
 %% %% For a deeper context, the analysis produces often significantly richer

@@ -349,29 +349,29 @@ actual implementation in the following ways:
 \cline{1-1}
 \hspace{-3mm}
 \begin{tabular}{l l}
-\pred{Alloc}{var : V, heap : H, inMeth : M}  & \args{\# var = new ...} \\
-\pred{Move}{to : V, from : V}                & \args{\# to = from} \\
-\pred{Load}{to : V, base : V, fld : F}       & \args{\# to = base.fld}\\
-\pred{Store}{base : V, fld : F, from : V}    & \args{\# base.fld = from} \\
-\pred{VCall}{base : V, sig : S, invo : I, inMeth : M} & \args{\# base.sig(..)}   \\
+\rel{Alloc}{var : V, heap : H, inMeth : M}  & \args{\# var = new ...} \\
+\rel{Move}{to : V, from : V}                & \args{\# to = from} \\
+\rel{Load}{to : V, base : V, fld : F}       & \args{\# to = base.fld}\\
+\rel{Store}{base : V, fld : F, from : V}    & \args{\# base.fld = from} \\
+\rel{VCall}{base : V, sig : S, invo : I, inMeth : M} & \args{\# base.sig(..)}   \\
 \end{tabular}\\
 \\
-\pred{FormalArg}{meth : M, i : $\mathbb{N}$, arg : V} \\ 
-\pred{ActualArg}{invo : I, i : $\mathbb{N}$, arg : V} \\ 
-\pred{FormalReturn}{meth : M, ret : V} \\                
-\pred{ActualReturn}{invo : I, var : V} \\                
-\pred{ThisVar}{meth : M, this : V} \\                    
-\pred{HeapType}{heap : H, type : T} \\
-\pred{LookUp}{type : T, sig : S, meth : M} \\            
+\rel{FormalArg}{meth : M, i : $\mathbb{N}$, arg : V} \\ 
+\rel{ActualArg}{invo : I, i : $\mathbb{N}$, arg : V} \\ 
+\rel{FormalReturn}{meth : M, ret : V} \\                
+\rel{ActualReturn}{invo : I, var : V} \\                
+\rel{ThisVar}{meth : M, this : V} \\                    
+\rel{HeapType}{heap : H, type : T} \\
+\rel{LookUp}{type : T, sig : S, meth : M} \\            
 \\
-\pred{SiteToRefine}{invo : I, meth : M} \\ 
-\pred{ObjectToRefine}{heap : H} \\ 
+\rel{SiteToRefine}{invo : I, meth : M} \\ 
+\rel{ObjectToRefine}{heap : H} \\ 
 \cline{1-1}
-\pred{VarPointsTo}{var : V, ctx : C, heap : H, hctx : HC} \\
-\pred{CallGraph}{invo : I, callerCtx : C, meth : M, calleeCtx : C} \\
-\pred{FldPointsTo}{baseH: H, baseHCtx: HC, fld: F, heap: H, hctx: HC} \\
-\pred{InterProcAssign}{to : V, toCtx : C, from : V, fromCtx : C} \\
-\pred{Reachable}{meth : M, ctx : C} \\
+\rel{VarPointsTo}{var : V, ctx : C, heap : H, hctx : HC} \\
+\rel{CallGraph}{invo : I, callerCtx : C, meth : M, calleeCtx : C} \\
+\rel{FldPointsTo}{baseH: H, baseHCtx: HC, fld: F, heap: H, hctx: HC} \\
+\rel{InterProcAssign}{to : V, toCtx : C, from : V, fromCtx : C} \\
+\rel{Reachable}{meth : M, ctx : C} \\
 %\\
 \cline{1-1}
 \cons{Record}{heap : H, ctx : C}{newHCtx : HC} \\
@@ -400,69 +400,69 @@ actual implementation in the following ways:
 %\begin{center}
 \begin{tabular}{l}
 %\cline{1-1}
-\pred{InterProcAssign}{to, calleeCtx, from, callerCtx} \rulearrow{} \\
-\hspace{2 mm} \pred{CallGraph}{invo, callerCtx, meth, calleeCtx}, \\
-\hspace{2 mm} \pred{FormalArg}{meth, i, to}, \pred{ActualArg}{invo, i, from}. \\
+\rel{InterProcAssign}{to, calleeCtx, from, callerCtx} \rulearrow{} \\
+\hspace{2 mm} \rel{CallGraph}{invo, callerCtx, meth, calleeCtx}, \\
+\hspace{2 mm} \rel{FormalArg}{meth, i, to}, \rel{ActualArg}{invo, i, from}. \\
 \\
 
-\pred{InterProcAssign}{to, callerCtx, from, calleeCtx} \rulearrow{} \\
-\hspace{2 mm} \pred{CallGraph}{invo, callerCtx, meth, calleeCtx}, \\
-\hspace{2 mm} \pred{FormalReturn}{meth, from}, \pred{ActualReturn}{invo, to}. \\
+\rel{InterProcAssign}{to, callerCtx, from, calleeCtx} \rulearrow{} \\
+\hspace{2 mm} \rel{CallGraph}{invo, callerCtx, meth, calleeCtx}, \\
+\hspace{2 mm} \rel{FormalReturn}{meth, from}, \rel{ActualReturn}{invo, to}. \\
 \\
 \\
 \cons{Record}{heap, ctx}{hctx}, \\
-\pred{VarPointsTo}{var, ctx, heap, hctx} \rulearrow{} \\
-\hspace{2 mm} \pred{Reachable}{meth, ctx}, \pred{Alloc}{var, heap, meth}, \\
-\hspace{2 mm} !\pred{ObjectToRefine}{heap}. \\
+\rel{VarPointsTo}{var, ctx, heap, hctx} \rulearrow{} \\
+\hspace{2 mm} \rel{Reachable}{meth, ctx}, \rel{Alloc}{var, heap, meth}, \\
+\hspace{2 mm} !\rel{ObjectToRefine}{heap}. \\
 \\
 
 \args{\# duplicate rule, for introspective context-sensitivity}\\
 \cons{RecordRefined}{heap, ctx}{hctx}, \\
-\pred{VarPointsTo}{var, ctx, heap, hctx} \rulearrow{} \\
-\hspace{2 mm} \pred{Reachable}{meth, ctx}, \pred{Alloc}{var, heap, meth}, \\
-\hspace{2 mm} \pred{ObjectToRefine}{heap}. \\
+\rel{VarPointsTo}{var, ctx, heap, hctx} \rulearrow{} \\
+\hspace{2 mm} \rel{Reachable}{meth, ctx}, \rel{Alloc}{var, heap, meth}, \\
+\hspace{2 mm} \rel{ObjectToRefine}{heap}. \\
 \\
 
-\pred{VarPointsTo}{to, ctx, heap, hctx} \rulearrow{} \\
-\hspace{2 mm} \pred{Move}{to, from}, \pred{VarPointsTo}{from, ctx, heap, hctx}. \\
+\rel{VarPointsTo}{to, ctx, heap, hctx} \rulearrow{} \\
+\hspace{2 mm} \rel{Move}{to, from}, \rel{VarPointsTo}{from, ctx, heap, hctx}. \\
 \\
 
-\pred{VarPointsTo}{to, toCtx, heap, hctx} \rulearrow{} \\
-\hspace{2 mm} \pred{InterProcAssign}{to, toCtx, from, fromCtx}, \\
-\hspace{2 mm} \pred{VarPointsTo}{from, fromCtx, heap, hctx}. \\
+\rel{VarPointsTo}{to, toCtx, heap, hctx} \rulearrow{} \\
+\hspace{2 mm} \rel{InterProcAssign}{to, toCtx, from, fromCtx}, \\
+\hspace{2 mm} \rel{VarPointsTo}{from, fromCtx, heap, hctx}. \\
 \\
 
-\pred{VarPointsTo}{to, ctx, heap, hctx} \rulearrow{} \\
-\hspace{2 mm} \pred{Load}{to, base, fld}, \pred{VarPointsTo}{base, ctx, baseH, baseHCtx}, \\
-\hspace{2 mm} \pred{FldPointsTo}{baseH, baseHCtx, fld, heap, hctx}. \\
+\rel{VarPointsTo}{to, ctx, heap, hctx} \rulearrow{} \\
+\hspace{2 mm} \rel{Load}{to, base, fld}, \rel{VarPointsTo}{base, ctx, baseH, baseHCtx}, \\
+\hspace{2 mm} \rel{FldPointsTo}{baseH, baseHCtx, fld, heap, hctx}. \\
 \\
 
-\pred{FldPointsTo}{baseH, baseHCtx, fld, heap, hctx} \rulearrow{} \\
-\hspace{2 mm} \pred{Store}{base, fld, from}, \pred{VarPointsTo}{from, ctx, heap, hctx},\\
-\hspace{2 mm} \pred{VarPointsTo}{base, ctx, baseH, baseHCtx}. \\
+\rel{FldPointsTo}{baseH, baseHCtx, fld, heap, hctx} \rulearrow{} \\
+\hspace{2 mm} \rel{Store}{base, fld, from}, \rel{VarPointsTo}{from, ctx, heap, hctx},\\
+\hspace{2 mm} \rel{VarPointsTo}{base, ctx, baseH, baseHCtx}. \\
 \\
 \\
 \cons{Merge}{heap, hctx, invo, callerCtx}{calleeCtx}, \\
-\pred{Reachable}{toMeth, calleeCtx}, \\
-\pred{VarPointsTo}{this, calleeCtx, heap, hctx}, \\
-\pred{CallGraph}{invo, callerCtx, toMeth, calleeCtx} \rulearrow{} \\
-\hspace{2 mm} \pred{VCall}{base, sig, invo, inMeth}, \pred{Reachable}{inMeth, callerCtx}, \\
-\hspace{2 mm} \pred{VarPointsTo}{base, callerCtx, heap, hctx},\\
-\hspace{2 mm} \pred{HeapType}{heap, heapT}, \pred{Lookup}{heapT, sig, toMeth},\\
-\hspace{2 mm} \pred{ThisVar}{toMeth, this}, \\
-\hspace{2 mm} !\pred{SiteToRefine}{invo, toMeth}. \\
+\rel{Reachable}{toMeth, calleeCtx}, \\
+\rel{VarPointsTo}{this, calleeCtx, heap, hctx}, \\
+\rel{CallGraph}{invo, callerCtx, toMeth, calleeCtx} \rulearrow{} \\
+\hspace{2 mm} \rel{VCall}{base, sig, invo, inMeth}, \rel{Reachable}{inMeth, callerCtx}, \\
+\hspace{2 mm} \rel{VarPointsTo}{base, callerCtx, heap, hctx},\\
+\hspace{2 mm} \rel{HeapType}{heap, heapT}, \rel{Lookup}{heapT, sig, toMeth},\\
+\hspace{2 mm} \rel{ThisVar}{toMeth, this}, \\
+\hspace{2 mm} !\rel{SiteToRefine}{invo, toMeth}. \\
 
 \\
 \args{\# duplicate rule, for introspective context-sensitivity}\\
 \cons{MergeRefined}{heap, hctx, invo, callerCtx}{calleeCtx}, \\
-\pred{Reachable}{toMeth, calleeCtx}, \\
-\pred{VarPointsTo}{this, calleeCtx, heap, hctx}, \\
-\pred{CallGraph}{invo, callerCtx, toMeth, calleeCtx} \rulearrow{} \\
-\hspace{2 mm} \pred{VCall}{base, sig, invo, inMeth}, \pred{Reachable}{inMeth, callerCtx}, \\
-\hspace{2 mm} \pred{VarPointsTo}{base, callerCtx, heap, hctx},\\
-\hspace{2 mm} \pred{HeapType}{heap, heapT}, \pred{Lookup}{heapT, sig, toMeth},\\
-\hspace{2 mm} \pred{ThisVar}{toMeth, this}, \\
-\hspace{2 mm} \emph{\pred{SiteToRefine}{invo, toMeth}}. \\
+\rel{Reachable}{toMeth, calleeCtx}, \\
+\rel{VarPointsTo}{this, calleeCtx, heap, hctx}, \\
+\rel{CallGraph}{invo, callerCtx, toMeth, calleeCtx} \rulearrow{} \\
+\hspace{2 mm} \rel{VCall}{base, sig, invo, inMeth}, \rel{Reachable}{inMeth, callerCtx}, \\
+\hspace{2 mm} \rel{VarPointsTo}{base, callerCtx, heap, hctx},\\
+\hspace{2 mm} \rel{HeapType}{heap, heapT}, \rel{Lookup}{heapT, sig, toMeth},\\
+\hspace{2 mm} \rel{ThisVar}{toMeth, this}, \\
+\hspace{2 mm} \emph{\rel{SiteToRefine}{invo, toMeth}}. \\
  \\
 %\cline{1-1}
 \end{tabular}
@@ -483,31 +483,31 @@ call-graph computation.
   analysis. They are logically grouped into relations that represent
   instructions, relations that represent name-and-type information,
   and parameterization relations for introspective
-  context-sensitivity. For instance, the \predname{Alloc} relation
+  context-sensitivity. For instance, the \relname{Alloc} relation
   represents every instruction that allocates a new heap object,
   \args{heap}, and assigns it to local variable \args{var} inside
   method \args{inMeth}. (Note that every local variable is defined in
   a unique method, hence the \args{inMeth} argument is also implied by
   \args{var} but is included to simplify later rules.) There are
   similar input relations for all other instruction types
-  (\predname{Move}, \predname{Load}, \predname{Store}, and
-  \predname{VCall}).
+  (\relname{Move}, \relname{Load}, \relname{Store}, and
+  \relname{VCall}).
 
   Similarly, there are relations that encode type system, symbol
   table, and program environment information. These are mostly
-  straightforward. For instance, \predname{FormalArg} shows which
+  straightforward. For instance, \relname{FormalArg} shows which
   variable is a formal argument of a given method at a certain index
-  (i.e., the $i$-th argument). \predname{LookUp} matches a method
+  (i.e., the $i$-th argument). \relname{LookUp} matches a method
   signature to the actual method definition inside a
-  type. \predname{HeapType} matches an object to its type, i.e., is a
+  type. \relname{HeapType} matches an object to its type, i.e., is a
   function of its first argument. (Note that we are shortening the
   term ``heap object'' to just ``heap'' and represent heap objects as
-  allocation sites throughout.) \predname{ActualReturn} is also a
+  allocation sites throughout.) \relname{ActualReturn} is also a
   function of its first argument (a method invocation site) and
   returns the local variable at the call-site that receives the method
   call's return value. 
 
-  Finally, the \predname{SiteToRefine} and \predname{ObjectToRefine}
+  Finally, the \relname{SiteToRefine} and \relname{ObjectToRefine}
   relations are inputs that are used exclusively for the purposes of
   introspective context-sensitivity. They encode the program points
   (allocation sites, \args{heap}, and invocation site/method
@@ -516,8 +516,8 @@ call-graph computation.
   
 \paragraph{Computed relations.}
   There are five output or intermediate computed relations:
-  \predname{VarPointsTo}, $\ldots$,
-  \predname{Reachable}.\footnote{\predname{Reachable} is somewhat of a
+  \relname{VarPointsTo}, $\ldots$,
+  \relname{Reachable}.\footnote{\relname{Reachable} is somewhat of a
     special case, since we assume it is also used as an input
     relation: it needs to initially hold methods that are always
     reachable, such as the programs's \code{main} method, the
@@ -527,12 +527,12 @@ call-graph computation.
   method or local variable in computed relations is qualified with a
   context (i.e., an element of set \args{C}), while every occurrence
   of a heap object is qualified with a heap context (i.e., an element
-  of \args{HC}). The main output relations are \predname{VarPointsTo}
-  and \predname{CallGraph}, encoding our points-to and call-graph
-  results. The \predname{VarPointsTo} relation links a variable
+  of \args{HC}). The main output relations are \relname{VarPointsTo}
+  and \relname{CallGraph}, encoding our points-to and call-graph
+  results. The \relname{VarPointsTo} relation links a variable
   (\args{var}) to a heap object (\args{heap}). Other intermediate
-  relations (\predname{FldPointsTo}, \predname{InterProcAssign},
-  \predname{Reachable}) correspond to standard concepts and are
+  relations (\relname{FldPointsTo}, \relname{InterProcAssign},
+  \relname{Reachable}) correspond to standard concepts and are
   introduced for conciseness and readability.
 
 \paragraph{Constructors for context-sensitivity.}
@@ -612,7 +612,7 @@ call-graph computation.
   those that should have a different, refined context. Therefore, we
   can effect any change we want to the context-sensitivity of an
   analysis, on a per-object/per-site basis, by supplying the right
-  input relations \predname{ObjectToRefine} or \predname{SiteToRefine}
+  input relations \relname{ObjectToRefine} or \relname{SiteToRefine}
   and setting the appropriate constructors, \consname{RecordRefined}
   and \consname{MergeRefined} to implement a different flavor of
   context-sensitivity. We discuss such options next.
@@ -628,16 +628,16 @@ while others are analyzed with call-site sensitivity, of any
 depth. One aspect to determine, therefore, is the two analyses that
 will be used in different program points.
 
-Another question is how to populate the \predname{ObjectToRefine} and
-\predname{SiteToRefine} input relations.  One could attempt to do so
+Another question is how to populate the \relname{ObjectToRefine} and
+\relname{SiteToRefine} input relations.  One could attempt to do so
 by mere syntactic inspection of the program.  For example, methods
 containing cast statements can be analyzed with a higher context
 depth. In our work, we have failed to identify such syntactic
 heuristics that would yield benefit.
 
 Instead, our introspective context-sensitivity consists of running the
-analysis \emph{twice}. The first time, \predname{ObjectToRefine} and
-\predname{SiteToRefine} are empty and the
+analysis \emph{twice}. The first time, \relname{ObjectToRefine} and
+\relname{SiteToRefine} are empty and the
 \consname{Merge}/\consname{Record} context constructors are set so
 that an inexpensive but scalable analysis is performed. In our
 experimental setting, these constuctor functions return a unique
@@ -653,12 +653,12 @@ are set to implement an expensive context-sensitive analysis,
 following the techniques of Kastrinis and
 Smaragdakis~\cite{pldi:2013:Kastrinis}.  Yet, these constructors are not
 relevant in the first analysis run, since the rules employing them are
-predicated on having elements in \predname{SiteToRefine} and
-\predname{ObjectToRefine}, respectively.
+predicated on having elements in \relname{SiteToRefine} and
+\relname{ObjectToRefine}, respectively.
 
 Subsequently, we use the results of the context-insensitive analysis
 to compute which program elements to refine (i.e., to populate the
-\predname{SiteToRefine} and \predname{ObjectToRefine} relations), and
+\relname{SiteToRefine} and \relname{ObjectToRefine} relations), and
 run the analysis a second time. The result is that a subset of the
 program elements are analyzed context-sensitively, while the rest are
 analyzed context-insensitively even during the second analysis run.
@@ -773,14 +773,14 @@ total count of matching tuples.)
 
 \begin{figure}[h]
 \begin{tabular}{l}
-\pred{HeapsPerInvocationPerArg}{invo, arg, heap} \rulearrow{} \\
-\hspace{2 mm} \pred{CallGraph}{invo, \_, \_, \_},\\
-\hspace{2 mm} \pred{ActualArg}{invo, \_, arg},\\
-\hspace{2 mm} \pred{VarPointsTo}{arg, \_, heap, \_}.\\
+\rel{HeapsPerInvocationPerArg}{invo, arg, heap} \rulearrow{} \\
+\hspace{2 mm} \rel{CallGraph}{invo, \_, \_, \_},\\
+\hspace{2 mm} \rel{ActualArg}{invo, \_, arg},\\
+\hspace{2 mm} \rel{VarPointsTo}{arg, \_, heap, \_}.\\
 \\
-\pred{InFlow}{invo, result} \rulearrow{} \\
+\rel{InFlow}{invo, result} \rulearrow{} \\
 \hspace{2 mm} \emph{agg}$<$\args{result = count()}$>$\\
-\hspace{2 mm} (\pred{HeapsPerInvocationPerArg}{invo, \_, \_}).\\
+\hspace{2 mm} (\rel{HeapsPerInvocationPerArg}{invo, \_, \_}).\\
 \end{tabular}
 \end{figure}
 

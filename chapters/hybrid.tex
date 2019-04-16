@@ -362,39 +362,39 @@ actual implementation in the following ways:
 %\\
 \cline{1-1}
 %\begin{tabular}{ll}
-%\pred{Alloc}{var : V, heap : H, inMeth : M}   &   \pred{FormalArg}{meth : M, i : $\mathbb{N}$, arg : V} \\ 
-%\pred{Move}{to : V, from : V}               &   \pred{ActualArg}{invo : I, i : $\mathbb{N}$, arg : V} \\ 
-%\pred{Load}{to : V, base : V, fld : F}      &   \pred{FormalReturn}{meth : M, ret : V} \\                
-%\pred{Store}{base : V, fld : F, from : V}   &   \pred{ActualReturn}{invo : I, var : V} \\                
-%\pred{VCall}{base : V, sig : S, invo : I, inMeth : M}   &   \pred{ThisVar}{meth : M, this : V} \\                    
-%\pred{SCall}{meth : M, invo : I, inMeth : M}&   \pred{HeapType}{heap : H, type : T} \\
-%                                            &   \pred{LookUp}{type : T, sig : S, meth : M} \\            
-%\pred{InMethod}{instr : I, meth : M}        &   \pred{Subtype}{type : T, superT : T} \\
+%\rel{Alloc}{var : V, heap : H, inMeth : M}   &   \rel{FormalArg}{meth : M, i : $\mathbb{N}$, arg : V} \\ 
+%\rel{Move}{to : V, from : V}               &   \rel{ActualArg}{invo : I, i : $\mathbb{N}$, arg : V} \\ 
+%\rel{Load}{to : V, base : V, fld : F}      &   \rel{FormalReturn}{meth : M, ret : V} \\                
+%\rel{Store}{base : V, fld : F, from : V}   &   \rel{ActualReturn}{invo : I, var : V} \\                
+%\rel{VCall}{base : V, sig : S, invo : I, inMeth : M}   &   \rel{ThisVar}{meth : M, this : V} \\                    
+%\rel{SCall}{meth : M, invo : I, inMeth : M}&   \rel{HeapType}{heap : H, type : T} \\
+%                                            &   \rel{LookUp}{type : T, sig : S, meth : M} \\            
+%\rel{InMethod}{instr : I, meth : M}        &   \rel{Subtype}{type : T, superT : T} \\
 %\end{tabular}
 \hspace{-3mm}
 \begin{tabular}{l l}
-\pred{Alloc}{var : V, heap : H, inMeth : M}  & \args{\# var = new ...} \\
-\pred{Move}{to : V, from : V}                & \args{\# to = from} \\
-\pred{Load}{to : V, base : V, fld : F}       & \args{\# to = base.fld}\\
-\pred{Store}{base : V, fld : F, from : V}    & \args{\# base.fld = from} \\
-\pred{VCall}{base : V, sig : S, invo : I, inMeth : M} & \args{\# base.sig(..)}   \\
-\pred{SCall}{meth : M, invo : I, inMeth : M} & \args{\# Class.meth(..)}\\
+\rel{Alloc}{var : V, heap : H, inMeth : M}  & \args{\# var = new ...} \\
+\rel{Move}{to : V, from : V}                & \args{\# to = from} \\
+\rel{Load}{to : V, base : V, fld : F}       & \args{\# to = base.fld}\\
+\rel{Store}{base : V, fld : F, from : V}    & \args{\# base.fld = from} \\
+\rel{VCall}{base : V, sig : S, invo : I, inMeth : M} & \args{\# base.sig(..)}   \\
+\rel{SCall}{meth : M, invo : I, inMeth : M} & \args{\# Class.meth(..)}\\
 \end{tabular}\\
 \\
-\pred{FormalArg}{meth : M, i : $\mathbb{N}$, arg : V} \\ 
-\pred{ActualArg}{invo : I, i : $\mathbb{N}$, arg : V} \\ 
-\pred{FormalReturn}{meth : M, ret : V} \\                
-\pred{ActualReturn}{invo : I, var : V} \\                
-\pred{ThisVar}{meth : M, this : V} \\                    
-\pred{HeapType}{heap : H, type : T} \\
-\pred{LookUp}{type : T, sig : S, meth : M} \\            
+\rel{FormalArg}{meth : M, i : $\mathbb{N}$, arg : V} \\ 
+\rel{ActualArg}{invo : I, i : $\mathbb{N}$, arg : V} \\ 
+\rel{FormalReturn}{meth : M, ret : V} \\                
+\rel{ActualReturn}{invo : I, var : V} \\                
+\rel{ThisVar}{meth : M, this : V} \\                    
+\rel{HeapType}{heap : H, type : T} \\
+\rel{LookUp}{type : T, sig : S, meth : M} \\            
 %\\
 \cline{1-1}
-\pred{VarPointsTo}{var : V, ctx : C, heap : H, hctx : HC} \\
-\pred{CallGraph}{invo : I, callerCtx : C, meth : M, calleeCtx : C} \\
-\pred{FldPointsTo}{baseH: H, baseHCtx: HC, fld: F, heap: H, hctx: HC} \\
-\pred{InterProcAssign}{to : V, toCtx : C, from : V, fromCtx : C} \\
-\pred{Reachable}{meth : M, ctx : C} \\
+\rel{VarPointsTo}{var : V, ctx : C, heap : H, hctx : HC} \\
+\rel{CallGraph}{invo : I, callerCtx : C, meth : M, calleeCtx : C} \\
+\rel{FldPointsTo}{baseH: H, baseHCtx: HC, fld: F, heap: H, hctx: HC} \\
+\rel{InterProcAssign}{to : V, toCtx : C, from : V, fromCtx : C} \\
+\rel{Reachable}{meth : M, ctx : C} \\
 %\\
 \cline{1-1}
 \cons{Record}{heap : H, ctx : C}{newHCtx : HC} \\
@@ -415,54 +415,54 @@ information), output relations, and constructors of contexts.}
 %\begin{center}
 \begin{tabular}{l}
 %\cline{1-1}
-\pred{InterProcAssign}{to, calleeCtx, from, callerCtx} $\leftarrow$ \\
-\tab \pred{CallGraph}{invo, callerCtx, meth, calleeCtx}, \\
-\tab \pred{FormalArg}{meth, i, to}, \pred{ActualArg}{invo, i, from}. \\
+\rel{InterProcAssign}{to, calleeCtx, from, callerCtx} $\leftarrow$ \\
+\tab \rel{CallGraph}{invo, callerCtx, meth, calleeCtx}, \\
+\tab \rel{FormalArg}{meth, i, to}, \rel{ActualArg}{invo, i, from}. \\
 \\
 
-\pred{InterProcAssign}{to, callerCtx, from, calleeCtx} $\leftarrow$ \\
-\tab \pred{CallGraph}{invo, callerCtx, meth, calleeCtx}, \\
-\tab \pred{FormalReturn}{meth, from}, \pred{ActualReturn}{invo, to}. \\
+\rel{InterProcAssign}{to, callerCtx, from, calleeCtx} $\leftarrow$ \\
+\tab \rel{CallGraph}{invo, callerCtx, meth, calleeCtx}, \\
+\tab \rel{FormalReturn}{meth, from}, \rel{ActualReturn}{invo, to}. \\
 \\
 \\
 \cons{Record}{heap, ctx}{hctx}, \\
-\pred{VarPointsTo}{var, ctx, heap, hctx} $\leftarrow$ \\
-\tab \pred{Reachable}{meth, ctx}, \pred{Alloc}{var, heap, meth}. \\
+\rel{VarPointsTo}{var, ctx, heap, hctx} $\leftarrow$ \\
+\tab \rel{Reachable}{meth, ctx}, \rel{Alloc}{var, heap, meth}. \\
 \\
 
-\pred{VarPointsTo}{to, ctx, heap, hctx} $\leftarrow$ \\
-\tab \pred{Move}{to, from}, \pred{VarPointsTo}{from, ctx, heap, hctx}. \\
+\rel{VarPointsTo}{to, ctx, heap, hctx} $\leftarrow$ \\
+\tab \rel{Move}{to, from}, \rel{VarPointsTo}{from, ctx, heap, hctx}. \\
 \\
 
-\pred{VarPointsTo}{to, toCtx, heap, hctx} $\leftarrow$ \\
-\tab \pred{InterProcAssign}{to, toCtx, from, fromCtx}, \\
-\tab \pred{VarPointsTo}{from, fromCtx, heap, hctx}. \\
+\rel{VarPointsTo}{to, toCtx, heap, hctx} $\leftarrow$ \\
+\tab \rel{InterProcAssign}{to, toCtx, from, fromCtx}, \\
+\tab \rel{VarPointsTo}{from, fromCtx, heap, hctx}. \\
 \\
 
-\pred{VarPointsTo}{to, ctx, heap, hctx} $\leftarrow$ \\
-\tab \pred{Load}{to, base, fld}, \pred{VarPointsTo}{base, ctx, baseH, baseHCtx}, \\
-\tab \pred{FldPointsTo}{baseH, baseHCtx, fld, heap, hctx}. \\
+\rel{VarPointsTo}{to, ctx, heap, hctx} $\leftarrow$ \\
+\tab \rel{Load}{to, base, fld}, \rel{VarPointsTo}{base, ctx, baseH, baseHCtx}, \\
+\tab \rel{FldPointsTo}{baseH, baseHCtx, fld, heap, hctx}. \\
 \\
 
-\pred{FldPointsTo}{baseH, baseHCtx, fld, heap, hctx} $\leftarrow$ \\
-\tab \pred{Store}{base, fld, from}, \pred{VarPointsTo}{from, ctx, heap, hctx},\\
-\tab \pred{VarPointsTo}{base, ctx, baseH, baseHCtx}. \\
+\rel{FldPointsTo}{baseH, baseHCtx, fld, heap, hctx} $\leftarrow$ \\
+\tab \rel{Store}{base, fld, from}, \rel{VarPointsTo}{from, ctx, heap, hctx},\\
+\tab \rel{VarPointsTo}{base, ctx, baseH, baseHCtx}. \\
 \\
 \\
 \cons{Merge}{heap, hctx, invo, callerCtx}{calleeCtx}, \\
-\pred{Reachable}{toMeth, calleeCtx}, \\
-\pred{VarPointsTo}{this, calleeCtx, heap, hctx}, \\
-\pred{CallGraph}{invo, callerCtx, toMeth, calleeCtx} $\leftarrow$ \\
-\tab \pred{VCall}{base, sig, invo, inMeth}, \pred{Reachable}{inMeth, callerCtx}, \\
-\tab \pred{VarPointsTo}{base, callerCtx, heap, hctx},\\
-\tab \pred{HeapType}{heap, heapT}, \pred{Lookup}{heapT, sig, toMeth},\\
-\tab \pred{ThisVar}{toMeth, this}. \\
+\rel{Reachable}{toMeth, calleeCtx}, \\
+\rel{VarPointsTo}{this, calleeCtx, heap, hctx}, \\
+\rel{CallGraph}{invo, callerCtx, toMeth, calleeCtx} $\leftarrow$ \\
+\tab \rel{VCall}{base, sig, invo, inMeth}, \rel{Reachable}{inMeth, callerCtx}, \\
+\tab \rel{VarPointsTo}{base, callerCtx, heap, hctx},\\
+\tab \rel{HeapType}{heap, heapT}, \rel{Lookup}{heapT, sig, toMeth},\\
+\tab \rel{ThisVar}{toMeth, this}. \\
 \\
 
 \cons{MergeStatic}{invo, callerCtx}{calleeCtx}, \\
-\pred{Reachable}{toMeth, calleeCtx}, \\
-\pred{CallGraph}{invo, callerCtx, toMeth, calleeCtx} $\leftarrow$ \\
-\tab \pred{SCall}{toMeth, invo, inMeth}, \pred{Reachable}{inMeth, callerCtx}. \\
+\rel{Reachable}{toMeth, calleeCtx}, \\
+\rel{CallGraph}{invo, callerCtx, toMeth, calleeCtx} $\leftarrow$ \\
+\tab \rel{SCall}{toMeth, invo, inMeth}, \rel{Reachable}{inMeth, callerCtx}. \\
 %\cline{1-1}
 \end{tabular}
 %\end{center}
@@ -491,39 +491,39 @@ We explain the contents of both figures in more detail below:
 \item The input relations correspond to the intermediate language for
   our analysis. They are logically grouped into relations that
   represent instructions and relations that represent name-and-type
-  information. For instance, the \predname{Alloc} relation represents
+  information. For instance, the \relname{Alloc} relation represents
   every instruction that allocates a new heap object, \args{heap}, and
   assigns it to local variable \args{var} inside method
   \args{inMeth}. (Note that every local variable is defined in a
   unique method, hence the \args{inMeth} argument is also implied by
   \args{var} but is included to simplify later rules.) There are similar
-  input relations for all other instruction types (\predname{Move},
-  \predname{Load}, \predname{Store}, \predname{VCall}, and
-  \predname{SCall}). Similarly, there are relations that encode
+  input relations for all other instruction types (\relname{Move},
+  \relname{Load}, \relname{Store}, \relname{VCall}, and
+  \relname{SCall}). Similarly, there are relations that encode
   pertinent symbol table information.  Most of these are
-  self-explanatory but some deserve explanation. \predname{LookUp}
+  self-explanatory but some deserve explanation. \relname{LookUp}
   matches a method signature to the actual method definition inside a
-  type. \predname{HeapType} matches an object to its type, i.e., is a
+  type. \relname{HeapType} matches an object to its type, i.e., is a
   function on its first argument. (Note that we are shortening the
   term ``heap object'' to just ``heap'' and represent heap objects as
-  allocation sites throughout.) \predname{ActualReturn} is also a
+  allocation sites throughout.) \relname{ActualReturn} is also a
   function on its first argument (a method invocation site) and
   returns the local variable at the call-site that receives the method
   call's return value.
   
 \item There are five output or intermediate computed relations
-  (\predname{VarPointsTo}, $\ldots$, \predname{Reachable}). Every
+  (\relname{VarPointsTo}, $\ldots$, \relname{Reachable}). Every
   occurrence of a method or local variable in computed relations is
   qualified with a context (i.e., an element of set \args{C}), while
   every occurrence of a heap object is qualified with a heap context
   (i.e., an element of \args{HC}). The main output relations are
-  \predname{VarPointsTo} and \predname{CallGraph}, encoding our
-  points-to and call-graph results. The \predname{VarPointsTo}
+  \relname{VarPointsTo} and \relname{CallGraph}, encoding our
+  points-to and call-graph results. The \relname{VarPointsTo}
   relation links a variable (\args{var}) to a heap object
-  (\args{heap}). Other intermediate relations (\predname{FldPointsTo},
-  \predname{InterProcAssign}, \predname{Reachable}) correspond to
+  (\args{heap}). Other intermediate relations (\relname{FldPointsTo},
+  \relname{InterProcAssign}, \relname{Reachable}) correspond to
   standard concepts and are introduced for conciseness. For instance,
-  \predname{InterProcAssign} (which encodes all parameter and return
+  \relname{InterProcAssign} (which encodes all parameter and return
   value passing) unifies much of the treatment of static and virtual
   method calls.
 
@@ -541,7 +541,7 @@ We explain the contents of both figures in more detail below:
 
   \consname{Record} is the function that creates a new heap context.
   It is invoked whenever an object allocation site (input relation
-  \predname{Alloc}) is analyzed. Thus, \consname{Record} is only used
+  \relname{Alloc}) is analyzed. Thus, \consname{Record} is only used
   in the rule treating allocation instructions (3rd rule in
   Figure~\ref{fig:baserules}). \consname{Record} takes all available
   information at the allocation site of an object and combines it to
@@ -572,7 +572,7 @@ We explain the contents of both figures in more detail below:
   instruction leads to the inference of facts for the five output or
   intermediate relations. The most complex rule is the second-to-last,
   which handles virtual method calls (input relation
-  \predname{VCall}). The rule says that if a reachable method of the
+  \relname{VCall}). The rule says that if a reachable method of the
   program has an instruction making a virtual method call over local
   variable \args{base} (this is an input fact), and the analysis so
   far has established that \args{base} can point to heap object
