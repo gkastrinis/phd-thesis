@@ -22,22 +22,22 @@ program. A must-alias analysis has several applications:
         optimizations---e.g., constant folding,
 		common subexpression elimination, and register allocation;
 	\item it can increase the precision of bug detectors: Nikoli\'{c} and
-		Spoto~\cite{DBLP:conf/ictac/NikolicS12} report that a must-alias
+		Spoto~\cite{ictac:2012:Nikolic} report that a must-alias
 		analysis significantly increases the precision of both a null-reference
 		detector (46\% fewer warnings) and a non-termination detector (11\%
 		fewer warnings). Earlier work has reported similar
-		benefits~\cite{DBLP:conf/isola/MaWD08};
+		benefits~\cite{isola:2008:Ma};
 	%\item it can be used as an internal component in other analyses. For
 		%instance, the \textsc{Doop} framework for analysis of Java
-		%bytecode~\cite{oopsla/BravenboerS09} uses a must-alias analysis in
+		%bytecode~\cite{oopsla:2009:Bravenboer} uses a must-alias analysis in
 		%order to perform ``strong updates'' at instructions that modify the
 		%heap. Earlier work has used must-alias analysis to similar
-	%  benefit~\cite{emami-etal-pldi94,Jagannathan:1998:SLM:268946.268973}.
+	%  benefit~\cite{pldi:1994:Emami,popl:1998:Jagannathan}.
 	\item it can be used as an internal component as part of a more complex
 		analysis. For instance, must-alias results may enable an analysis to
 		perform ``strong updates'' at instructions that modify the heap.
 		Earlier work has used must-alias analysis to similar
-		benefit~\cite{emami-etal-pldi94,Jagannathan:1998:SLM:268946.268973}.
+		benefit~\cite{pldi:1994:Emami,popl:1998:Jagannathan}.
 	%% \item it can be invaluable for better program understanding; the results of
 	%%	a must-inference are guaranteed facts, of immediate value to the human
 	%%	programmer.
@@ -112,7 +112,7 @@ to more inferences.
 
 %% The vast majority of pointer analysis techniques that have appeared in
 %% the recent research literature (e.g.,
-%% \cite{mattmight:Yong:1999:Pointer,pldi/BerndlLQHU03,cc/KastrinisS13,antgrasshopper,1044835,pldi/WhaleyL04,pldi/SridharanB06})
+%% \cite{mattmight:Yong:1999:Pointer,pldi/BerndlLQHU03,cc/KastrinisS13,antgrasshopper,article:2005:Milanova,pldi/WhaleyL04,pldi/SridharanB06})
 %% are \emph{may-analyses}. That is, the techniques attempt to
 %% \emph{over-approximate} the (unattainable) fully precise result.  All
 %% possible alias pairs are guaranteed to be included in the outcome of a
@@ -159,7 +159,7 @@ In this work, we present a simple declarative model of a must-alias
 analysis over access paths (i.e., expressions of the form
 ``\args{var}(\args{.fld})*'').  The model underlies the implementation
 of must-alias analysis in the \textsc{Doop}
-framework~\cite{oopsla/BravenboerS09}, which expresses several
+framework~\cite{oopsla:2009:Bravenboer}, which expresses several
 analyses of Java bytecode using Datalog specifications. \textsc{Doop}
 employs must-alias analysis as an enhancer of its standard array of
 may-analyses---e.g., in order to enable ``strong updates''.
@@ -178,7 +178,7 @@ The model is interesting in a few different ways:
   further enhanced. The rules allow configurability and employ several
   techniques for conciseness and power. The use of context, in particular,
   is crucial: the analysis introduces context variables, much like in
-  traditional may analyses (e.g., \cite{pldi/KastrinisS13,PGL-014}), yet
+  traditional may analyses (e.g., \cite{pldi:2013:Kastrinis,article:2015:Smaragdakis}), yet
   uses the context highly unconventionally. Context is used as ``fuel'',
   to guarantee the ``must'' nature of the analysis: must-alias inferences
   are propagated inter-procedurally, with context extended for every
@@ -198,7 +198,7 @@ The model is interesting in a few different ways:
 %% easily understood and can be further enhanced. Indeed, the analysis
 %% core we present is the basis of a much larger (over 300 Datalog rules)
 %% must-alias analysis implementation already in active use in the
-%% \textsc{Doop} static analysis framework~\cite{oopsla/BravenboerS09}
+%% \textsc{Doop} static analysis framework~\cite{oopsla:2009:Bravenboer}
 %% for Java bytecode.
 
 %% Based on this declarative analysis model, it is possible to identify
@@ -426,7 +426,7 @@ The model is interesting in a few different ways:
 
 
 %% The model is written in the Datalog language, often used to specify
-%% program analyses~\cite{repsdb,aplas/WhaleyACL05,oopsla/BravenboerS09}. The
+%% program analyses~\cite{repsdb,aplas/WhaleyACL05,oopsla:2009:Bravenboer}. The
 %% purpose of the model is dual. First, it allows us to reason about must-alias
 %% analysis without dealing with the details of a specific implementation. At the
 %% specification level (which the Datalog model captures well) we can see that a
@@ -484,7 +484,7 @@ algorithm on a static-single assignment (SSA) intermediate language.
 The language can be enhanced with features such as arrays, static members and
 calls, exceptions, etc. to be a full-fledged intermediate language.
 Indeed, our actual analysis implementation is on the Jimple intermediate
-language of the Soot framework~\cite{vall99soot},%valleerai00optimizing},
+language of the Soot framework~\cite{cascon:1999:Vall},%cc:2000:Vall},
 which
 models all features of Java bytecode. Yet the core of the analysis is
 represented well in the minimal language.
@@ -1141,10 +1141,10 @@ whereas deeper context in a may-analysis it results in \emph{more
 What can our context be, however? In typical context-sensitive pointer
 analyses in the literature, a variety of context creation functions
 can be employed. There are context flavors such as \emph{call-site
-  sensitivity} \cite{Sharir:Interprocedural,shivers:thesis},
+  sensitivity} \cite{col:1981:Sharir,thesis:Shivers},
 \emph{object sensitivity}
-\cite{Milanova:2002:POS:566172.566174,1044835}, or \emph{type
-  sensitivity} \cite{popl/SmaragdakisBL11}. Our \consname{NewContext}
+\cite{issta:2002:Milanova,article:2005:Milanova}, or \emph{type
+  sensitivity} \cite{popl:2011:Smaragdakis}. Our \consname{NewContext}
 constructor (employed at method calls) could be set appropriately to
 produce such context variety. However, the current form of our rules
 restricts our options to call-site sensitivity, with potential extra
@@ -1442,7 +1442,7 @@ relations.
 %%
 %%Directly executing the Datalog rules of Section~\ref{sec:model} is a
 %%realistic proposition. Indeed, the must-alias analysis in the
-%%\textsc{Doop} framework~\cite{oopsla/BravenboerS09} is well-captured
+%%\textsc{Doop} framework~\cite{oopsla:2009:Bravenboer} is well-captured
 %%by the model. However, several inefficiencies arise from the rules.
 %%
 %%\paragraph{Representing Equivalence Relations.} The first observation
@@ -1974,7 +1974,7 @@ relations.
 %% 3.00GHz. The machine has 512GB of RAM. All measurements are single-threaded
 %% (though, as is common, Java runs its garbage collector in extra threads) and
 %% all executions occupy only a small fraction of the available RAM. We experiment
-%% with the DaCapo benchmark programs~\cite{dacapo:paper} v.2006-10-MR2 and
+%% with the DaCapo benchmark programs~\cite{oopsla:2006:Blackburn} v.2006-10-MR2 and
 %% v.9.12-bach under JDK 1.7.0\_45.  We use the LogicBlox Datalog engine,
 %% v.3.10.14.
 %% 
@@ -2197,7 +2197,7 @@ relations.
 %% %% The minimal model of earlier sections captures the essence of our
 %% %% full-fledged implementation. Our framework, \textsc{MaDoop}, is built
 %% %% on top of the \textsc{Doop} Datalog framework for may-point-to
-%% %% analysis of Java bytecode~\cite{oopsla/BravenboerS09}. Whereas
+%% %% analysis of Java bytecode~\cite{oopsla:2009:Bravenboer}. Whereas
 %% %% \textsc{Doop} is a flow-insensitive points-to analysis framework
 %% %% (ignoring the order of instructions in a method), \textsc{MaDoop} adds
 %% %% flow-sensitive modeling of the Java bytecode program (a full
@@ -2207,7 +2207,7 @@ relations.
 %% 
 %% 
 %% %% To demonstrate the framework experimentally, we apply it to the DaCapo
-%% %% benchmark programs~\cite{dacapo:paper} v.2006-10-MR2 under JDK
+%% %% benchmark programs~\cite{oopsla:2006:Blackburn} v.2006-10-MR2 under JDK
 %% %% 1.7.0\_21.  We use the LogicBlox Datalog engine, v.3.10.19, on a Xeon
 %% %% E5530 2.4GHz machine with only one thread running at a time and 24GB
 %% %% of RAM.  When a may-analysis is needed, we employ the most precise
@@ -2506,13 +2506,13 @@ distance between the implementation and the declarative specification.
 %% and by its leveraging of a highly-efficient data structure for sets of
 %% alias classes.
 
-%% Ma et al.~\cite{DBLP:conf/isola/MaWD08} present an algorithm for
+%% Ma et al.~\cite{isola:2008:Ma} present an algorithm for
 %% null-pointer dereference detection using a
 %% context-insensitive may-alias and a must-alias analysis; the latter is
 %% used to increase the precision of the former, by enabling strong
 %% updates when possible.
 
-Nikoli\'{c} and Spoto~\cite{DBLP:conf/ictac/NikolicS12} present a
+Nikoli\'{c} and Spoto~\cite{ictac:2012:Nikolic} present a
 must-alias analysis that tracks aliases between program expressions
 and local variables (or stack locations, since they analyze Java
 bytecode%% , which is a stack-based representation
@@ -2526,13 +2526,13 @@ results.
 %this is a relative of our Datalog-based approach, but it is unclear
 %how the two may compare in terms of engineering tradeoffs.
 
-Hind et al. \cite{Hind:1999:IPA:325478.325519} present a collection of pointer
+Hind et al. \cite{article:1999:Hind} present a collection of pointer
 analysis algorithms. Among them, the most relevant to this work is a
 flow-sensitive interprocedural pointer alias analysis. The authors
 optimistically produce \emph{must} information for pointers to single
 non-summary objects.
 
-Emami et al.~\cite{emami-etal-pldi94} present an approach that
+Emami et al.~\cite{pldi:1994:Emami} present an approach that
 simultaneously calculates both must- and may-point-to information for
 a C analysis. Their empirical results ``show the existence of a
 substantial number of definite points-to relationships, which forms
@@ -2541,10 +2541,10 @@ experience.
 
 Must- information is often computed in conjunction with a
 client analysis. One of the best examples is the typestate
-verification of Fink et al.~\cite{1146254}, which demonstrates the value of
+verification of Fink et al.~\cite{issta:2006:Fink}, which demonstrates the value of
 a must-analysis and the techniques that enable it.
 
-The analysis of \cite{De:2012:SFP:2367163.2367203} is essentially a
+The analysis of \cite{ecoop:2012:De} is essentially a
 flow-sensitive may-point-to analysis that performs strong updates, as
 it maps \emph{access paths} to \emph{heap objects} (abstracted by
 their allocation sites). 
@@ -2557,7 +2557,7 @@ D'Souza analysis, there is no \emph{must} point-to information
 derived, since this object could be a summary object (i.e., one that
 abstracts many objects allocated at the same allocation site). To
 reason about such cases, other approaches, such as the more expensive
-shape analysis algorithms \cite{mattmight:Sagiv:2002:TVLA},
+shape analysis algorithms \cite{article:2002:Sagiv},
 additionally maintain summary information per heap object. In this
 way, they allow must point-to edges to exist only if the target is
 definitely not a summary node.
@@ -2575,7 +2575,7 @@ definitely not a summary node.
 
 Generally, must-analyses can vary greatly in sophistication and can be
 employed in an array of different combinations with may-analyses.  The
-analysis of Balakrishnan and Reps~\cite{sas/BalakrishnanR06}, which
+analysis of Balakrishnan and Reps~\cite{sas:2006:Balakrishnan}, which
 introduces the \emph{recency abstraction}, distinguishes between the
 most recently allocated object at an allocation site (a concrete
 object, allowing strong updates) and earlier-allocated objects
@@ -2583,7 +2583,7 @@ object, allowing strong updates) and earlier-allocated objects
 information on the size of the set of objects represented by a summary
 node. At the extreme, one can find full-blown shape analysis
 approaches, such as that of Sagiv et
-al.~\cite{mattmight:Sagiv:2002:TVLA}, which explicitly maintains must-
+al.~\cite{article:2002:Sagiv}, which explicitly maintains must-
 and may- information simultaneously, by means of three-valued truth
 values, in full detail up to predicate abstraction: a
 relationship can definitely hold (``must''), definitely not hold
@@ -2593,7 +2593,7 @@ knowledge, albeit in full detail, as captured by arbitrary predicates
 whose value is maintained across program statements, at the cost of a
 super-exponential worst-case complexity.
 
-%% Jagannathan et al.~\cite{Jagannathan:1998:SLM:268946.268973} present
+%% Jagannathan et al.~\cite{popl:1998:Jagannathan} present
 %% an algorithm for must-alias analysis of functional languages. The
 %% algorithm adapts must-alias insights to the setting of captured
 %% variables.
