@@ -2,11 +2,10 @@ LATEX        := pdflatex -shell-escape -interaction=nonstopmode -file-line-error
 LATEXMK      := latexmk -shell-escape -interaction=nonstopmode -file-line-error -pdf
 BIBER        := biber
 RM           := rm -f
-MV           := mv
 
-biblio.bib   := $(wildcard biblio/*.bib)
 class.cls    := diphdthesis.cls
-styles.sty   := styles.sty
+biblio.bib   := $(wildcard biblio/*.bib)
+styles.sty   := $(wildcard definitions/*.sty)
 sources.tex  := $(wildcard thesis.tex)
 sources.tex  += $(wildcard committee.tex)
 sources.tex  += $(wildcard chapters/*.tex)
