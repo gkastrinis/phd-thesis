@@ -3,6 +3,10 @@
 
 \epigraph{If you wanted to know about the Hybrid, why didn’t you just ask me?}{\textit{The 12th Doctor} - Doctor Who}
 
+
+
+
+
 \emph{Points-to analysis} is a static program analysis that consists
 of computing all objects (typically identified by allocation site)
 that a program variable may point to. The area of points-to analysis
@@ -202,8 +206,9 @@ The rest of the paper introduces a model for points-to analysis
 several well-known analyses. In Section~\ref{sec:hybrid} we discuss the many
 choices for combining object- and call-site-sensitivity, as well as
 the most promising points in this design space. Our evaluation results
-follow in Section~\ref{sec:evaluation}, before describing related work
-(Section~\ref{sec:related}).
+follow in Section~\ref{sec:evaluation}
+
+%, before describing related work (Section~\ref{sec:related}).
 
 % \begin{comment}
 
@@ -1496,64 +1501,6 @@ faster than the base analysis 2type+H, while also being more precise.
 
 \end{itemize}
 
-
-\section{Related Work}
-\label{sec:related}
-
-We have discussed directly related work throughout the paper. Here we
-selectively mention a few techniques that, although not directly
-related to ours, offer alternative approaches to sweet spots in the
-precision/performance tradeoff.
-
-Special-purpose combinations of context-sensitivity have been used in
-the past, but have required manual identification of classes to be
-treated separately (e.g., Java collection classes, or library factory
-methods). An excellent representative is the TAJ work for taint
-analysis of Java web applications
-\cite{pldi:2009:Tripp}. In contrast, we have sought to
-map the space and identify interesting hybrids for general application
-of context-sensitivity, over the entire program.
-
-The analyses we examined are context-sensitive but flow-insensitive.
-We can achieve several of the benefits of flow-sensitivity by applying
-the analysis on the static single assignment (SSA) intermediate form
-of the program. This is easy to do with a mere flag setting on the
-\doop{} framework. However, the impact of the SSA transformation
-on the input is minimal. The default intermediate language used as
-input in \doop{} (the Jimple representation of the Soot
-framework \cite{cascon:1999:Vall,cc:2000:Vall}) is already close to
-SSA form, although it does not guarantee that every variable is
-strictly single-assignment without requesting it explicitly.  Recent
-work by Lhot\'{a}k and Chung \cite{popl:2011:Lhotak} has shown that
-much of the benefit of flow-sensitivity derives from the ability to do
-strong updates of the points-to information. Lhot\'{a}k and Chung then
-exploited this insight to derive analyses with similar benefit to a
-full flow-sensitive analysis at lower cost.
-
-A demand-driven evaluation strategy reduces the cost of an analysis by
-computing only those results that are necessary for a client program
-analysis~\cite{oopsla:2005:Sridharan,pldi:2006:Sridharan,popl:2008:Zheng,pldi:2001:Heintze}. This is a useful
-approach for client analyses that focus on specific locations in a
-program, but if the client needs results from the entire program, then
-demand-driven analysis is typically slower than an exhaustive
-analysis.
-
-Reps~\cite{cc:1994:Reps} showed how to use the standard magic-sets
-optimization to automatically derive a demand-driven analysis
-from an exhaustive analysis (like ours). This optimization
-combines the benefits of top-down and bottom-up evaluation of
-logic programs by adding side-conditions to rules that limit
-the computation to just the required data.
-
-An interesting recent approach to demand-driven analyses was
-introduced by Liang and Naik \cite{pldi:2011:Liang}.
-Their ``pruning'' approach consists of first computing a coarse
-over-approximation of the points-to information, while keeping the
-provenance of this derivation, i.e., recording which input facts have
-affected each part of the output. The input program is then pruned so
-that parts that did not affect the interesting points of the output
-are eliminated. Then a precise analysis is run, in order to establish
-the desired property.
 
 \section{Conclusions and Future Work}
 

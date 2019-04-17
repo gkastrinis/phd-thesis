@@ -1,1 +1,615 @@
 \chapter{Related Work}\label{chapter:related}
+
+\section{Hybrid}
+
+We have discussed directly related work throughout the paper. Here we
+selectively mention a few techniques that, although not directly
+related to ours, offer alternative approaches to sweet spots in the
+precision/performance tradeoff.
+
+Special-purpose combinations of context-sensitivity have been used in
+the past, but have required manual identification of classes to be
+treated separately (e.g., Java collection classes, or library factory
+methods). An excellent representative is the TAJ work for taint
+analysis of Java web applications
+\cite{pldi:2009:Tripp}. In contrast, we have sought to
+map the space and identify interesting hybrids for general application
+of context-sensitivity, over the entire program.
+
+The analyses we examined are context-sensitive but flow-insensitive.
+We can achieve several of the benefits of flow-sensitivity by applying
+the analysis on the static single assignment (SSA) intermediate form
+of the program. This is easy to do with a mere flag setting on the
+\doop{} framework. However, the impact of the SSA transformation
+on the input is minimal. The default intermediate language used as
+input in \doop{} (the Jimple representation of the Soot
+framework \cite{cascon:1999:Vall,cc:2000:Vall}) is already close to
+SSA form, although it does not guarantee that every variable is
+strictly single-assignment without requesting it explicitly.  Recent
+work by Lhot\'{a}k and Chung \cite{popl:2011:Lhotak} has shown that
+much of the benefit of flow-sensitivity derives from the ability to do
+strong updates of the points-to information. Lhot\'{a}k and Chung then
+exploited this insight to derive analyses with similar benefit to a
+full flow-sensitive analysis at lower cost.
+
+A demand-driven evaluation strategy reduces the cost of an analysis by
+computing only those results that are necessary for a client program
+analysis~\cite{oopsla:2005:Sridharan,pldi:2006:Sridharan,popl:2008:Zheng,pldi:2001:Heintze}. This is a useful
+approach for client analyses that focus on specific locations in a
+program, but if the client needs results from the entire program, then
+demand-driven analysis is typically slower than an exhaustive
+analysis.
+
+Reps~\cite{cc:1994:Reps} showed how to use the standard magic-sets
+optimization to automatically derive a demand-driven analysis
+from an exhaustive analysis (like ours). This optimization
+combines the benefits of top-down and bottom-up evaluation of
+logic programs by adding side-conditions to rules that limit
+the computation to just the required data.
+
+An interesting recent approach to demand-driven analyses was
+introduced by Liang and Naik \cite{pldi:2011:Liang}.
+Their ``pruning'' approach consists of first computing a coarse
+over-approximation of the points-to information, while keeping the
+provenance of this derivation, i.e., recording which input facts have
+affected each part of the output. The input program is then pruned so
+that parts that did not affect the interesting points of the output
+are eliminated. Then a precise analysis is run, in order to establish
+the desired property.
+
+
+\section{Introspective}
+
+The effort to tune the context-sensitivity of an analysis is pervasive
+in the literature. Nevertheless, most approaches fundamentally differ
+from ours, either by trying to vary context-sensitivity based on
+syntactic properties or by trying to focus on only a part of the program
+that matters for answering a given query.
+In contrast, we attack the context-sensitive scalability problem 
+head-on, in the all-points points-to analysis setting, with context
+used all over the program and library.
+
+Typical scalable points-to analysis frameworks such as
+Wala~\cite{www:wala} and Doop~\cite{oopsla:2009:Bravenboer} employ a multitude of
+low-level heuristics for tuning the precision and scalability of an
+analysis. These include using extra context for collection classes,
+using a heap context for arrays in an analysis without a
+context-sensitive heap, allocating strings or exceptions
+context-insensitively, treating library factory methods with deeper
+context, etc. Such heuristics are typically user-selected and
+prominent in the documentation of the respective frameworks, and have
+also appeared in the literature (e.g.,
+\cite{pldi:2009:Tripp,cc:2013:Kastrinis}).  However, all
+such approaches are mere hard-wired heuristics and do not address the
+major scalability problem that our approach aims to solve. The
+scalability issues identified in earlier literature and discussed
+throughout this paper are present after all such heuristics have been
+employed.
+% These
+%heuristics are already implemented in the baseline framework that we
+%use for our analysis. 
+
+A more general approach is \emph{hybrid} context-sensitivity, which
+consists of treating virtual and static method calls differently
+\cite{pldi:2013:Kastrinis}. Such a hybrid analysis attempts to emulate
+call-site sensitivity for static method calls and object-sensitivity
+for dynamic calls. The approach becomes interesting when context is
+deep (e.g., how are context elements merged when a dynamic call is
+made inside a static call?). Nevertheless, the hybrid
+context-sensitivity approach does not change the essence of the
+problem we are trying to solve. For hard-to-analyze applications,
+hybrid context-sensitive algorithms are equally unscalable as their
+component algorithms. For the purposes of our experimental study,
+which only tests the scalability of heavyweight benchmarks, hybrid
+context-sensitivity is virtually indistinguishable from object-
+sensitivity.
+
+More interesting applications of selective context-sensitivity have
+been explored in the context of \emph{demand-driven} pointer analysis.
+A demand-driven evaluation strategy reduces the cost of an analysis by
+computing only those results that are necessary for a client program
+analysis~\cite{oopsla:2005:Sridharan,pldi:2006:Sridharan,popl:2008:Zheng,pldi:2001:Heintze}. This is a useful
+approach for client analyses that focus on specific locations in a
+program, but if the client needs results from the entire program, then
+demand-driven analysis is typically slower than an exhaustive
+analysis.
+
+In the demand-driven space, refinement-based analyses have been used
+primarily in the work of Sridharan and Bod\'{\i}k~\cite{pldi:2006:Sridharan} and
+of Liang and Naik~\cite{pldi:2011:Liang}.  Sridharan
+and Bod\'{\i}k~\cite{pldi:2006:Sridharan} introduce refinement-based analysis as a
+way to adaptively increase the precision characteristics of an
+existing analysis algorithm when a client analysis is not satisfied
+with the result. The approach allows turning on field-sensitivity, as
+well as higher call-site sensitivity for an analysis algorithm. Yet,
+unlike ours, it is not a general approach that can apply to any kind
+of context and a large number of different algorithms.  Liang and
+Naik's ``pruning'' approach \cite{pldi:2011:Liang}
+consists of first computing a coarse over-approximation of the
+points-to information, while keeping the provenance of this
+derivation, i.e., recording which input facts have affected each part
+of the output. The input program is then pruned so that parts that did
+not affect the interesting points of the output are eliminated. Then a
+highly context-sensitive precise analysis is run, in order to
+establish the desired property. This approach is similar to
+introspective context-sensitivity in that the analysis is run twice
+and a separate query over the first-run result determines the second
+run's characteristics.  Nevertheless, our approach requires no
+provenance computation (which is unlikely to scale for an all-points
+analysis) and works even when we want answers for the entire
+program---i.e., when pruning is not possible.
+
+Both of the above demand-driven approaches can be viewed as
+complements of our introspective context-sensitivity. In the
+demand-driven world, it is possible to estimate the \emph{benefit}
+that a more precise analysis may yield: either the client is happy
+with the current level of precision (which implies there is no further
+benefit to be obtained) or it is not, in which case more precision
+should be added. In our all-points pointer analysis problem we have no
+such information. This motivates our \emph{cost}-based heuristics,
+which attempt to estimate ``what can go wrong'' when more precision
+gets added, as opposed to ``what can be gained'', as in demand-driven
+techniques.
+
+
+\section{Must-Analysis: Logic}
+
+There are several approaches in the literature that present
+must-analyses in the pointer analysis setting or employ them in a
+may-analysis. Our approach is a must-alias analysis applied to Java
+bytecode, but conceptually it is distinguished by its minimizing the
+distance between the implementation and the declarative specification.
+%% and by its leveraging of a highly-efficient data structure for sets of
+%% alias classes.
+
+%% Ma et al.~\cite{isola:2008:Ma} present an algorithm for
+%% null-pointer dereference detection using a
+%% context-insensitive may-alias and a must-alias analysis; the latter is
+%% used to increase the precision of the former, by enabling strong
+%% updates when possible.
+
+Nikoli\'{c} and Spoto~\cite{ictac:2012:Nikolic} present a
+must-alias analysis that tracks aliases between program expressions
+and local variables (or stack locations, since they analyze Java
+bytecode%% , which is a stack-based representation
+).  The analysis
+%itself does not expose any clear configuration points but it 
+is related to ours both because of its application to Java bytecode
+and because it is constraint-based: the analysis is a generator of
+constraints, which are subsequently solved to produce the analysis
+results.
+% Abstractly,
+%this is a relative of our Datalog-based approach, but it is unclear
+%how the two may compare in terms of engineering tradeoffs.
+
+Hind et al. \cite{article:1999:Hind} present a collection of pointer
+analysis algorithms. Among them, the most relevant to this work is a
+flow-sensitive interprocedural pointer alias analysis. The authors
+optimistically produce \emph{must} information for pointers to single
+non-summary objects.
+
+Emami et al.~\cite{pldi:1994:Emami} present an approach that
+simultaneously calculates both must- and may-point-to information for
+a C analysis. Their empirical results ``show the existence of a
+substantial number of definite points-to relationships, which forms
+very valuable information''---much in line with our own
+experience.
+
+Must- information is often computed in conjunction with a
+client analysis. One of the best examples is the typestate
+verification of Fink et al.~\cite{issta:2006:Fink}, which demonstrates the value of
+a must-analysis and the techniques that enable it.
+
+The analysis of \cite{ecoop:2012:De} is essentially a
+flow-sensitive may-point-to analysis that performs strong updates, as
+it maps \emph{access paths} to \emph{heap objects} (abstracted by
+their allocation sites). 
+The approach uses a flow-insensitive
+may-point-to analysis to bootstrap the main analysis. However, it
+provides no \emph{definite} knowledge of any sort, since the aim is to
+increase the precision of the may-analysis. For instance, even if an
+access path points to a single heap object, according to the De and
+D'Souza analysis, there is no \emph{must} point-to information
+derived, since this object could be a summary object (i.e., one that
+abstracts many objects allocated at the same allocation site). To
+reason about such cases, other approaches, such as the more expensive
+shape analysis algorithms \cite{article:2002:Sagiv},
+additionally maintain summary information per heap object. In this
+way, they allow must point-to edges to exist only if the target is
+definitely not a summary node.
+
+%An alternative approach to handle this shortcoming is to propagate
+%% An approach for integrating \emph{must} point-to reasoning in an
+%% analysis is to propagate such
+%% %\emph{must}-point-to 
+%% information only at instructions where we know that the given heap
+%% allocation target still refers to the last object allocated at that
+%% site \cite{Altucher:1995:EFM:199448.199466}. Thus, an execution path
+%% that may create another object at the same site (such as when reaching
+%% the end of the loop) would invalidate any previous must-point-to facts
+%% (i.e., it will stop them from propagating any further).
+
+Generally, must-analyses can vary greatly in sophistication and can be
+employed in an array of different combinations with may-analyses.  The
+analysis of Balakrishnan and Reps~\cite{sas:2006:Balakrishnan}, which
+introduces the \emph{recency abstraction}, distinguishes between the
+most recently allocated object at an allocation site (a concrete
+object, allowing strong updates) and earlier-allocated objects
+(represented as a summary node). The analysis additionally keeps
+information on the size of the set of objects represented by a summary
+node. At the extreme, one can find full-blown shape analysis
+approaches, such as that of Sagiv et
+al.~\cite{article:2002:Sagiv}, which explicitly maintains must-
+and may- information simultaneously, by means of three-valued truth
+values, in full detail up to predicate abstraction: a
+relationship can definitely hold (``must''), definitely not hold
+(``must not'', i.e., negation of ``may''), or possibly hold
+(``may''). Summary and concrete nodes are again used to represent
+knowledge, albeit in full detail, as captured by arbitrary predicates
+whose value is maintained across program statements, at the cost of a
+super-exponential worst-case complexity.
+
+%% Jagannathan et al.~\cite{popl:1998:Jagannathan} present
+%% an algorithm for must-alias analysis of functional languages. The
+%% algorithm adapts must-alias insights to the setting of captured
+%% variables.
+%% %captured in closures.  
+%% For instance, must-alias information for
+%% non-summary objects permits strong updates, which the authors find to
+%% improve analysis precision. We employ must-alias analysis results
+%% quite similarly in applications of our model analysis.
+
+
+%% Our optimized data structure is (partly) based on the observation that
+%% must-alias sets are equivalence classes. This is not the first time
+%% that a data structure that efficiently implements equivalence classes
+%% has been used to speed up pointer analysis. Most notably, a
+%% Steensgaard-style (or \emph{unification-based})
+%% \cite{steensgard:1996:PointsTo} analysis computes may-point-to sets
+%% that are equivalence classes. This means that points-to sets are
+%% disjoint---if two points-to sets are found to possibly overlap, they
+%% get unified. This loses precision (relative to a standard subset-based
+%% points-to analysis) but enables the algorithm to use union-find trees
+%% for a very efficient representation.
+
+%% Another optimized data structure often used in pointer analysis is the
+%% \emph{constraint graph}: a graph with nodes denoting pointer variables
+%% and an edge between nodes \code{p} and \code{q} denoting flow (e.g., a
+%% direct assignment) from variable \code{p} to variable \code{q}.  Online
+%% cycle elimination by F\"{a}ndrich et al.
+%% \cite{pldi/FahndrichFSA98} detects cycles in the
+%% constraint graph and collapses all nodes in a cycle into a
+%% representative node, since such nodes will have identical points-to
+%% information. The technique of Nasre
+%% \cite{ismm/Nasre12} extends such constraint graph
+%% reasoning based on the observation that if two nodes have the same
+%% dominator in the constraint graph, then they are clones: the values
+%% flowing to them are (only) those of the dominator node. Several other
+%% constraint graph optimizations are applied off-line (i.e., before the
+%% points-to analysis runs).  Prime examples of such techniques are
+%% Rountev and Chandra's \cite{rountevOffline} and Hardekopf and Lin's
+%% \cite{hardekopfOffline}. (Hardekopf and Lin have also applied similar
+%% ideas in a hybrid online/offline setting \cite{antgrasshopper}.)  Both
+%% of these techniques perform an off-line detection of equivalent
+%% points-to sets and use this knowledge to eliminate redundant work in
+%% subsequent points-to computations. Our data structure can be seen as
+%% somewhat analogous to constraint-graph techniques, in the sense that
+%% we do not compute the flow of objects or the fully expanded set of all
+%% possible alias pairs. Instead, we compute the ``wiring'' (i.e., the
+%% alias relationships, locally, that the program induces) and keep the
+%% alias information in condensed form, until it needs to be queried by a
+%% client analysis.
+
+%% %Hardekopf and
+%% %Lin's approach is impressively general, computing hash codes that
+%% %encode all the logical processing of a points-to set that is induced
+%% %by the current program and, thus, detecting equivalent points-to sets
+%% %even through complex program patterns.
+
+%% % \citep{Heintze:2001:UAA:378795.378855} ; pre-transitive constraint-graph and reachability caching
+
+
+\section{Must-Analysis: Datastructure}
+
+There are several approaches in the literature that present
+must-analyses in the pointer analysis setting or employ them in a
+may-analysis. Additionally, there are several approaches that
+integrate efficient data structures in the representation of
+points-to information.
+
+
+\paragraph{Data Structures and Heap Abstractions.}
+Our optimized data structure is (partly) based on the observation that
+must-alias sets are equivalence classes. This is not the first time
+that a data structure that efficiently implements equivalence classes
+has been used to speed up pointer analysis. Most notably, a
+Steensgaard-style (or \emph{unification-based})
+\cite{popl:1996:Steensgaard} analysis computes may-point-to sets
+that are equivalence classes. This means that points-to sets are
+disjoint---if two points-to sets are found to possibly overlap, they
+get unified. This loses precision (relative to a standard subset-based
+points-to analysis) but enables the algorithm to use union-find trees
+for a very efficient representation.
+
+Another optimized data structure often used in pointer analysis is the
+\emph{constraint graph}: a graph with nodes denoting pointer variables
+and an edge between nodes \code{p} and \code{q} denoting flow (e.g., a
+direct assignment) from variable \code{p} to variable \code{q}.  Online
+cycle elimination by F\"{a}ndrich et al.
+\cite{pldi:1998:Fahndrich} detects cycles in the
+constraint graph and collapses all nodes in a cycle into a
+representative node, since such nodes will have identical points-to
+information. The technique of Nasre
+\cite{ismm:2012:Nasre} extends such constraint graph
+reasoning based on the observation that if two nodes have the same
+dominator in the constraint graph, then they are clones: the values
+flowing to them are (only) those of the dominator node. Several other
+constraint graph optimizations are applied off-line (i.e., before the
+points-to analysis runs).  Prime examples of such techniques are
+Rountev and Chandra's \cite{pldi:2000:Rountev} and Hardekopf and Lin's
+\cite{sas:2007:Hardekopf}. (Hardekopf and Lin have also applied similar
+ideas in a hybrid online/offline setting \cite{pldi:2007:Hardekopf}.)  Both
+of these techniques perform an off-line detection of equivalent
+points-to sets and use this knowledge to eliminate redundant work in
+subsequent points-to computations. Our data structure can be seen as
+somewhat analogous to constraint-graph techniques, in the sense that
+we do not compute the flow of objects or the fully expanded set of all
+possible alias pairs. Instead, we compute the ``wiring'' (i.e., the
+alias relationships, locally, that the program induces) and keep the
+alias information in condensed form, until it needs to be queried by a
+client analysis.
+
+Another conceptual relative of our data structure is the model
+presented by Madhavan et al. \cite{article:2015:Madhavan} for modular \emph{may}
+analyses. That model is similar in that it invents abstract nodes for
+heap objects that resemble ours (without the equivalence-class
+nature). The Madhavan et al. approach aims to achieve modular
+reasoning, i.e., to model the heap effects of a method without knowing
+its calling environment. To do so, the approach creates abstract
+nodes that represent concepts such as ``whichever object variable
+\code{x} may point to''. Our data structure has nodes with a similar
+meaning, however we also take advantage of the ``must'' nature of
+the analysis to merge nodes, every time the same access path can
+reach both.
+
+
+\paragraph{Must-Analyses for Aliasing.}
+There are several instances of past work that apply must reasoning in
+pointer analysis. These mostly serve to paint the landscape of
+potential applicability of our data structure.
+
+Ma et al.~\cite{isola:2008:Ma} present an algorithm for
+null-pointer dereference detection using a context-insensitive
+may-alias and a must-alias analysis; the latter is used to increase
+the precision of the former, by enabling strong updates when possible.
+
+Nikoli\'{c} and Spoto~\cite{ictac:2012:Nikolic} present a
+must-alias analysis that tracks aliases between program expressions
+and local variables (or stack locations, since they analyze Java
+bytecode, which is a stack-based representation).  The analysis is a
+generator of constraints, which are subsequently solved to produce the
+analysis results.
+% Abstractly,
+%this is a relative of our Datalog-based approach, but it is unclear
+%how the two may compare in terms of engineering tradeoffs.
+
+Hind et al. \cite{article:1999:Hind} present a collection of pointer
+analysis algorithms. Among them, the most relevant to this work is a
+flow-sensitive interprocedural pointer alias analysis. The authors
+optimistically produce \emph{must} information for pointers to single
+non-summary objects.
+
+Emami et al.~\cite{pldi:1994:Emami} present an approach that
+simultaneously calculates both must- and may-point-to information for
+a C analysis. Their empirical results ``show the existence of a
+substantial number of definite points-to relationships, which forms
+very valuable information''---much in line with our own
+experience.
+
+Must- information is often computed in conjunction with a
+client analysis. One of the best examples is the typestate
+verification of Fink et al.~\cite{issta:2006:Fink}, which demonstrates the value of
+a must-analysis and the techniques that enable it.
+
+%% The analysis of \cite{ecoop:2012:De} is essentially a
+%% flow-sensitive may-point-to analysis that performs strong updates, as
+%% it maps \emph{access paths} to \emph{heap objects} (abstracted by
+%% their allocation sites). 
+%% The approach uses a flow-insensitive
+%% may-point-to analysis to bootstrap the main analysis. However, it
+%% provides no \emph{definite} knowledge of any sort, since the aim is to
+%% increase the precision of the may-analysis. For instance, even if an
+%% access path points to a single heap object, according to the De and
+%% D'Souza analysis, there is no \emph{must} point-to information
+%% derived, since this object could be a summary object (i.e., one that
+%% abstracts many objects allocated at the same allocation site). To
+%% reason about such cases, other approaches, such as the more expensive
+%% shape analysis algorithms \cite{article:2002:Sagiv},
+%% additionally maintain summary information per heap object. In this
+%% way, they allow must point-to edges to exist only if the target is
+%% definitely not a summary node.
+
+%An alternative approach to handle this shortcoming is to propagate
+An approach for integrating \emph{must} point-to reasoning in an
+analysis is to propagate such
+%\emph{must}-point-to 
+information only at instructions where we know that the given heap
+allocation target still refers to the last object allocated at that
+site \cite{popl:1995:Altucher}. Thus, an execution path
+that may create another object at the same site (such as when reaching
+the end of the loop) would invalidate any previous must-point-to facts
+(i.e., it will stop them from propagating any further).
+
+Generally, must-analyses can vary greatly in sophistication and can be
+employed in an array of different combinations with may-analyses.  The
+analysis of Balakrishnan and Reps~\cite{sas:2006:Balakrishnan}, which
+introduces the \emph{recency abstraction}, distinguishes between the
+most recently allocated object at an allocation site (a concrete
+object, allowing strong updates) and earlier-allocated objects
+(represented as a summary node). The analysis additionally keeps
+information on the size of the set of objects represented by a summary
+node. At the extreme, one can find full-blown shape analysis
+approaches, such as that of Sagiv et
+al.~\cite{article:2002:Sagiv}, which explicitly maintains must-
+and may- information simultaneously, by means of three-valued truth
+values, in full detail up to predicate abstraction: a
+relationship can definitely hold (``must''), definitely not hold
+(``must not'', i.e., negation of ``may''), or possibly hold
+(``may''). Summary and concrete nodes are again used to represent
+knowledge, albeit in full detail, as captured by arbitrary predicates
+whose value is maintained across program statements, at the cost of a
+super-exponential worst-case complexity.
+
+Jagannathan et al.~\cite{popl:1998:Jagannathan} present
+an algorithm for must-alias analysis of functional languages. The
+algorithm adapts must-alias insights to the setting of captured
+variables.
+%captured in closures.  
+For instance, must-alias information for
+non-summary objects permits strong updates, which the authors find to
+improve analysis precision. We employ must-alias analysis results
+quite similarly in applications of our model analysis.
+
+
+
+%Hardekopf and
+%Lin's approach is impressively general, computing hash codes that
+%encode all the logical processing of a points-to set that is induced
+%by the current program and, thus, detecting equivalent points-to sets
+%even through complex program patterns.
+
+% \citep{Heintze:2001:UAA:378795.378855} ; pre-transitive constraint-graph and reachability caching
+
+
+\section{Defensive Analysis}
+
+There is certainly past work that attempt to ensure a sound
+whole-program analysis, but none matches the generality and
+applicability of our approach. We selectively discuss representative
+approaches.
+
+The standard past approach to soundness for a careful static analysis
+has been to ``bail out'': the analysis detects whether there are
+program features that it does not handle soundly, and issues warnings,
+or refuses to produce answers. This is a common pattern in
+abstract-interpretation~\cite{popl:1977:Cousot} analyses,
+such as Astr\'{e}e~\cite{sas:2007:Delmas}, which have traditionally
+emphasized sound handling of conventional language features. However,
+this is far from a solution to the problem of being sound for opaque
+code: refusing to handle the vast majority of realistic programs can
+be argued to be sound, but is not usefully so. In contrast, our work
+handles \emph{all} realistic programs, but returns partial (but sound)
+results, i.e., produces non-empty points-to sets for a subset of the
+variables. It is an experimental question to determine whether
+this subset is usefully large, as we do in our evaluation.
+
+%\citet{ecoop:2004:Hirzel,article:2007:Hirzel}
+Hirzel et al. \cite{ecoop:2004:Hirzel,article:2007:Hirzel} use an
+online pointer analysis to deal with reflection and dynamic loading by
+monitoring their run-time occurrence, recording their results, and
+running the analysis again, incrementally. However, this is hardly a
+\emph{static} analysis and its cost is prohibitive for precise
+(context-sensitive) analyses, if applied to all reflection
+actions. 
+
+%\citet{pldi:2007:Lattner}
+Lattner et al. \cite{pldi:2007:Lattner} offer an algorithm that can apply to incomplete
+programs, but it assumes that the linker can know all callers (i.e.,
+there is no reflection---the analysis is for C/C++) and the approach
+is closely tied to a specific flow-insensitive, unification-based
+analysis logic~\cite{popl:1996:Steensgaard}, necessary
+for simultaneously computing inter-related points-to, may-alias, and
+may-escape information.
+
+%\citet{pldi:2000:Sreedhar}
+Sreedhar et al. \cite{pldi:2000:Sreedhar} present the
+only past approach to explicitly target dynamic class loading,
+although only for a specific client analysis (call
+specialization). Still, that work ends up making many statically
+unsound assumptions (requiring, at the very least, programmer
+intervention), illustrating well the difficulty of the problem, if not
+addressed defensively. The approach assumes that only the public API
+of a ``closed world'' is callable, thus ignoring many uses of
+reflection. (With reflection, any method is callable from unknown
+code, and any field is accessible.) It ``[does] not address the Java
+features of reloading and the Java Native Interface''. It
+``optimistically assumes'' that ``[the extant state of statically
+  known objects] remains unchanged when they become reachable from
+static reference variables''. It is not clear whether the technique is
+conservative relative to adversarial native code (in system libraries,
+since the JNI is ignored). Finally, the approach assumes the existence
+of a sound may-point-to analysis, even though none exists in practice!
+% (i.e., the points-to analysis may miss
+%objects when asked ``what objects can this variable point to'', as it is
+%in the Sreedhar et al. paper).
+
+Traditional conservative call-graph construction (\emph{Class
+  Hierarchy Analysis (CHA)} \cite{ecoop:1995:Dean} or
+\emph{Rapid Type Analysis (RTA)} \cite{oopsla:1996:Bacon}) is
+unsound.  Such algorithms explore the entire class hierarchy for
+matching (overriding) methods and consider all of them to be potential
+virtual call targets. However, even this is not sufficient for a sound static
+analysis of opaque code: classes can be generated and loaded
+dynamically during program execution. CHA cannot find target methods
+that do not even exist statically, yet modeling them is precisely what
+is needed for soundness in real-world conditions. For instance, Java
+applications, especially in the enterprise (server-side) space, employ
+dynamic loading heavily, and patterns such as \emph{dynamic proxies}
+have been standardized and used widely since the early Java days.
+
+Furthermore, such heuristic ``best-effort'' over-approximation is
+detrimental to analysis precision and performance. CHA is an example
+of a loose over-approximation in an effort to capture most dynamic
+behaviors.
+%(Similar loose over-approximations have been proposed, for
+%instance, for reflection analysis~\cite{aplas:2015:Smaragdakis}.) 
+Loose over-approximations compute many more possible targets than
+those that realistically arise. This yields vast points-to sets that
+render the analysis heavyweight and useless due to imprecision.
+(Avoiding such costs is exactly why past analyses have often opted for glaringly
+unsound handling of opaque code features.)
+Our lazy representation of ``don't know''/''cannot bound'' values as empty
+sets addresses the problem, by keeping all points-to sets compact.
+
+
+The conventional handling of reflection in may-point-to analysis
+algorithms for
+Java~\cite{www:wala-reflection,ecoop:2014:Li,aplas:2005:Livshits,thesis:Livshits,aplas:2015:Smaragdakis,sas:2015:Li}
+is unsound, instead relying on a ``best-effort'' approach.  Such past
+analyses attempt to statically model the result of reflection
+operations, e.g., by computing a superset of the strings that can be
+used as arguments to a \code{Class.forName} operation (which accepts a
+name string and returns a reflection object representing the class
+with that name).
+The analyses are unsound when faced with a completely unknown string:
+instead of assuming that \emph{any} class object can be returned, the
+analysis assumes that \emph{none} can. The reason is that
+over-approximation (assuming any object is returned) would be
+detrimental to the analysis performance and precision. Even with an
+unsound approach, current algorithms are heavily burdened by the use
+of reflection analysis. For instance, the documentation of the
+\textsc{Wala} library directly blames reflection analysis for
+scalability shortcomings
+\cite{www:wala-reflection},\footnote{The \textsc{Wala} documentation
+  is explicit: ``\emph{Reflection usage and the
+    size of modern libraries/frameworks make it very difficult to
+    scale flow-insensitive points-to analysis to modern Java
+    programs. For example, with default settings, WALA's pointer
+    analyses cannot handle any program linked against the Java 6
+    standard libraries, due to extensive reflection in the
+    libraries.}''~\cite{www:wala-reflection}} and enabling reflection
+on the \textsc{Doop} framework slows it down by an order of magnitude
+on standard benchmarks~\cite{aplas:2015:Smaragdakis}.
+% SPACE
+Furthermore, none
+of these approaches attempt to model dynamic loading---a ubiquitous
+feature in Java enterprise applications.
+
+%Most importantly,
+%however, no such approach can possibly ever be sound purely
+%statically. Even if the analysis could feasibly assume that \emph{any}
+%class object is returned by a \code{forName} operation, this
+%%over-approximation 
+%cannot account for dynamically generated and loaded
+%classes---a ubiquitous feature in Java enterprise
+%applications.%
