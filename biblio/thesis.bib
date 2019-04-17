@@ -19,6 +19,13 @@
     year = {2006},
 }
 
+@phdthesis{thesis:Livshits,
+    author = {Benjamin Livshits},
+    title = {Improving Software Security with Precise Static and Runtime Analysis},
+    school = {Stanford University},
+    year = {2006},
+}
+
 @article{article:1999:Hind,
     author = {Michael Hind and Michael Burke and Paul Carini and Jong-Deok Choi},
     title = {Interprocedural Pointer Alias Analysis},
@@ -60,6 +67,16 @@
 	address = {New York, NY, USA},
 }
 
+@article{article:2007:Hirzel,
+    author = {Martin Hirzel and Daniel von Dincklage and Amer Diwan and Michael Hind},
+    title = {Fast online pointer analysis},
+    journal = {{ACM} Trans. Program. Lang. Syst.},
+    volume = {29},
+    number = {2},
+    year = {2007},
+    doi = {10.1145/1216374.1216379},
+}
+
 @article{article:2008:tosem:Lhotak,
     author = {Ond\v{r}ej Lhot\'{a}k and Laurie J. Hendren},
     title = {Evaluating the benefits of context-sensitive points-to analysis using a {BDD}-based implementation},
@@ -98,6 +115,18 @@
     doi = {10.1561/2500000020},
 }
 
+@article{article:2015:Livshits,
+    author = {Livshits, Benjamin and Sridharan, Manu and Smaragdakis, Yannis and Lhot\'{a}k, Ond\v{r}ej and Amaral, J. Nelson and Chang, Bor-Yuh Evan and Guyer, Samuel Z. and Khedker, Uday P. and M{\o}ller, Anders and Vardoulakis, Dimitrios},
+    title = {In Defense of Soundiness: A Manifesto},
+    journal = {Commun. ACM},
+    volume = {58},
+    number = {2},
+    year = {2015},
+    issn = {0001-0782},
+    pages = {44--46},
+    doi = {10.1145/2644805},
+} 
+
 @incollection{col:1981:Sharir,
 	author = {Micha Sharir and Amir Pnueli},
 	title = {Two Approaches to Interprocedural Data Flow Analysis},
@@ -130,21 +159,35 @@
 }
 
 @misc{misc:Cifuentes,
-    title = {Personal communication},
     author = {Cristina Cifuentes},
+    title = {Personal communication},
     year = 2013
 }
 
 @misc{misc:Chong,
-    title = {Personal communication},
     author = {Stephen Chong},
+    title = {Personal communication},
     year = 2013
+}
+
+@misc{misc:Xavier,
+    author = {Xavier Rival},
+    title = {Comment on "What Is Soundness in Static Analysis" post, in the {PL Enthusiast} blog},
+    howpublished = {\url{http://www.pl-enthusiast.net/2017/10/23/what-is-soundness-in-static-analysis/\#comment-1265}},
+    year = 2017,
 }
 
 @misc{www:wala,
     title = {{T.J.} {W}atson Libraries for Analysis ({WALA})},
     author = {Stephen J. Fink},
     howpublished = {\url{http://wala.sourceforge.net}},
+}
+
+@misc{www:wala-reflection,
+    title = {{WALA} {U}ser{G}uide: {P}ointer{A}nalysis},
+    author = {Stephen J. Fink and others},
+    howpublished = {\url{http://wala.sourceforge.net/wiki/index.php/UserGuide:PointerAnalysis}},
+    year = {2013}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -155,6 +198,19 @@
 	crossref = {aplas:2005},
 	pages = {97--118},
 	% doi = {10.1007/11575467_8},
+}
+
+@inproceedings{aplas:2005:Livshits,
+    author = {Benjamin Livshits and John Whaley and Monica S. Lam},
+    title = {Reflection Analysis for {J}ava},
+	crossref = {aplas:2005},
+    pages = {139--160}, 
+}
+
+@inproceedings{aplas:2015:Smaragdakis,
+    author = {Yannis Smaragdakis and George Balatsouras and George Kastrinis and Martin Bravenboer},
+    title = {More Sound Static Handling of {J}ava Reflection},
+    crossref = {aplas:2015},
 }
 
 @inproceedings{cc:1994:Reps,
@@ -184,6 +240,27 @@
     crossref = {cc:2013},
 }
 
+@inproceedings{cc:2016:Scholz,
+    author = {Bernhard Scholz and Herbert Jordan and Pavle Subotic and Till Westmann},
+    title = {On fast large-scale program analysis in Datalog},
+    crossref = {cc:2016},
+    pages = {196--206},
+}
+
+@inproceedings{ecoop:1995:Dean,
+    author = {Jeffrey Dean and David Grove and Craig Chambers},
+    title = {Optimization of Object-Oriented Programs Using Static Class Hierarchy Analysis},
+    crossref = {ecoop:1995},
+    pages = {77--101},
+}
+
+@inproceedings{ecoop:2004:Hirzel,
+    author = {Martin Hirzel and Amer Diwan and Michael Hind},
+    title = {Pointer Analysis in the Presence of Dynamic Class Loading},
+    crossref = {ecoop:2004},
+    pages = {96--122},
+}
+
 @inproceedings{ecoop:2006:Hajiyev,
     author = {Elnar Hajiyev and Mathieu Verbaere and Oege de Moor},
     title = {{C}ode{Q}uest: Scalable Source Code Queries with {D}atalog},
@@ -207,6 +284,20 @@
     % doi = {10.1007/978-3-642-31057-7_29},
 }
 
+@inproceedings{ecoop:2014:Li,
+    author = {Yue Li and Tian Tan and Yulei Sui and Jingling Xue},
+    title = {Self-Inferencing Reflection Resolution for {J}ava},
+    crossref = {ecoop:2014},
+    pages = {27--53},
+}
+
+@inproceedings{ecoop:2016:Spath,
+    author = {Johannes Sp{\"{a}}th and Lisa Nguyen Quang Do and Karim Ali and Eric Bodden},
+    title = {Boomerang: Demand-Driven Flow- and Context-Sensitive Pointer Analysis for Java},
+    crossref = {ecoop:2016},
+    pages = {22:1--22:26},
+}
+
 @inproceedings{fse:2013:Madsen,
 	author = {Magnus Madsen and Benjamin Livshits and Michael Fanning},
 	title = {Practical static analysis of {J}ava{S}cript applications in the presence of frameworks and libraries},
@@ -221,6 +312,12 @@
     crossref = {icse:2008},
     pages = {391--400},
     % doi = {10.1145/1368088.1368142}
+}
+
+@inproceedings{icse:2017:Landman,
+    author = {Davy Landman and Alexander Serebrenik and Jurgen J. Vinju},
+    title = {Challenges for Static Analysis of {Java} Reflection -- Literature Review and Empirical Study},
+    crossref = {icse:2017},
 }
 
 @inproceedings{ictac:2012:Nikolic,
@@ -261,6 +358,13 @@
 	crossref = {issta:2006},
     pages = {133--144},
     % doi = {http://doi.acm.org/10.1145/1146238.1146254},
+}
+
+@inproceedings{oopsla:1996:Bacon,
+    author = {David F. Bacon and Peter F. Sweeney},
+    title = {Fast static analysis of {C}++ virtual function calls},
+    crossref = {oopsla:1996},
+    pages = {324--341},
 }
 
 @inproceedings{oopsla:2005:Sridharan,
@@ -308,6 +412,13 @@
     % doi = {10.1145/349299.349310},
 }
 
+@inproceedings{pldi:2000:Sreedhar,
+    author = {Vugranam C. Sreedhar and Michael Burke and Jong-Deok Choi},
+    title = {A Framework for Interprocedural Optimization in the Presence of Dynamic Class Loading},
+    crossref = {pldi:2000},
+    pages = {196--207},
+} 
+
 @inproceedings{pldi:2001:Heintze,
     author = {Nevin Heintze and Olivier Tardieu},
     title = {Demand-Driven Pointer Analysis},
@@ -347,6 +458,12 @@
 	pages = {290--299},
 }
 
+@InProceedings{pldi:2007:Lattner,
+    author = {Chris Lattner and Andrew Lenharth and Vikram Adve},
+    title = {Making Context-Sensitive Points-to Analysis with Heap Cloning Practical For The Real World},
+    crossref = {pldi:2007},
+}
+
 @inproceedings{pldi:2009:Tripp,
     author = {Omer Tripp and Marco Pistoia and Stephen J. Fink and Manu Sridharan and Omri Weisman},
     title = {{TAJ}: effective taint analysis of web applications},
@@ -377,12 +494,33 @@
     crossref = {pldi:2013},
 }
 
+@inproceedings{pldi:2014:Smaragdakis,
+    author = {Yannis Smaragdakis and George Kastrinis and George Balatsouras},
+    title = {Introspective Analysis: Context-sensitivity, Across the Board},
+    crossref = {pldi:2014},
+    pages = {485--495},
+}
+
 @inproceedings{pods:2005:Lam,
 	author = {Monica S. Lam and John Whaley and V. Benjamin Livshits and Michael C. Martin and Dzintars Avots and Michael Carbin and Christopher Unkel},
 	title = {Context-sensitive program analysis as database queries},
 	crossref = {pods:2005},
 	pages = {1--12},
 	% doi = {10.1145/1065167.1065169},
+}
+
+@inproceedings{popl:1977:Cousot,
+    author = {Patrick Cousot and Radhia Cousot},
+    title = {Abstract interpretation: a unified lattice model for static analysis of programs by construction or approximation of fixpoints},
+    crossref = {popl:1977},    
+    pages = {238--252},
+}
+
+@inproceedings{popl:1993:Choi,
+    author = {Choi, Jong D. and Burke, Michael and Carini, Paul},
+    title = {Efficient flow-sensitive interprocedural computation of pointer-induced aliases and side effects},
+    crossref = {popl:1993},    
+    pages = {232--245},
 }
 
 @inproceedings{popl:1995:Altucher,
@@ -397,6 +535,27 @@
     title = {Points-to analysis in almost linear time},
     crossref = {popl:1996},
     pages = {32--41},
+}
+
+@inproceedings{popl:1996:Deutsch,
+    author = {Alain Deutsch},
+    title = {On the Complexity of Escape Analysis},
+    crossref = {popl:1996},
+    pages = {358--371},
+}
+
+@inproceedings{popl:1997:Biswas,
+    author = {Sandip K. Biswas},
+    title = {A demand-driven set-based analysis},
+    crossref = {popl:1997},
+    pages = {372--385},
+}
+
+@inproceedings{popl:1998:Blanchet,
+    author = {Bruno Blanchet},
+    title = {Escape analysis: Correctness proof, implementation and experimental results},
+    crossref = {popl:1998},
+    pages = {25--37},
 }
 
 @inproceedings{popl:1998:Jagannathan,
@@ -420,6 +579,13 @@
 	crossref = {popl:2009},
 	pages = {226--238},
 	% doi = {10.1145/1480881.1480911},
+}
+
+@inproceedings{popl:2009:Calcagno,
+    author = {Cristiano Calcagno and Dino Distefano and Peter O'Hearn and Hongseok Yang},
+    title = {Compositional Shape Analysis by Means of Bi-abduction},
+	crossref = {popl:2009},
+    pages = {289--300},
 }
 
 @inproceedings{popl:2011:Lhotak,
@@ -448,6 +614,20 @@
     title = {Exploiting pointer and location equivalence to optimize pointer analysis},
     crossref = {sas:2007},
     pages = {265--280}
+}
+
+@inproceedings{sas:2007:Delmas,
+    author = {David Delmas and Jean Souyris},
+    title = {Astr{\'e}e: From Research to Industry},
+    crossref = {sas:2007},
+    pages = {437--451},
+}
+
+@inproceedings{sas:2015:Li,
+    author = {Yue Li and Tian Tan and Jingling Xue},
+    title = {Effective Soundness-Guided Reflection Analysis},
+    crossref = {sas:2015},
+    pages = {162--180},
 }
 
 @inproceedings{soap/Balatsouras17,

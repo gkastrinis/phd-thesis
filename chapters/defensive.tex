@@ -62,13 +62,13 @@ root-of-hierarchy type.
 %% Given the prevalence of static analyses, and especially may-analyses,
 %% it is a rather surprising fact that practically \emph{no implemented
 %%   whole-program static may-analysis is sound for the majority of
-%%   realistic programs}~\cite{soundiness15}. For instance, no realistic
+%%   realistic programs}~\cite{article:2015:Livshits}. For instance, no realistic
 %% may-point-to analysis computes a true over-approximation of the
 %% points-to sets that arise during program execution.
 
 %% This is not to say that no sound analyses exist. For instance,
-%% abstract-interpretation-based~\cite{Cousot:1977:AIU:512950.512973}
-%% approaches, such as Astr\'{e}e~\cite{Delmas2007}, have long emphasized
+%% abstract-interpretation-based~\cite{popl:1977:Cousot}
+%% approaches, such as Astr\'{e}e~\cite{sas:2007:Delmas}, have long emphasized
 %% soundness. However such analyses typically reject most real-world
 %% programs wholesale, because of the use of language features that are
 %% not supported soundly.  Such features include native (non-analyzable)
@@ -79,11 +79,11 @@ root-of-hierarchy type.
 
 Faced with such complications, all past analyses that claim soundness
 have done so under \emph{a priori} qualifications. Prominently,
-abstract-interpretation-based~\cite{Cousot:1977:AIU:512950.512973}
-approaches, such as Astr\'{e}e~\cite{Delmas2007}, have long emphasized
+abstract-interpretation-based~\cite{popl:1977:Cousot}
+approaches, such as Astr\'{e}e~\cite{sas:2007:Delmas}, have long emphasized
 soundness. The conceptual form of such a soundness result is as
 follows:\footnote{This formulation is due to Xavier Rival of the Astr\'{e}e project
-  (e.g., \cite{www:soundness-xavier}).}
+  (e.g., \cite{misc:Xavier}).}
 
 \begin{quote}
   An \(Analysis\) of programs in language \(Lang\) is sound relative to
@@ -103,11 +103,11 @@ dynamic features (e.g., reflection) and/or executions subset \(Exec'\)
 will disqualify all behaviors that are deemed too-dynamic (e.g.,
 invoking dynamically-loaded code).  Reflection alone disqualifies
 $\sim$80\% of Java programs in the 461-program corpus of the recent
-Landman et al. study~\cite{Landman17}.
+Landman et al. study~\cite{icse:2017:Landman}.
 
 The above issues have led several members of
 the static analysis community to proclaim that ``\emph{all published
-  whole-program analyses are unsound}''~\cite{soundiness15}, i.e.,
+  whole-program analyses are unsound}''~\cite{article:2015:Livshits}, i.e.,
 their soundness guarantee does not apply to realistic programs, and
 similarly that ``\emph{[there is not] a single realistic whole-program
   analysis tool [...] that does not purposely make unsound choices}''.
@@ -122,7 +122,7 @@ the type of \code{obj} is known, many implemented static analyses will
 not consider all its methods (which now form a small finite set) as
 possible values of \code{m}, but will instead ignore the code
 altogether.  This phenomenon has led to the introduction of the term
-\emph{soundy}~\cite{soundiness15} to characterize such analyses.
+\emph{soundy}~\cite{article:2015:Livshits} to characterize such analyses.
 Despite the derogatory tone, ``soundy'' analyses are the current
 \emph{good} case of static analyses! They are realistic analyses that
 handle all ``normal'' language features soundly.
@@ -260,7 +260,7 @@ the points-to set remains empty, to denote ``I don't know'' or
   yields sound results for realistic programs in the presence of
   opaque code.
   %% (Arguably other approaches
-  %% \cite{ecoop/HirzelDH04,toplas/HirzelDDH07,DSA:PLDI07} achieve
+  %% \cite{ecoop:2004:Hirzel,article:2007:Hirzel,pldi:2007:Lattner} achieve
   %% soundness, but not for the full problem. Additionally, an analysis
   %% can be nominally sound by rejecting wholesale any program that
   %% employs features that the analysis does not handle. This is also not
@@ -502,8 +502,8 @@ requires to have pre-computed an over-approximate (i.e., sound)
 points-to analysis, which is the problem we are trying to solve in the
 first place. Past work has dealt with this problem with unrealistic
 assumptions. For instance,
-%\citet{Sreedhar:2000:FIO:349299.349326}
-Sreedhar et al. \cite{Sreedhar:2000:FIO:349299.349326} present a
+%\citet{pldi:2000:Sreedhar}
+Sreedhar et al. \cite{pldi:2000:Sreedhar} present a
 call-specialization analysis that can handle dynamic class loading,
 but only if given the results of a sound may-point-to analysis as
 input.
@@ -694,11 +694,11 @@ in our experiments, defensive analysis scales to be flow-sensitive,
 (In standard past literature for all-program-points analyses, even a
 flow-\emph{insensitive}, 2-call-site-sensitive analysis has been
 infeasible over these
-benchmarks~\cite{Smaragdakis:2014:IAC:2594291.2594320}.\footnote{It is
+benchmarks~\cite{pldi:2014:Smaragdakis}.\footnote{It is
   worth emphasizing that, although defensive analysis is lazy, this
   is a very different form of laziness than that of \emph{on-demand}
   points-to analysis (e.g.,
-  \cite{DBLP:conf/ecoop/SpathDAB16,dvanhorn:biswas-popl97}). An
+  \cite{ecoop:2016:Spath,popl:1997:Biswas}). An
   on-demand analysis only computes points-to information for program
   points that may affect a particular site of interest, instead of the
   entire program. The defensive analysis we describe is an
@@ -1065,7 +1065,7 @@ rather different than in a traditional unsound points-to analysis.
 Contexts in standard points-to analysis can be \emph{summarizing}: a
 single context can merge arbitrary concrete (dynamic) executions, as
 long as any single concrete execution maps uniquely to a context. For
-instance, a 1-object-sensitive analysis \cite{1044835} merges all
+instance, a 1-object-sensitive analysis \cite{article:2005:Milanova} merges all
 calls to a method as long as they have the same abstract receiver
 object, independently of call sites.
 
@@ -1086,11 +1086,11 @@ context.
 
 Therefore, a context-sensitive defensive analysis has to be, at a
 minimum, \emph{call-site
-  sensitive}~\cite{Sharir:Interprocedural,shivers:thesis}: the call
+  sensitive}~\cite{col:1981:Sharir,thesis:Shivers}: the call
 site of an analyzed method has to be part of the context (as will, for
 deeper context, the call site of the caller, the call site of the
 caller's caller, etc.).  Other kinds of context (e.g.,
-object-sensitive context \cite{1044835,popl/SmaragdakisBL11}) can be added for extra
+object-sensitive context \cite{article:2005:Milanova,popl:2011:Smaragdakis}) can be added for extra
 precision.
 %, but call-sites cannot be dropped.
 %, unlike in an unsound points-to analysis.
@@ -1630,7 +1630,7 @@ sets.
 
 A straightforward way to ensure that the pair \((\var{meth},c')\)
 uniquely identifies invocation instruction \(i\) and context \(c\)
-is to use \emph{call-site sensitivity}~\cite{Sharir:Interprocedural,shivers:thesis}:
+is to use \emph{call-site sensitivity}~\cite{col:1981:Sharir,thesis:Shivers}:
 \(c'\) is formed by combining \(i\) and \(c\)---that is,
 \(\mathcal{NC}(i,c,\alloc{o}) = \emph{cons}(i,c)\).
 (Contexts can typically
@@ -1899,13 +1899,13 @@ also establish our laziness result.
 
 We have implemented defensive analysis in the Datalog language and
 integrated it with the \textsc{Doop} Datalog framework for
-may-point-to analysis of Java bytecode~\cite{oopsla/BravenboerS09}.
+may-point-to analysis of Java bytecode~\cite{oopsla:2009:Bravenboer}.
 The full implementation consists of over 400 logical rules, yet
 %in 3KLoC, yet
 the minimal model of Section~\ref{sec:model} captures well its
 essential features. We also completed a second, largely equivalent,
 implementation on the Souffl\'{e} Datalog
-engine~\cite{DBLP:conf/cc/ScholzJSW16}. Both implementations are
+engine~\cite{cc:2016:Scholz}. Both implementations are
 publicly available at {\small \url{https://bitbucket.org/yanniss/doop}}.
 %$<$\emph{link-anonymized}$>$.
 %, but the
@@ -1931,7 +1931,7 @@ that of the analysis's \emph{coverage}: for how many program elements
 (e.g., local variables) can the analysis produce non-empty points-to
 information? Coverage has similarly been used as a key metric in other
 work that infers specifications
-modularly~\cite{Calcagno:2009:CSA:1480881.1480917}.
+modularly~\cite{popl:2009:Calcagno}.
 %, i.e., denoting ``don't know''/''cannot bound'' values.
 
 Additionally, a defensive analysis is not in competition with a
@@ -2133,7 +2133,7 @@ information beyond a \code{put} call.
 
 \item
   The analysis coverage can be expanded by employing it jointly with a
-  \emph{must-alias} analysis~\cite{mattmight:Jagannathan:1998:Single,dvanhorn:choi-etal-popl93,popl/ZhengR08}, an \emph{escape} analysis~\cite{mattmight:Blanchet:1998:Escape,Deutsch:1997:CEA:263699.263750}, and a
+  \emph{must-alias} analysis~\cite{popl:1998:Jagannathan,popl:1993:Choi,popl:2008:Zheng}, an \emph{escape} analysis~\cite{popl:1998:Blanchet,popl:1996:Deutsch}, and a
   \emph{thread-escape} analysis. A must-alias analysis will increase
   the applicability of the rule for heap loads, and can be combined
   with the rule for heap stores to enable more strong updates. An
@@ -2178,7 +2178,7 @@ information beyond a \code{put} call.
 %% The context constructor, \consname{NewContext}, in
 %% Section~\ref{sec:model}, is modeled after the \consname{Merge} context
 %% constructor in conventional unsound points-to
-%% analyses~\cite{popl/SmaragdakisBL11,pldi/KastrinisS13}.  However, as
+%% analyses~\cite{popl:2011:Smaragdakis,pldi/KastrinisS13}.  However, as
 %% mentioned in Section~\ref{sec:model}, the resulting context has to
 %% uniquely determine the \args{invo} argument (i.e., should be call-site
 %% sensitive), although other kinds of context sensitivity can be added
@@ -2188,7 +2188,7 @@ information beyond a \code{put} call.
 %% We could similarly add a context-sensitive heap to the model, by
 %% qualifying all abstract objects with an \args{hctx} argument and
 %% employing a heap-context constructor
-%% %the \consname{Record} constructor of past work~\cite{popl/SmaragdakisBL11,pldi/KastrinisS13} 
+%% %the \consname{Record} constructor of past work~\cite{popl:2011:Smaragdakis,pldi/KastrinisS13} 
 %% on the rule for \relname{Alloc}. This addition is orthogonal to all
 %% other elements, therefore we chose not to burden the model with it.
 %% The implementation has \args{hctx} arguments in all rules, but we
@@ -2294,9 +2294,9 @@ established more than $D$ calls back in the call-stack.
 %\footnote{Even for more pedestrian language
 %  features, the most conservative analysis algorithms available are
 %  not sound for dynamically loaded code. For instance, \emph{Rapid
-%    Type Analysis (RTA)} \cite{bacon-sweeney-oopsla96} and
+%    Type Analysis (RTA)} \cite{oopsla:1996:Bacon} and
 %  \emph{Class Hierarchy Analysis (CHA)}
-%  \cite{Dean:1995:OOP:646153.679523} are well-known conservative
+%  \cite{ecoop:1995:Dean} are well-known conservative
 %  algorithms for static call-graph construction.  Nevertheless, the
 %  algorithms are not sound: they over-approximate known classes but
 %  cannot statically handle dynamically loaded classes.}
@@ -2441,7 +2441,7 @@ There are five research questions that our evaluation seeks to answer:
 %%  pointer analysis expert.)
   
 We analyze, under JDK 1.7.0\_75, the DaCapo benchmark
-programs~\cite{dacapo:paper} v.2006-10-MR2 as well as v.9.12-Bach.
+programs~\cite{oopsla:2006:Blackburn} v.2006-10-MR2 as well as v.9.12-Bach.
 The
 9.12-Bach version contains several different programs, as well as
 more recent versions of some of the same programs.
@@ -2450,8 +2450,8 @@ all of the v.2006-10-MR2 benchmarks and for those of the v.9.12-Bach
 benchmarks
 that could be analyzed by the \textsc{Doop} framework in under 3
 hours.)  We also use the two non-Android benchmarks (NTI, jFlex) from the Julia set by
-%\citet{DBLP:conf/ictac/NikolicS12}.
-Nikoli\'{c} and Spoto~\cite{DBLP:conf/ictac/NikolicS12}.
+%\citet{ictac:2012:Nikolic}.
+Nikoli\'{c} and Spoto~\cite{ictac:2012:Nikolic}.
 %(The rest of
 %the benchmarks in that set are Android applications, which the
 %\textsc{Doop} framework currently does not analyze for purely
@@ -3028,8 +3028,8 @@ The standard past approach to soundness for a careful static analysis
 has been to ``bail out'': the analysis detects whether there are
 program features that it does not handle soundly, and issues warnings,
 or refuses to produce answers. This is a common pattern in
-abstract-interpretation~\cite{Cousot:1977:AIU:512950.512973} analyses,
-such as Astr\'{e}e~\cite{Delmas2007}, which have traditionally
+abstract-interpretation~\cite{popl:1977:Cousot} analyses,
+such as Astr\'{e}e~\cite{sas:2007:Delmas}, which have traditionally
 emphasized sound handling of conventional language features. However,
 this is far from a solution to the problem of being sound for opaque
 code: refusing to handle the vast majority of realistic programs can
@@ -3039,8 +3039,8 @@ results, i.e., produces non-empty points-to sets for a subset of the
 variables. It is an experimental question to determine whether
 this subset is usefully large, as we do in our evaluation.
 
-%\citet{ecoop/HirzelDH04,toplas/HirzelDDH07}
-Hirzel et al. \cite{ecoop/HirzelDH04,toplas/HirzelDDH07} use an
+%\citet{ecoop:2004:Hirzel,article:2007:Hirzel}
+Hirzel et al. \cite{ecoop:2004:Hirzel,article:2007:Hirzel} use an
 online pointer analysis to deal with reflection and dynamic loading by
 monitoring their run-time occurrence, recording their results, and
 running the analysis again, incrementally. However, this is hardly a
@@ -3048,17 +3048,17 @@ running the analysis again, incrementally. However, this is hardly a
 (context-sensitive) analyses, if applied to all reflection
 actions. 
 
-%\citet{DSA:PLDI07}
-Lattner et al. \cite{DSA:PLDI07} offer an algorithm that can apply to incomplete
+%\citet{pldi:2007:Lattner}
+Lattner et al. \cite{pldi:2007:Lattner} offer an algorithm that can apply to incomplete
 programs, but it assumes that the linker can know all callers (i.e.,
 there is no reflection---the analysis is for C/C++) and the approach
 is closely tied to a specific flow-insensitive, unification-based
-analysis logic~\cite{mattmight:Steensgard:1996:PointsTo}, necessary
+analysis logic~\cite{popl:1996:Steensgaard}, necessary
 for simultaneously computing inter-related points-to, may-alias, and
 may-escape information.
 
-%\citet{Sreedhar:2000:FIO:349299.349326}
-Sreedhar et al. \cite{Sreedhar:2000:FIO:349299.349326} present the
+%\citet{pldi:2000:Sreedhar}
+Sreedhar et al. \cite{pldi:2000:Sreedhar} present the
 only past approach to explicitly target dynamic class loading,
 although only for a specific client analysis (call
 specialization). Still, that work ends up making many statically
@@ -3080,8 +3080,8 @@ of a sound may-point-to analysis, even though none exists in practice!
 %in the Sreedhar et al. paper).
 
 Traditional conservative call-graph construction (\emph{Class
-  Hierarchy Analysis (CHA)} \cite{Dean:1995:OOP:646153.679523} or
-\emph{Rapid Type Analysis (RTA)} \cite{bacon-sweeney-oopsla96}) is
+  Hierarchy Analysis (CHA)} \cite{ecoop:1995:Dean} or
+\emph{Rapid Type Analysis (RTA)} \cite{oopsla:1996:Bacon}) is
 unsound.  Such algorithms explore the entire class hierarchy for
 matching (overriding) methods and consider all of them to be potential
 virtual call targets. However, even this is not sufficient for a sound static
@@ -3098,7 +3098,7 @@ detrimental to analysis precision and performance. CHA is an example
 of a loose over-approximation in an effort to capture most dynamic
 behaviors.
 %(Similar loose over-approximations have been proposed, for
-%instance, for reflection analysis~\cite{aplas/Smaragdakis15}.) 
+%instance, for reflection analysis~\cite{aplas:2015:Smaragdakis}.) 
 Loose over-approximations compute many more possible targets than
 those that realistically arise. This yields vast points-to sets that
 render the analysis heavyweight and useless due to imprecision.
@@ -3110,7 +3110,7 @@ sets addresses the problem, by keeping all points-to sets compact.
 
 The conventional handling of reflection in may-point-to analysis
 algorithms for
-Java~\cite{www:wala-reflection,ecoop/LiTSX14,aplas/LivshitsWL05,livshits:thesis,aplas/Smaragdakis15,DBLP:conf/sas/LiTX15}
+Java~\cite{www:wala-reflection,ecoop:2014:Li,aplas:2005:Livshits,thesis:Livshits,aplas:2015:Smaragdakis,sas:2015:Li}
 is unsound, instead relying on a ``best-effort'' approach.  Such past
 analyses attempt to statically model the result of reflection
 operations, e.g., by computing a superset of the strings that can be
@@ -3135,7 +3135,7 @@ scalability shortcomings
     standard libraries, due to extensive reflection in the
     libraries.}''~\cite{www:wala-reflection}} and enabling reflection
 on the \textsc{Doop} framework slows it down by an order of magnitude
-on standard benchmarks~\cite{aplas/Smaragdakis15}.
+on standard benchmarks~\cite{aplas:2015:Smaragdakis}.
 % SPACE
 Furthermore, none
 of these approaches attempt to model dynamic loading---a ubiquitous
@@ -3744,7 +3744,7 @@ hindered by the lack of a sound substrate.
 \begin{comment}
 \section{Why Is Sound Analysis Hard?}
 
-In a recent article \cite{soundiness15}, Livshits et al. observe that
+In a recent article \cite{article:2015:Livshits}, Livshits et al. observe that
 ``\textit{[there is not] a single realistic whole-program analysis
   tool [...]  that does not purposely make unsound choices
   ... [V]irtually all published whole-program analyses are unsound and
@@ -3771,7 +3771,7 @@ points-to sets can only be \emph{implicitly} over-approximate. I.e.,
 they cannot list exhaustively all the abstract objects that a variable
 can point to, but instead should have catch-all values (such as
 $\top$, as in traditional data-flow analysis) or marks (such as ``I''
-for ``incomplete'' in past work \cite{DSA:PLDI07}).
+for ``incomplete'' in past work \cite{pldi:2007:Lattner}).
 
 To see this, consider the traditional explicit representation of
 points-to sets in a static analysis. A set \code{\{o1, o3, o17\}}
@@ -3834,10 +3834,10 @@ complication. More importantly, it also implies that a large number of
 objects can never be proven to not escape into opaque code. Listing
 all such objects explicitly would be highly inefficient.\footnote{The
   only past analysis that attempts to do so is that of Lattner et
-  al. \cite{DSA:PLDI07}, which has a special form that sidesteps the
+  al. \cite{pldi:2007:Lattner}, which has a special form that sidesteps the
   inefficiency at the expense of imprecision. The analysis employs a
   Steensgaard/unification-based analysis
-  model~\cite{mattmight:Steensgard:1996:PointsTo}. In this model, no
+  model~\cite{popl:1996:Steensgaard}. In this model, no
   object can belong in more than one points-to set, thus enabling a
   highly efficient representation of large sets of objects (using
   union-find trees), which cannot, however, be distinguished.} Note
@@ -3860,14 +3860,14 @@ of a large number of objects to a completely unforeseen method. Even
 modeling reflection unsoundly (but with enough effort to have a
 realistic treatment) faces a heavy engineering burden. For instance,
 the latest reflection handling in the \textsc{Doop}
-framework~\cite{aplas/Smaragdakis15} spans hundreds of logical
+framework~\cite{aplas:2015:Smaragdakis} spans hundreds of logical
 rules---a significant portion of the overall code base.
 
 Even worse, the analysis needs to also model dynamically loaded code,
 i.e., code that may not even exist at analysis time. It is far from
 trivial to consider how dynamic loading can affect the analyzed
 code---no past work has done so (except in very specific client
-settings~\cite{Sreedhar:2000:FIO:349299.349326}---see
+settings~\cite{pldi:2000:Sreedhar}---see
 Section~\ref{sec:related}). The reason, again, has to do with
 inter-procedural interactions. Extra code has the potential of
 affecting nearly every inference of a whole-program analysis (e.g.,
