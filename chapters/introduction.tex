@@ -9,7 +9,7 @@ Nowadays, it is an umbrella term for many different methodologies (...) all
 with the ultimate goal of inferring a program's properties, without the need of
 an actual execution. It is routinely employed in many different contexts:
 compilers, bug detectors, verifiers, security analyzers, IDEs, and a myriad
-other tools. 
+other tools.
 
 The main intention of any \emph{static} program analysis algorithm is to reason
 about the set of all feasible behaviors (under some abstraction of behaviors)
@@ -119,6 +119,10 @@ keeping track of the 3 most recent call-stack frames that led to the current
 method call, in order to annotate local variables. Similarly, the analysis is
 using the 2 most recent call-stack frames that led to the allocation site of an
 object to annotate the newly allocated object.
+
+
+\section{Declarative Specifications}
+
 
 
 \section{Design Choices}
@@ -494,7 +498,7 @@ precision of the end result. Truly, such a combination would bear some
 precision benefits but in most cases it would be accompanied by an infeasibly
 high and disproportionate cost.
 
-Our first scientific contribution is a step towards a more sophisticated
+\paragraphhead{First contribution.} Our first scientific contribution is a step towards a more sophisticated
 handling aiming to achieve a beneficial combination of both context flavors. We
 propose a \emph{hybrid} context flavor for defining a family of analyses where
 classical contexts are mixed and combined only in those program points where it
@@ -505,7 +509,7 @@ counterparts. This result holds for a large array of analyses (e.g.,
 1-object-sensitive, 2-object-sensitive with a context-sensitive heap, etc.)
 establishing a new set of performance/precision sweet spots.
 
-The second scientific contribution tries to tackle an oft-reported issue with
+\paragraphhead{Second contribution.} The second scientific contribution tries to tackle an oft-reported issue with
 context-sensitive analyses, in that they mostly operate in two extremes: either
 the analysis is precise enough that it manipulates only manageable sets of
 data, and thus scales impressively well, or the analysis gets quickly derailed
@@ -532,7 +536,7 @@ aim for the highest confidence in their claims. Although quite reluctant and
 conservative in making a claim, when they actually do they make certain that it
 is the correct decision.
 
-The next, third contribution features a different flavor of static program
+\paragraphhead{Third contribution.} The next, third contribution features a different flavor of static program
 analysis. Instead of the more commonly researched paradigm of
 \emph{may}-analyses, we chose to explore the alternative approach of a
 \emph{must}-analysis. More specifically, we focus on an instance of a
@@ -569,7 +573,7 @@ Under this approach, must-alias analysis can be performed efficiently, over
 large Java benchmarks, in under half a minute, making the analysis cost
 acceptable for most practical uses.
 
-For our last contribution, we revisit the setting of a may-analysis but this
+\paragraphhead{Fourth contribution.} For our last contribution, we revisit the setting of a may-analysis but this
 time while aiming to explore the potential of a truly \emph{sound} --instead of
 just soundy-- yet \emph{practical} analysis. We present such an approach in a
 \emph{defensive} may-points-to analysis, which can guarantee soundness even in
