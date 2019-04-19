@@ -7,37 +7,6 @@
 
 
 
-\emph{Points-to analysis} is a static program analysis that consists
-of computing all objects (typically identified by allocation site)
-that a program variable may point to. The area of points-to analysis
-(and its close relative, \emph{alias analysis}) has been the focus of
-intense research and is among the most standardized and
-well-understood of inter-procedural analyses. The emphasis of
-points-to analysis algorithms is on combining fairly precise modeling
-of pointer behavior with scalability. The challenge is to pick
-judicious approximations that will allow satisfactory precision at a
-reasonable cost. Furthermore, although increasing precision often
-leads to higher asymptotic complexity, this worst-case behavior is
-rarely encountered in actual practice. Instead, techniques that are
-effective at maintaining good precision often also exhibit better
-average-case performance, since smaller points-to sets lead to less
-work.
-
-One of the major tools for exploiting sweet spots in the
-precision/performance tradeoff has been \emph{context-sensitivity}.
-Context-sensitivity consists of qualifying local variables and objects
-with context information: the analysis unifies executions that map to
-the same context value, while separating executions that map to
-different contexts. This approach tries to counter the loss of
-precision that naturally results in any static analysis from
-conflating information from different dynamic program paths. Two main
-kinds of context-sensitivity have been explored in the literature:
-\emph{call-site-sensitivity}
-\cite{col:1981:Sharir,thesis:Shivers} and
-%Shivers:1988:CFA}
-\emph{object-sensitivity}
-\cite{issta:2002:Milanova,article:2005:Milanova,popl:2011:Smaragdakis}.
-
 A call-site-sensitive/$k$CFA analysis uses method call-sites (i.e.,
 labels of instructions that may call the method) as context elements.
 That is, the analysis separates information on local variables (e.g.,

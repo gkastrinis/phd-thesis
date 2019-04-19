@@ -74,12 +74,20 @@ couple of defensive algorithms for reporting highly-confident results even in
 the presence of hostile and/or unknown program points.
 
 
-\section{Context-Sensitivity}
+\section{Background}
+
+There are a few important design choices that can affect drastically the
+properties a static program analysis algorithm will enjoy and the reasoning
+that each one will need to implement.
+
+\subsection{Context-Sensitivity}
 
 Throughout the years, pointer analysis has evolved and has been the focus of
 intense research. It is widely accepted to be among the most standardized and
 well-understood inter-procedural (i.e., reasoning about a property taking into
 account the flow of code across different program functions) analyses.
+
+The emphasis of points-to analysis algorithms is on combining fairly precise modeling of pointer behavior with scalability. The challenge is to pick judicious approximations that will allow satisfactory precision at a reasonable cost. Furthermore, although increasing precision often leads to higher asymptotic complexity, this worst-case behavior is rarely encountered in actual practice. Instead, techniques that are effective at maintaining good precision often also exhibit better average-case performance, since smaller points-to sets lead to less work.
 
 A widely used concept that emerged as a powerful tool for tuning precision
 while still achieving scalable analyses, is that of \emph{context-sensitivity}.
@@ -91,15 +99,13 @@ components that result in the same context, while keep separate information for
 different contexts. In essence, qualifying components with additional context
 is as if each such component is replaced with multiple versions (one for each
 different associated context value) and the analysis can reason individually
-for each version.
+for each version. This approach tries to counter the loss of precision that naturally results in any static analysis from conflating information from different dynamic program paths.
 
 Two main flavors of context-sensitivity have been explored in past literature:
 \begin{inparaenum}[(1)]
-\item \emph{call-site sensitivity} (also known as \emph{$k$CFA}) in which
-	call-sites are used to qualify variables and other analysis components,
-	essentially re-analyzing a method for different call-sites that target that
-	method, and
-\item \emph{object-sensitivity} in which receiver objects of a call are used
+\item \emph{call-site sensitivity} (also known as \emph{$k$CFA}) \cite{col:1981:Sharir,thesis:Shivers} 
+in which call-sites are used to qualify variables and other analysis components, essentially re-analyzing a method for different call-sites that target that method, and
+\item \emph{object-sensitivity} \cite{issta:2002:Milanova,article:2005:Milanova,popl:2011:Smaragdakis} in which receiver objects of a call are used
 	instead, in a similar manner.
 \end{inparaenum}
 Another kind of context-sensitivity, known as \emph{type-sensitivity}, has also
@@ -121,15 +127,33 @@ using the 2 most recent call-stack frames that led to the allocation site of an
 object to annotate the newly allocated object.
 
 
-\section{Declarative Specifications}
+\subsection{Datalog \& the Declarative \doop{} Framework}
 
+Most of the following work and algorithms have been expressed in the \doop{} framework. \doop{} is written in the \emph{declarative} language Datalog, and although Datalog has been used for points-to analyses in the past, \doop{} was the first implementation to express full end-to-end context-sensitive analyses in Datalog. This include key analysis elements such as call-graph construction as well as logic dealing with various semantic complexities of the Java language such as native code, reflection and exceptions.
 
+The declarative power of \doop{} stems from the expressivity of Datalog. Programs written in Datalog are essentially logic specifications that as a side-effect are also executable. One simply models the semantics for each language feature of interest along with any reasoning rules of the desired analysis, and the underlying engine is responsible for combining the logic specification with input facts and, after applying a specialized computation, inferring anything that entails given the rules and the respective input.
 
-\section{Design Choices}
+The aforementioned specialized computation is known as a \emph{fixed-point} computation. All valid Datalog rules are monotonic, i.e. can only reason about the inference of additional facts, and this is exploited by the underlying engine in order to efficiently compute new facts in a repeating fashion until knowledge from previous steps cannot be applied to infer anything new in the current step. It has been described in the past, at a higher level, either as Prolog without function symbols or as SQL with support of recursion. Rules comprise of two parts; the \emph{rule-body} which describes what conditions need to hold in order to infer something new, and the \emph{rule-head} which describes what new knowledge is inferred each time. A classic example is given bellow: the part on the left of the arrow comprises the head of the rule and the part on the right comprises the body, respectively. Every relation is conceptually similar to a database table with commas (``,'') playing a similar role to database joins, i.e. denoting a logical \texttt{AND} between relations. On the other hand, a semicolon (``;'') denotes a logical \texttt{OR} between relations.
 
-There are a few important design choices that can affect drastically the
-properties a static program analysis algorithm will enjoy and the reasoning
-that each one will need to implement.
+% \begin{datalog}
+% Ancestor(x, y) :- Parent(x, y).
+
+% Ancestor(x, y) :- Parent(x, z), Ancestor(z, y).
+
+% Ancestor(x, y) :- |$\forall$| Parent(x, z), Ancestor(z, y).
+% \end{datalog}
+
+% \begin{minted}[escapeinside=||,mathescape=true]{prolog}
+% Ancestor(x, y) :- Parent(x, z), Ancestor(z, y),
+% %$\forall$
+% Parent(x, z),
+% Parent(x, z).
+% \end{minted}
+
+\rel{Ancestor}{x, y} $\leftarrow$ \rel{Parent}{x, y}.
+
+\rel{Ancestor}{x, y} $\leftarrow$ \rel{Parent}{x, z}, \rel{Ancestor}{z, y}.
+
 
 \subsection{Whole-Program vs. Partial Analyses}
 
@@ -283,7 +307,7 @@ $Any(P)$. On the other hand, a \emph{must}-analysis is one that aims to
 May(P) \supseteq Any(P) \quad \textrm{and} \quad Must(P) \subseteq All(P)
 \]
 
-\section{Soundness \& Completeness}
+\subsection{Soundness \& Completeness}
 
 The term \emph{soundness} (and its converse \emph{completeness}) originate from
 formal mathematical logic where it is used in order to evaluate a \emph{proof}
