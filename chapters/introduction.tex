@@ -78,7 +78,29 @@ the presence of hostile and/or unknown program points.
 
 There are a few important design choices that can affect drastically the
 properties a static program analysis algorithm will enjoy and the reasoning
-that each one will need to implement.
+that is required to achieve such goals.
+
+
+\subsection{The \doop{} Framework}
+
+Most of the following work and algorithms have been expressed in the \doop{} framework. \doop{} is written in the \emph{declarative} language Datalog, and although Datalog has been used for points-to analyses in the past, \doop{} was the first implementation to express full end-to-end context-sensitive analyses declaratively. This includes handling key analysis elements such as call-graph construction as well as logic dealing with various semantic complexities of the Java language such as native code, reflection and exceptions.\footnote{More specifically, the soon-to-be presented algorithms operate on Java Bytecode---the lower-level intermediate representation used in the Java Virtual Machine---and thus they could, in theory, be applied to any programming language that targets the Java VM.} Nowadays, \doop{} offers a wide array of intricate analyses displaying a variety of properties.
+
+\subsection{A Datalog Primer}
+
+The declarative power of \doop{} stems from the expressiveness of Datalog. Datalog has been described in the past, at a higher level, either as Prolog without function symbols or as SQL with support of recursion. Programs written in Datalog are essentially logic specifications that, as a side-effect, are also executable. One simply models the semantics for each language feature of interest along with any reasoning rules of the desired analysis, and the underlying engine is responsible for combining the logic specification with input facts and, after applying a specialized computation, inferring anything that follows given the rules and the respective input.
+
+The aforementioned specialized computation is known as a \emph{fixed-point} computation. All valid Datalog rules are monotonic, i.e., can only reason about the inference of additional facts, and this is exploited by the underlying engine in order to efficiently compute new facts in a repeating fashion until knowledge from previous steps cannot be applied to infer anything new in the current step. Datalog programs are contained in the \texttt{PTime} complexity class, i.e., they can be computed in polynomial time, and vice-versa, any polynomial algorithm can be implemented as a Datalog program. Additionally, because of the monotonic nature of rules, termination is always guaranteed.\footnote{We will later relax these constraints by adding language extensions that will push Datalog programs over the \texttt{PTime} class and might invalidate the termination guarantees offered by the language. We will do so in a principled way, allowing for greater flexibility on the algorithms that we can express.}
+
+A Datalog program is mainly a collection of rules with each rule contributing to a common knowledge base. Each rule has two parts (separated by ``\dl{:-}''); the \emph{rule-body}, on the right, that describes what conditions need to hold in order to infer something new, and the \emph{rule-head}, on the left, that describes what new knowledge is inferred each time. Both parts are collections of \emph{relations} that are conceptually similar to database tables. Relations can be connected to each other either via commas (``\dl{,}''), denoting a logical \texttt{AND} connection similar to a database join, or via semicolons (``\dl{;}''), denoting a logical \texttt{OR} connection.
+
+A classic example is given below. \relname{Parent} represents the obvious parent relationship between individuals abstracted by the two arguments, whereas \relname{Ancestor} represents an ancestry relationship of any depth. 
+
+\rel{Ancestor}{x, y} \dl{:-} \rel{Parent}{x, y}\dl{.}
+
+\rel{Ancestor}{x, y} \dl{:-} \rel{Parent}{x, z}\dl{,} \rel{Ancestor}{z, y}\dl{.}
+
+The first rule simply states that any parent relationship is also an ancestry one. The second rule is where recursion, the true power of Datalog, shines through. It states that whenever some \args{x} is the parent of some \args{z}, and it is already known that \args{z} is an ancestor of some \args{y}, then it is also valid to infer that \args{x} is transitively an ancestor of \args{y}. This second rule is where the fixed-point computation comes into play. Depending on the input facts, the underlying engine might need to apply the rule multiply times, each time inferring new facts that will in turn be used as the base for further inference.
+
 
 \subsection{Context-Sensitivity}
 
@@ -126,33 +148,6 @@ method call, in order to annotate local variables. Similarly, the analysis is
 using the 2 most recent call-stack frames that led to the allocation site of an
 object to annotate the newly allocated object.
 
-
-\subsection{Datalog \& the Declarative \doop{} Framework}
-
-Most of the following work and algorithms have been expressed in the \doop{} framework. \doop{} is written in the \emph{declarative} language Datalog, and although Datalog has been used for points-to analyses in the past, \doop{} was the first implementation to express full end-to-end context-sensitive analyses in Datalog. This include key analysis elements such as call-graph construction as well as logic dealing with various semantic complexities of the Java language such as native code, reflection and exceptions.
-
-The declarative power of \doop{} stems from the expressivity of Datalog. Programs written in Datalog are essentially logic specifications that as a side-effect are also executable. One simply models the semantics for each language feature of interest along with any reasoning rules of the desired analysis, and the underlying engine is responsible for combining the logic specification with input facts and, after applying a specialized computation, inferring anything that entails given the rules and the respective input.
-
-The aforementioned specialized computation is known as a \emph{fixed-point} computation. All valid Datalog rules are monotonic, i.e. can only reason about the inference of additional facts, and this is exploited by the underlying engine in order to efficiently compute new facts in a repeating fashion until knowledge from previous steps cannot be applied to infer anything new in the current step. It has been described in the past, at a higher level, either as Prolog without function symbols or as SQL with support of recursion. Rules comprise of two parts; the \emph{rule-body} which describes what conditions need to hold in order to infer something new, and the \emph{rule-head} which describes what new knowledge is inferred each time. A classic example is given bellow: the part on the left of the arrow comprises the head of the rule and the part on the right comprises the body, respectively. Every relation is conceptually similar to a database table with commas (``,'') playing a similar role to database joins, i.e. denoting a logical \texttt{AND} between relations. On the other hand, a semicolon (``;'') denotes a logical \texttt{OR} between relations.
-
-% \begin{datalog}
-% Ancestor(x, y) :- Parent(x, y).
-
-% Ancestor(x, y) :- Parent(x, z), Ancestor(z, y).
-
-% Ancestor(x, y) :- |$\forall$| Parent(x, z), Ancestor(z, y).
-% \end{datalog}
-
-% \begin{minted}[escapeinside=||,mathescape=true]{prolog}
-% Ancestor(x, y) :- Parent(x, z), Ancestor(z, y),
-% %$\forall$
-% Parent(x, z),
-% Parent(x, z).
-% \end{minted}
-
-\rel{Ancestor}{x, y} $\leftarrow$ \rel{Parent}{x, y}.
-
-\rel{Ancestor}{x, y} $\leftarrow$ \rel{Parent}{x, z}, \rel{Ancestor}{z, y}.
 
 
 \subsection{Whole-Program vs. Partial Analyses}
