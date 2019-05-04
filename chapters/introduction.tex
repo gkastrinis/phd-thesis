@@ -323,7 +323,7 @@ of local variables. This is not the case for other, more complicated language
 features such as heap accesses and method invocations, but SSA provides an easy
 way to pick the low-hanging fruit.
 
-\setlength\intextsep{10pt}
+\setlength\intextsep{15pt}
 \begin{wrapfigure}{ht}{.12\textwidth}
     \centering
 \begin{javacodeNoLines}
@@ -353,7 +353,7 @@ program $P$ \emph{will} exhibit in \emph{some} program execution (e.g., method
 $m1$ will throw exception $e1$ in one execution and exception $e2$ in another).
 Respectively, set $All(P)$ is defined as containing behaviors that will appear
 in \emph{every} program execution (e.g., method $m2$ will always throw
-exception $e3$ during any execution). I.e.,
+exception $e3$ during any execution). %I.e.,
 \[
 Any(P) := \bigcup_{e \in Executions} Behaviors(P, e)
 \quad \textrm{and} \quad
@@ -367,7 +367,7 @@ of one of the two sets. Under that definition, analyses are split mainly into
 two groups depending on the kind of approximation they try to achieve. On one
 hand, a \emph{may}-analysis is one that aims to \emph{over}-approximate
 $Any(P)$. On the other hand, a \emph{must}-analysis is one that aims to
-\emph{under}-approximate $All(P)$. I.e.,
+\emph{under}-approximate $All(P)$. %I.e.,
 \[
 May(P) \supseteq Any(P) \quad \textrm{and} \quad Must(P) \subseteq All(P)
 \]
@@ -464,23 +464,22 @@ is actually true. A sound-must analysis will have perfect precision, since it
 makes no incorrect claims (it does not report any behavior that cannot actually
 occur).
 
-Highly useful as they are, both measures have two major shortcomings. Firstly,
-these are \emph{empirical} measures in the sense that they measure an
-analysis's performance in regards to a specific given program. They bear no
-information about the analysis behavior at a theoretical level and cannot be
-generalized to other programs. An analysis could be perfect for one program and
-terrible for another. This could be tackled to some extend with the use of well
-established benchmarking suites during the testing phase, that aim to cover
-common and interesting code patterns and program behaviors.
-
-Secondly, what might be the most challenging issue, it is rarely the case that
+Highly useful as they are, both measures have a major, unavoidable shortcoming.
+It is rarely the case that
 there is actual knowledge of the ground-truth. Somewhat a chicken-and-egg
 problem, having an automatic way to retrieve the ground-truth for arbitrary
 programs is both what a static analysis aims to achieve at its core and also
 what is needed to evaluate its claims. Usually, one has to resort to observing
-a limited amount of actual executions for a given program and, making the
-assumption that the observations are a good enough representative, interpolate
+a limited amount of actual executions for a given program and---making the
+assumption that the observations are a good enough representative---interpolate
 to all possible program executions.
+
+Furthermore, this approach makes both measures \emph{empirical}, in the sense that they measure an
+analysis's performance in regards to a \emph{specific} given program. They bear no
+information in regards to the analysis behavior at a theoretical level and cannot be
+generalized to other programs. An analysis could be perfect for one program and
+terrible for another. This could be tackled to some extent with the use of well-established \emph{benchmarking suites} during the testing phase, that aim to cover
+common and interesting code patterns and program behaviors.
 
 
 \subsection{Soundiness}
