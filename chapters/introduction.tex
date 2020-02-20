@@ -1,6 +1,7 @@
 \chapter{Introduction}\label{chapter:intro}
 
-\epigraph{I'm the Doctor; I'm worse than everyone's aunt. And that is not how I'm introducing myself.}{\textit{The 11th Doctor} - Doctor Who}
+\epigraph{“Don’t be scared. All of this is new to you, and new can be scary. Now we all want answers. Stick with me — you might get some.”}{\textit{The 13th Doctor} - Doctor Who}
+%\epigraph{I'm the Doctor; I'm worse than everyone's aunt. And that is not how I'm introducing myself.}{\textit{The 11th Doctor} - Doctor Who}
 % \epigraph{Sometimes a scream is better than a thesis.}{\textit{Manfred Eigen}}
 
 Static program analysis is the cornerstone of several modern programming
@@ -67,6 +68,14 @@ It is possible to implement \emph{highly sophisticated} and \emph{precise}
 	program.
 \end{displayquote}
 
+\paragraph*{Thesis.}
+\begin{displayquote}
+It is possible to implement \emph{highly sophisticated} and \emph{precise}
+	static pointer analysis algorithms without forgoing \emph{scalability}.
+	Furthermore, precision and the accompanied \emph{confidence in results} is not a global property of a given algorithm, but can be tweaked differently for different parts of the
+	program.
+\end{displayquote}
+
 We provide a number of techniques for implementing scalable static pointer and
 alias analyses in the setting of Java programs by configuring the analysis
 strategy differently for different code parts. Additionally, we present a
@@ -84,7 +93,7 @@ that is required to achieve such goals.
 \subsection{The \doop{} Framework}
 
 Most of the following work and algorithms have been expressed in the \doop{}
-framework. \doop{} is written in the \emph{declarative} language Datalog, and
+framework \cite{oopsla:2009:Bravenboer}. \doop{} is written in the \emph{declarative} language Datalog, and
 although Datalog has been used for points-to analyses in the past, \doop{} was
 the first implementation to express full end-to-end context-sensitive analyses
 for Java,\footnote{More specifically, the soon-to-be presented algorithms
@@ -98,6 +107,7 @@ intricate analyses displaying a variety of properties.
 
 
 \subsection{A Datalog Primer}
+\label{sec:intro:datalog}
 
 The declarative power of \doop{} stems from the expressiveness of Datalog.
 Datalog has been described in the past, at a higher level, either as Prolog
@@ -515,54 +525,54 @@ features include uses of \emph{reflection} or \emph{native code} in Java,
 \begin{subfigure}{.47\textwidth}
     \includegraphics[scale=.45]{assets/intro/venn-soundness-a.pdf}
     \caption{Behavior sets of actual program executions}
-    \label{fig:soundness-a}
+    \label{fig:intro:soundness-a}
 \end{subfigure}
 \hfill
 \begin{subfigure}{.47\textwidth}
     \includegraphics[scale=.45]{assets/intro/venn-soundness-b.pdf}
     \caption{Mathematical ideals $Any(P)$ (union) and $All(P)$ (intersection)}
-    \label{fig:soundness-b}
+    \label{fig:intro:soundness-b}
 \end{subfigure}
 \begin{subfigure}{.47\textwidth}
     \includegraphics[scale=.45]{assets/intro/venn-soundness-c.pdf}
     \caption{Any sound-may analysis (green) in relation to $Any(P)$}
-    \label{fig:soundness-c}
+    \label{fig:intro:soundness-c}
 \end{subfigure}
 \hfill
 \begin{subfigure}{.47\textwidth}
     \includegraphics[scale=.45]{assets/intro/venn-soundness-d.pdf}
     \caption{Any sound-must analysis (red) in relation to $All(P)$}
-    \label{fig:soundness-d}
+    \label{fig:intro:soundness-d}
 \end{subfigure}
 \begin{subfigure}{.47\textwidth}
     \includegraphics[scale=.45]{assets/intro/venn-soundness-e.pdf}
     \caption{Any unsound analysis (orange) in relation to both ideals}
-    \label{fig:soundness-e}
+    \label{fig:intro:soundness-e}
 \end{subfigure}
 \hfill
 \begin{subfigure}{.47\textwidth}
     \includegraphics[scale=.45]{assets/intro/venn-soundness-f.pdf}
     \caption{Any \emph{soundy} analysis (blue) in relation to both ideals}
-    \label{fig:soundness-f}
+    \label{fig:intro:soundness-f}
 \end{subfigure}
 \caption{Venn diagrams visualizing the relations of different static program analysis flavors to each other and to real behaviors}
-\label{fig:soundness}
+\label{fig:intro:soundness}
 \end{figure}
 
-Figure \ref{fig:soundness} attempts to shed some light on how different kinds
+Figure \ref{fig:intro:soundness} attempts to shed some light on how different kinds
 of static program analysis relate to each other and to the mathematical ideals.
-Each set in figure \ref{fig:soundness-a} represents all behaviors exhibited
+Each set in figure \ref{fig:intro:soundness-a} represents all behaviors exhibited
 under a single actual program execution. Any static program analysis will
 collapse different executions into a single set and will make claims about the
-given program in general. In figure \ref{fig:soundness-b}, the ideal $Any(P)$
+given program in general. In figure \ref{fig:intro:soundness-b}, the ideal $Any(P)$
 is represented by the union of all sets and that of $Any(P)$ by the
 intersection, respectively. Any sound-may analysis will result in a superset of
-$Any(P)$ (figure \ref{fig:soundness-c}), whereas any sound-must analysis will
-result in a subset of $All(P)$ (figure \ref{fig:soundness-d}). Finally, any
-unsound analysis (figure \ref{fig:soundness-e}) will result in a set with no
+$Any(P)$ (figure \ref{fig:intro:soundness-c}), whereas any sound-must analysis will
+result in a subset of $All(P)$ (figure \ref{fig:intro:soundness-d}). Finally, any
+unsound analysis (figure \ref{fig:intro:soundness-e}) will result in a set with no
 apparent properties; not entirely covering its appropriate mathematical ideal
 but also including unrelated elements. More specifically though, as illustrated
-in figure \ref{fig:soundness-f}, a soundy analysis will result in a set that
+in figure \ref{fig:intro:soundness-f}, a soundy analysis will result in a set that
 starts as a superset of $Any(P)$ but misses some hard (i.e., costly) to
 overapproximate behaviors in well-known cases.
 

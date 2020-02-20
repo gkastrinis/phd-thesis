@@ -2,7 +2,7 @@
 
 \usepackage[backend=biber,bibencoding=ascii,style=numeric-comp,mincrossrefs=20]{biblatex}
 \usepackage{bookmark}
-\usepackage{booktabs} % toprule, etc
+\usepackage{booktabs} % cmidrule, toprule, etc
 \usepackage{caption}
 \usepackage{epigraph}
 \usepackage{graphicx}
@@ -17,17 +17,16 @@
 \usepackage{xparse} % NewDocumentCommand
 
 \usepackage{definitions/datalog}
-\usepackage{definitions/instructions}
 \usepackage{definitions/java}
+\usepackage{definitions/instructions}
 \usepackage{definitions/mathpartir} % inference rules
 \usepackage{definitions/misc}
 
 %%%% TEMPORARY %%%%
 \usepackage{comment}
-% \usepackage{xcolor}
-% \usepackage{pagecolor}
-% \pagecolor{black}
-% \color{white}
+%\usepackage{pagecolor}
+%\pagecolor{black}
+%\color{white}
 %%%% TEMPORARY %%%%
 
 
@@ -41,7 +40,8 @@
 \authorMiddleGr{Σ.}
 \authorLastGr{Καστρίνης}
 
-\titleEn{Scalable Static Pointer Analysis with High-Confidence Results}
+\titleEn{Static Pointer Analysis: A Story of Scalable and  High-Confidence Results}
+% \titleEn{Scalable Static Pointer Analysis with High-Confidence Results}
 \titleGr{Αποδοτική Στατική Ανάλυση Δεικτών με Αξιόπιστα Αποτελέσματα}
 
 \input{committee}
@@ -75,17 +75,17 @@
 
 \part{Achieving Scalability}
 \input{chapters/paper-hybrid}
-\input{chapters/paper-introspective}
+%\input{chapters/paper-introspective}
 
 \part{Achieving High-Confidence Results}
-\input{chapters/paper-must-logic}
-\input{chapters/paper-must-data}
-\input{chapters/paper-defensive}
+%\input{chapters/paper-must-logic}
+%\input{chapters/paper-must-data}
+%\input{chapters/paper-defensive}
 
 \part{Epilogue}
-\input{chapters/panda.tex}
-\input{chapters/related}
-\input{chapters/conclusions}
+%\input{chapters/panda.tex}
+%\input{chapters/related}
+%\input{chapters/conclusions}
 
 \backmatter
 
