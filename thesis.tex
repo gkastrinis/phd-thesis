@@ -7,6 +7,7 @@
 \usepackage{epigraph}
 \usepackage{graphicx}
 \usepackage{hhline} % double lines, instead of \cline
+\usepackage{hyperref}
 \usepackage[utf8]{inputenc}
 \usepackage{minted}
 \usepackage{multirow}
@@ -16,19 +17,20 @@
 \usepackage[dvipsnames]{xcolor}
 \usepackage{xparse} % NewDocumentCommand
 
-\usepackage{definitions/datalog}
-\usepackage{definitions/java}
+\usepackage{definitions/code}
 \usepackage{definitions/instructions}
 \usepackage{definitions/mathpartir} % inference rules
 \usepackage{definitions/misc}
 
+\renewcommand{\textflush}{flushepinormal} % justify in epigraph
+
 %%%% TEMPORARY %%%%
-\usepackage{comment}
+%\usepackage{comment}
 %\usepackage{pagecolor}
 %\pagecolor{black}
 %\color{white}
+\newcommand{\todo}{\textbf{\textcolor{Red}{FIX???}}}
 %%%% TEMPORARY %%%%
-
 
 %%%% Metadata START %%%%
 \authorFirstEn{George}
@@ -40,8 +42,9 @@
 \authorMiddleGr{Σ.}
 \authorLastGr{Καστρίνης}
 
+%\titleEn{Precision, Completeness and Scalability for Static Pointer Analysis}
 \titleEn{Static Pointer Analysis: A Story of Scalable and  High-Confidence Results}
-% \titleEn{Scalable Static Pointer Analysis with High-Confidence Results}
+%\titleEn{Scalable Static Pointer Analysis with High-Confidence Results}
 \titleGr{Αποδοτική Στατική Ανάλυση Δεικτών με Αξιόπιστα Αποτελέσματα}
 
 \input{committee}
@@ -75,7 +78,7 @@
 
 \part{Achieving Scalability}
 \input{chapters/paper-hybrid}
-%\input{chapters/paper-introspective}
+\input{chapters/paper-introspective}
 
 \part{Achieving High-Confidence Results}
 %\input{chapters/paper-must-logic}

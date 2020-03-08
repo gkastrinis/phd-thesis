@@ -1,0 +1,62 @@
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\comm}[1]{\textcolor{OliveGreen}{\textit{#1}}}
+
+%%%%%%%%%%% JAVA %%%%%%%%%%%
+\setminted[java]{style=friendly}
+
+\newminted[javacode]{java}{%
+    % mathescape,
+    % autogobble,
+    tabsize=4,
+    fontsize=\footnotesize,
+    xleftmargin=30pt,
+    linenos
+}
+
+\newminted[javacodeNoLines]{java}{%
+    % mathescape,
+    % autogobble,
+    tabsize=4,
+    fontsize=\footnotesize,
+    xleftmargin=15pt
+}
+
+%%%%%%%%%%% DATALOG %%%%%%%%%%%
+\newcommand{\dlIf}{{\large{\code{$\leftarrow$}}}}
+\newcommand{\dlnot}{\textcolor{Red}{\textbf{!}}}
+
+% Relation name and arguments, without colors
+\newcommand{\argsRAW}[1]{{\small{\code{#1}}}}
+\newcommand{\relnameRAW}[1]{\textsc{\argsRAW{#1}}}
+% With color
+\newcommand{\args}[1]{\textcolor{Bittersweet}{\argsRAW{#1}}}
+\newcommand{\relname}[1]{\textcolor{NavyBlue}{\relnameRAW{#1}}}
+\newcommand{\consname}[1]{\textbf{\relname{#1}}}
+
+\newcommand{\rel}[2]{\texttt{\relname{#1}(\args{#2})}}
+\newcommand{\cons}[3]{\texttt{\consname{#1}(\args{#2}) = \textbf{\args{#3}}}}
+
+% "Irrelevant" relation
+\newcommand{\commrel}[2]{\textcolor{Gray}{\texttt{\relnameRAW{#1}(\argsRAW{#2})}}}
+
+% Aggregation
+\newcommand{\aggregate}[3]{\texttt{\relname{#1}\{ #2 \} = \args{#3}}}
+
+
+%% Datalog Environment
+\newsavebox\spacewd
+\savebox\spacewd{\texttt{ }}
+\newenvironment{datalog}{\par\catcode32=\active \setlength{\parindent}{0pt}\ttfamily}{\par}
+{
+\catcode32=\active %
+\gdef {\makebox[\wd\spacewd][l]{%
+\textcolor{white}{\fontfamily{lmtt}\selectfont\large\smash{\char32}}}}% 
+}
+
+%%%\newcommand{\consapp}[2]{\consname{#1} (\args{#2})}
+%%%\newcommand{\cons}[3]{\consapp{#1}{#2} = \texttt{\textbf{\args{#3}}}}
+%%\newcommand{\altrelname}[1]{\textsc{\underline{#1}}}
+%%\newcommand{\altrel}[2]{\altrelname{#1} (\args{#2})}
+\newcommand{\dlarrow}{\textcolor{Bittersweet}{CHANGE!!!}}
+\newcommand{\dlforall}{{\large{\textbf{$\implies$}}}}
+%\newcommand{\tab}{\hspace{5 mm}}

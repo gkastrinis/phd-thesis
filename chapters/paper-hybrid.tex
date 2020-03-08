@@ -1,43 +1,6 @@
-\chapter{Hybrid Context-Sensitivity}\label{chapter:hybrid}
-
+\chapter{Hybrid Context-Sensitivity}
+\label{chapter:hybrid}
 \epigraph{If you wanted to know about the Hybrid, why didn’t you just ask me?}{\textit{The 12th Doctor} - Doctor Who}
-
-\section{Call-Site Sensitivity ($k$CFA)}
-
-As previously mentioned, a call-site sensitive analysis uses method call sites (i.e., labels of invocation instructions) as context elements. The analysis separates information on program expressions, such as local variables, per call-stack (i.e., sequence of $k$ most recent call-sites) that led to the current method call. Similarly, the analysis separates information on heap objects per call-stack that led to the object's allocation.
-
-For instance, in the code snippet of Figure~\ref{fig:hybrid:snippet}, a \emph{1-call-site-sensitive} analysis (unlike a \emph{context-insensitive} analysis) will distinguish the two call-sites of method \code{foo} in lines 7 and 9. This results in an analysis that will treat \code{foo} separately in two cases: that of its formal argument, \code{arg}, pointing to anything \code{obj1} may point to, and that of \code{arg} pointing to anything \code{obj2} may point to.
-
-An equivalent mental model is that of two instances of method \code{foo} being analyzed---\code{foo\_COPY1} and \code{foo\_COPY2}. The invocation in line 7 leads to \code{foo\_COPY1}, whereas the one in line 9 leads to \code{foo\_COPY2}. After the analysis has been concluded, if one is to query regarding method \code{foo}, information from both instances will be collapsed into as single answer-set.
-
-\begin{figure}[h]
-\begin{javacode}
-class A {
-    void foo(Object arg) { ... }
-}
-
-class B {
-    void bar(A a1, A a2) {
-        ...
-        a1.foo(obj1);
-        ...
-        a2.foo(obj2);
-    }
-}
-\end{javacode}
-\caption{Code snippet for illustrating context-sensitive analyses.}
-\label{fig:hybrid:snippet}
-\end{figure}
-
-\section{Object Sensitivity}
-
-In contrast, an object sensitive analysis uses allocation sites (i.e., labels of instructions containing a \code{new} statement) as context elements. (Hence, a better name for ``object-sensitivity'' might have been ``allocation-site sensitivity''.) When a method is called on an object (also known as the call \emph{receiver}), the analysis separates information depending on the allocation site of that object, as well as other, previous allocation sites used as context.
-
-Thus, in the code of Figure~\ref{fig:hybrid:snippet}, a \emph{1-object-sensitive} analysis will analyze \code{foo} separately on all the allocation sites of objects that \code{a1} and \code{a2} may point to. If, for example, \code{a1} and \code{a2} are inferred to potentially point to objects from two and three distinct allocation sites respectively, \code{foo} will effectively be analyzed under five different contexts. On the other hand, if the analysis has inferred that both \code{a1} and \code{a2} may only point to objects from a single common allocation site, then the method will only be analyzed under one context.
-
-It is not apparent from this code fragment---and this also holds in the general case--neither whether \code{a1} and \code{a2} may point to different objects, nor to how many: the allocation site of the receiver object may be remote and unrelated to the method call itself. Similarly, it is not possible to compare the precision of an object-sensitive and a call-site-sensitive analysis in principle. In this example, it is not even clear whether the object sensitive analysis will examine all calls to \code{foo} as one case, as two, or as many more, since this depends on the allocation sites of all objects that the analysis \emph{itself} computes to flow into \code{a1} and \code{a2}.
-
-\section{A Hybrid Approach}
 
 Although in principle call-site- and object-sensitivity are incomparable, in practice the story is quite clear. Call-site-sensitivity has a long history, dating to at least the '80s. For a long time, call-site-sensitivity was considered synonymous with context-sensitivity as a whole. Object-sensitivity was later introduced in 2002 \cite{issta:2002:Milanova} and within a decade it has become the overwhelming choice of context-sensitivity for object-oriented programs. Multiple studies \cite{pldi:2006:Naik,paste:2005:Liang,thesis:Lhotak,article:2008:tosem:Lhotak,oopsla:2009:Bravenboer} have found object-sensitive analyses to yield excellent precision/cost tradeoffs. Compared to call-site-sensitive analyses, an object-sensitive analysis of the same context depth has always been advantageous, in terms of both speed and performance.
 
@@ -54,7 +17,7 @@ The end result is analyses that closely track the precision of a combined call-s
 In all, this chapter describes the following contributions:
 
 \begin{itemize}
-\item We model the parameter space of context-sensitive points-to analysis in a way that allows both call-site- and object-sensitivity, as well as combinations and switching of context at key points (in our case study, virtual calls vs. static calls). In this space, we map out choices that produce entirely different flavors of algorithms.
+\item \todo{} We model the parameter space of context-sensitive points-to analysis in a way that allows both call-site- and object-sensitivity, as well as combinations and switching of context at key points (in our case study, virtual calls vs. static calls). In this space, we map out choices that produce entirely different flavors of algorithms.
 
 \item We introduce the idea of hybrid call-site- and object-sensitivity where the two kinds of context are freely mixed and the mix is adjusted in response to analyzing different program features. The goal is to achieve the precision of keeping \emph{both} kinds of context together, but at the same cost as keeping only one.
 
@@ -63,9 +26,9 @@ In all, this chapter describes the following contributions:
 \item We show experimentally, over large Java benchmarks and the Java JDK, that hybrid context-sensitivity works remarkably well. Our experiments establish that different programming language constructs are best analyzed with different kinds of context. The selective application of a combined context achieves the same \emph{effective} precision as keeping both contexts at all times, at a fraction of the cost, and is typically faster even than keeping only an object context. For instance, in the practically important case of a 2-object-sensitive analysis with a context-sensitive heap, we get an average speedup of 1.53x \emph{and} a more precise analysis. Similarly, for the simple and popular 1-object-sensitive analysis, we get an average speedup of 1.12x combined with significant increase in precision.
 \end{itemize}
 
-The rest of the chapter introduces a model for points-to analysis (Section~\ref{sec:hybrid:model}) and shows how instantiating the model yields several well-known analyses. In Section~\ref{sec:hybrid:analyses} we discuss the many choices for combining object- and call-site-sensitivity, as well as the most promising points in this design space. Our evaluation results follow in Section~\ref{sec:hybrid:evaluation}
+%\todo{}
+%The rest of the chapter introduces a model for points-to analysis (Section~\ref{sec:hybrid:model}) and shows how instantiating the model yields several well-known analyses. In Section~\ref{sec:hybrid:analyses} we discuss the many choices for combining object- and call-site-sensitivity, as well as the most promising points in this design space. Our evaluation results follow in Section~\ref{sec:hybrid:evaluation}
 
-% \begin{comment}
 
 % In this paper, we offer a unified formal framework that captures the
 % object-sensitive analyses defined in the literature and allows a
@@ -116,267 +79,6 @@ The rest of the chapter introduces a model for points-to analysis (Section~\ref{
 % new sweet spot in the practical tradeoff of points-to analysis
 % precision and performance.
 
-% \end{comment}
-
-\section{Modeling of Points-To Analysis}
-\label{sec:hybrid:model}
-
-We begin with a concise modeling of the relevant points-to analyses and their context choices.
-
-\subsection{Background: Parameterizable Model}
-
-We model a spectrum of flow-insensitive, context-sensitive points-to analyses and joint (also known as \emph{on-the-fly} or \emph{online}) call-graph construction as a parametric Datalog program. Rules in a Datalog program are monotonic logical inferences that repeatedly apply to infer more facts until fixpoint. Our rules do not use negation in a recursive cycle, or other non-monotonic logic constructs, resulting in a declarative specification: the order of evaluation of rules cannot affect the final result. A more detailed Datalog primer was presented in chapter \ref{sec:intro:datalog}. The same abstract model applies to a wealth of analyses. We use it to model a context-insensitive Andersen-style \cite{thesis:Andersen} analysis, as well as several context-sensitive analyses, both call-site-sensitive and object-sensitive ones.
-
-The input language is a representative simplified intermediate language that models well the Java bytecode representation, but also other high-level intermediate languages. It does not, however, model languages such as C or C++ that can create pointers through an address-of operator. The techniques used in that space are fairly different---e.g., \cite{pldi:2007:Hardekopf,popl:2009:Hardekopf}---although our main hybrid approach is likely to be applicable there as well. Also, even though we model regular object fields and static methods, we omit static fields. Their treatment is a mere engineering complexity, as it does not interact with context choice.
-
-\begin{figure}[tb!p]
-\begin{tabular}{l}
-\args{V} is a set of program variables \\
-\args{H} is a set of heap abstractions (i.e., allocation sites) \\
-\args{M} is a set of method identifiers \\
-\args{S} is a set of method signatures (including name and type signature) \\
-\args{F} is a set of fields \\
-\args{I} is a set of instructions (mainly used for invocation sites)\\
-\args{T} is a set of class types \\
-\args{$\mathbb{N}$} is the set of natural numbers \\
-\args{C} is a set of contexts \\
-\args{HC} is a set of heap contexts \\
-\end{tabular}
-\caption[]{The domain of our input intermediate language.}
-\label{fig:hybrid:input-domain}
-\end{figure}
-
-The domain of our intermediate language (i.e., the different value sets that constitute the space of our computation) is presented in Figure~\ref{fig:hybrid:input-domain} and the core instructions are abstracted away in the first six Datalog input relations presented in Figure~\ref{fig:hybrid:input}. We explain the contents of our input relations in more detail below:
-
-\begin{itemize}
-\item \relname{Alloc} represents instructions for allocating an object \args{heapObj} on the heap, assigning it to variable \args{var} of method \args{inMeth}. Note that every local variable is appropriately annotated by the exact method signature in which it is defined and is thus uniquely identified just by its name. Additionally, we abstract heap objects by their allocation sites throughout.
-
-\item  \relname{Move} represents instructions for copying values between local variables \args{to} and \args{from}.
-
-\item \relname{Load} represents instructions for reading from the heap, i.e., from field \args{fld} of the object stored in variable \args{base} and assigning the value back to variable \args{to}, whereas \relname{Store} represents instructions for the inverse flow (i.e., writing the value of variable \args{from} to the field \args{fld} of the object in variable \args{base}).
-
-\item \relname{VCall} represents instructions that call the method of the appropriate signature \args{sig} that is defined in the dynamic class of the receiver object stored in local variable \args{base} whereas \relname{SCall} represents instructions that call a statically known target method identified by signature \args{sig}. Both \relname{VCall} and \relname{SCall} supplementary report the invocation instruction \args{invo} itself as well as the enclosing method \args{inMeth}.
-\end{itemize}
-
-\begin{figure}[tb!p]
-\begin{tabular}{l l}
-\rel{Alloc}{var : V, heapObj : H, inMeth : M}  & // var = new ... \\
-\rel{Move}{to : V, from : V}                   & // to = from \\
-\rel{Load}{to : V, base : V, fld : F}          & // to = base.fld \\
-\rel{Store}{base : V, fld : F, from : V}       & // base.fld = from \\
-\rel{VCall}{base : V, sig : S, invo : I, inMeth : M} & // base.sig(..) \\
-\rel{SCall}{meth : M, invo : I, inMeth : M}    & // Class.meth(..) \\
-\\
-\rel{FormalArg}{meth : M, i : $\mathbb{N}$, arg : V} \\ 
-\rel{ActualArg}{invo : I, i : $\mathbb{N}$, arg : V} \\ 
-\rel{FormalReturn}{meth : M, ret : V} \\                
-\rel{ActualReturn}{invo : I, var : V} \\                
-\rel{ThisVar}{meth : M, this : V} \\                    
-\rel{HeapType}{heapObj : H, type : T} \\
-\rel{LookUp}{type : T, sig : S, meth : M} \\            
-\end{tabular}\\
-\caption[]{The input Datalog relations describing the program under analysis.}
-\label{fig:hybrid:input}
-\end{figure}
-
-The last seven Datalog relations encode pertinent symbol table information, that will prove helpful in the analysis rules to come.
-
-\begin{itemize}
-\item \relname{FormalArg} states that the $i$-th argument of method \args{meth} is the local variable \args{arg}. \relname{ActualArg} does the same for invocations.
-
-\item \relname{FormalReturn} and \relname{ActualReturn} convey similar information for when a method returns to its caller.
-
-\item \relname{ThisVar} represents the special local variable \args{this}---when applicable---inside method \args{meth} whereas \relname{HeapType} maps object \args{heapObj} to its actual dynamic type.
-
-\item \relname{LookUp} simulates the lookup operations inside a Java VM that given the dynamic type \args{type} of a receiver object and a method signature \args{sig}, find the appropriate target method \args{meth} to call in a virtual invocation.
-\end{itemize}
-
-The specification of our points-to analysis as well as the input language are in line with those in past literature \cite{uss:2009:Guarnieri,fse:2013:Madsen}, although we also integrate elements such as on-the-fly call-graph construction, static calls, and field-sensitivity. Specifying the analysis logically as Datalog rules has the advantage that the specification is close to the actual implementation. Datalog has been the basis of several implementations of program analyses, both low-level \cite{col:1994:Reps,aplas:2005:Whaley,pods:2005:Lam,pldi:2004:Whaley,oopsla:2009:Bravenboer} and high-level \cite{icse:2008:Eichberg,ecoop:2006:Hajiyev}. Indeed, the analysis we show is a faithful model of the implementation in the \doop{} framework, upon which our work builds. Our specification of the analysis (Figures~\ref{fig:hybrid:output}-\ref{fig:hybrid:baserules}) is an abstraction of the actual implementation in the following ways:
-
-\begin{itemize}
-\item The implementation has many more rules. It covers the full complexity of Java, including rules for handling reflection, native methods, static fields, string constants, implicit initialization, threads, and a lot more. The \doop{} implementation\footnote{Available at http://doop.program-analysis.org/ (??? github)} currently contains over 600 (???) rules in the common core of all analyses, and several more rules specific to each analysis, as opposed to the 9 rules we examine here. (Note, however, that these few rules are the most crucial for any points-to analysis. They also correspond fairly closely to the algorithms specified in other formalizations of points-to analyses in the literature~\cite{pldi:2010:Might,popl:2011:Smaragdakis}.)
-
-\item The implementation also reflects considerations for efficient execution. The most important is that of defining indexes (????) for the key relations of the evaluation. Furthermore, it designates some relations as functions, defines storage models for relations (e.g., how many bits each variable uses), designates intermediate relations as ``materialized views'' or not, etc. No such considerations are reflected in our model.
-\end{itemize}
-
-\begin{figure}[tb!p]
-\begin{tabular}{l}
-\rel{VarPointsTo}{var : V, ctx : C, heap : H, hctx : HC} \\
-\rel{CallGraph}{invo : I, callerCtx : C, meth : M, calleeCtx : C} \\
-\rel{FldPointsTo}{baseH: H, baseHCtx: HC, fld: F, heap: H, hctx: HC} \\
-\rel{InterProcAssign}{to : V, toCtx : C, from : V, fromCtx : C} \\
-\rel{Reachable}{meth : M, ctx : C} \\
-\\
-\cons{Record}{heap : H, ctx : C}{newHCtx : HC} \\
-\cons{Merge}{heap : H, hctx : HC, invo : I, ctx : C}{newCtx : C} \\
-\cons{MergeStatic}{invo : I, ctx : C}{newCtx : C} \\
-\end{tabular}
-\caption[]{The core Datalog output relations and constructors of contexts.}
-\label{fig:hybrid:output}
-\end{figure}
-
-\begin{figure}[tb!p]
-\begin{tabular}{l}
-\rel{InterProcAssign}{to, calleeCtx, from, callerCtx} $\leftarrow$ \\
-\tab \rel{CallGraph}{invo, callerCtx, meth, calleeCtx}, \\
-\tab \rel{FormalArg}{meth, i, to}, \rel{ActualArg}{invo, i, from}. \\
-\\
-\rel{InterProcAssign}{to, callerCtx, from, calleeCtx} $\leftarrow$ \\
-\tab \rel{CallGraph}{invo, callerCtx, meth, calleeCtx}, \\
-\tab \rel{FormalReturn}{meth, from}, \rel{ActualReturn}{invo, to}. \\
-\\
-\cline{1-1}
-\\
-\cons{Record}{heap, ctx}{hctx}, \\
-\rel{VarPointsTo}{var, ctx, heap, hctx} $\leftarrow$ \\
-\tab \rel{Reachable}{meth, ctx}, \rel{Alloc}{var, heap, meth}. \\
-\\
-\rel{VarPointsTo}{to, ctx, heap, hctx} $\leftarrow$ \\
-\tab \rel{Move}{to, from}, \rel{VarPointsTo}{from, ctx, heap, hctx}. \\
-\\
-\rel{VarPointsTo}{to, toCtx, heap, hctx} $\leftarrow$ \\
-\tab \rel{InterProcAssign}{to, toCtx, from, fromCtx}, \\
-\tab \rel{VarPointsTo}{from, fromCtx, heap, hctx}. \\
-\\
-\rel{VarPointsTo}{to, ctx, heap, hctx} $\leftarrow$ \\
-\tab \rel{Load}{to, base, fld}, \rel{VarPointsTo}{base, ctx, baseH, baseHCtx}, \\
-\tab \rel{FldPointsTo}{baseH, baseHCtx, fld, heap, hctx}. \\
-\\
-\rel{FldPointsTo}{baseH, baseHCtx, fld, heap, hctx} $\leftarrow$ \\
-\tab \rel{Store}{base, fld, from}, \rel{VarPointsTo}{from, ctx, heap, hctx},\\
-\tab \rel{VarPointsTo}{base, ctx, baseH, baseHCtx}. \\
-\\
-\cline{1-1}
-\\
-\cons{Merge}{heap, hctx, invo, callerCtx}{calleeCtx}, \\
-\rel{Reachable}{toMeth, calleeCtx}, \\
-\rel{VarPointsTo}{this, calleeCtx, heap, hctx}, \\
-\rel{CallGraph}{invo, callerCtx, toMeth, calleeCtx} $\leftarrow$ \\
-\tab \rel{VCall}{base, sig, invo, inMeth}, \rel{Reachable}{inMeth, callerCtx}, \\
-\tab \rel{VarPointsTo}{base, callerCtx, heap, hctx},\\
-\tab \rel{HeapType}{heap, heapT}, \rel{Lookup}{heapT, sig, toMeth},\\
-\tab \rel{ThisVar}{toMeth, this}. \\
-\\
-\cons{MergeStatic}{invo, callerCtx}{calleeCtx}, \\
-\rel{Reachable}{toMeth, calleeCtx}, \\
-\rel{CallGraph}{invo, callerCtx, toMeth, calleeCtx} $\leftarrow$ \\
-\tab \rel{SCall}{toMeth, invo, inMeth}, \rel{Reachable}{inMeth, callerCtx}. \\
-\end{tabular}
-\caption[]{Datalog rules for the points-to analysis and call-graph construction.}
-\label{fig:hybrid:baserules}
-\end{figure}
-
-Figure~\ref{fig:hybrid:output} shows the intermediate and output relations, as well as three \emph{constructor} functions, responsible for producing new contexts. Figure~\ref{fig:hybrid:baserules} shows the points-to analysis and call-graph computation. We explain the contents of both figures in more detail below:
-%The rule syntax is simple: the left arrow
-%symbol ($\leftarrow$) separates the inferred facts (i.e., the
-%\emph{head} of the rule) from the previously established facts (i.e.,
-%the \emph{body} of the rule). For instance, the first rule states
-%that, if we have computed a call-graph edge between invocation site
-%\args{invo} and method \args{meth} (under some contexts---see later),
-%then we infer an inter-procedural assignment to the $i$-th formal
-%argument of \args{meth} from the $i$-th actual argument at
-%\args{invo}, for every $i$.
-
-\begin{itemize}
-\item There are five output or intermediate computed relations (\relname{VarPointsTo}, $\ldots$, \relname{Reachable}). Every occurrence of a method or local variable in computed relations is qualified with a context (i.e., an element of set \args{C}), while every occurrence of a heap object is qualified with a heap context (i.e., an element of \args{HC}). The main output relations are \relname{VarPointsTo} and \relname{CallGraph}, encoding our points-to and call-graph results. The \relname{VarPointsTo} relation links a variable (\args{var}) to a heap object (\args{heap}). Other intermediate relations (\relname{FldPointsTo}, \relname{InterProcAssign}, \relname{Reachable}) correspond to standard concepts and are introduced for conciseness. For instance, \relname{InterProcAssign} (which encodes all parameter and return value passing) unifies much of the treatment of static and virtual method calls.
-
-\item The base rules are not concerned with what kind of context-sensitivity is used. The same rules can be used for a context-insensitive analysis (by only ever creating a single context object and a single heap context object), for a call-site-sensitive analysis, or for an object-sensitive analysis, for any context depth. These aspects are completely hidden behind constructor functions \consname{Record}, \consname{Merge}, and \consname{MergeStatic}. The first two follow the usage and naming convention of Smaragdakis et al.~\cite{popl:2011:Smaragdakis}, while \consname{MergeStatic} is new and used to differentiate the treatment of static calls---this is a crucial element of our approach.
-
-\item \consname{Record} is the function that creates a new heap context. It is invoked whenever an object allocation site (input relation \relname{Alloc}) is analyzed. Thus, \consname{Record} is only used in the rule treating allocation instructions (3rd rule in Figure~\ref{fig:hybrid:baserules}). \consname{Record} takes all available information at the allocation site of an object and combines it to produce a new heap context. The rule merely says that an allocation instruction in a reachable method leads us to infer a points-to fact between the allocated object and the variable it is directly assigned to.
-
-\item  \consname{Merge} and \consname{MergeStatic} are used to create new calling contexts (or just ``contexts''). These contexts are used to qualify method calls, i.e., they are applied to all local variables in a program. The \consname{Merge} and \consname{MergeStatic} functions take all available information at the call-site of a method (virtual or static) and combine it to create a new context. These functions are sufficient for modeling a very large variety of context-sensitive analyses, as we show in Sections \ref{sec:hybrid:instances} and \ref{sec:hybrid:main}.
-
-Note that the use of constructors, such as \consname{Record}, \consname{Merge}, and \consname{MergeStatic}, is not part of regular Datalog and can result in infinite structures (e.g., one can express unbounded call-site sensitivity) if care is not taken. All our later definitions statically guarantee to create contexts of a pre-set depth. Also noteworthy is the fact that, each different combination of parameters in a constructor will only create a new context if one does not already exist---otherwise it just returns the pre-existing one.
-
-\item The rules of Figure~\ref{fig:hybrid:baserules} show how each input instruction leads to the inference of facts for the five output or intermediate relations. The most complex rule is the second-to-last, which handles virtual method calls (input relation \relname{VCall}). The rule says that if a reachable method of the program has an instruction making a virtual method call over local variable \args{base} (this is an input fact), and the analysis so far has established that \args{base} can point to heap object \args{heap}, then the called method is looked up inside the type of \args{heap} and several further facts are inferred: that the looked up method is reachable, that it has an edge in the call-graph from the current invocation site, and that its \args{this} variable can point to \args{heap}. Additionally, the \consname{Merge} function is used to possibly create (or look up) the right context for the current invocation.
-\end{itemize}
-
-
-\subsection{Instantiating the Model: Standard Analyses}
-\label{sec:hybrid:instances}
-
-By modifying the definitions of the \consname{Record}, \consname{Merge} and \consname{MergeStatic} functions as well as domains \args{HC} and \args{C}, one can create endless variations of points-to analyses. We next discuss the most interesting combinations from past literature, before we introduce our own (in Section~\ref{sec:hybrid:main}). For every analysis name we also list a common abbreviation, which we often use later.
-
-\paragraph{Context-insensitive (insens).}
-As already mentioned, our context-sensitive analysis framework can yield a context-insensitive analysis by merely picking singleton \args{C} and \args{HC} sets (i.e., \args{C} = \args{HC} = \args{\{$\star$\}}, where $\star$ is merely a name for a distinguished element) and constructor functions that return the single element of the set:
-
-\begin{quote}
-\cons{Record}{heap, ctx}{$\star$}\\
-\cons{Merge}{heap, hctx, invo, ctx}{$\star$} \\
-\cons{MergeStatic}{invo, ctx}{$\star$}
-\end{quote}
-
-Note that the absence of contexts does not mean that the identity of input elements is forgotten. Objects are still represented by their allocation site (i.e., the exact program instruction that allocated the object) and local variables are still distinguished (e.g., by their declaration location in the input program). The absence of context just means that there is no \emph{extra} distinguishing information. This can also be seen in the rules of Figure~\ref{fig:hybrid:baserules}, where the \args{var} and \args{heap} predicate arguments are present, separately from the context arguments.
-
-\paragraph{1-call-site-sensitive (1call).}
-A 1-call-site-sensitive analysis has no heap context to qualify heap abstractions (\args{HC} = \args{\{$\star$\}}) and uses the current invocation site as a context (\args{C} = \args{I}). The following definitions describe such an analysis.
-
-\begin{quote}
-\cons{Record}{heap, ctx}{$\star$} \\
-\cons{Merge}{heap, hctx, invo, ctx}{invo} \\
-\cons{MergeStatic}{invo, ctx}{invo}
-\end{quote}
-
-In words: the analysis stores no context when an object is created (\consname{Record}) and keeps the invocation site as context in both virtual and static calls.
-
-\paragraph{1-call-site-sensitive with a context-sensitive heap (1call+H).}
-The analysis is defined similarly to 1call.\footnote{The standard convention in the points-to analysis literature is to name an analysis first according to the context of methods, and, if a heap context exists, designate it in a suffix such as \emph{context-sensitive heap} or \emph{heap cloning}.}  The heap context as well as the main context consist of an invocation site (\args{HC} = \args{C} = \args{I}).
-
-\begin{quote}
-\cons{Record}{heap, ctx}{ctx} \\
-\cons{Merge}{heap, hctx, invo, ctx}{invo} \\
-\cons{MergeStatic}{invo, ctx}{invo} 
-\end{quote}
-
-In words: the analysis uses the current method's context as a heap context for objects allocated inside the method. The invocation site of a method call is the context of the method for both virtual and static calls.
-
-\paragraph{1-object-sensitive (1obj).}
-Object sensitivity uses allocation sites as context components. A 1-object-sensitive analysis has no heap context (\args{HC} = \args{\{$\star$\}}) and uses the allocation site of the receiver object as context (\args{C} = \args{H}). The following definitions complete the description. 
-
-\begin{quote}
-\cons{Record}{heap, ctx}{$\star$} \\
-\cons{Merge}{heap, hctx, invo, ctx}{heap} \\
-\cons{MergeStatic}{invo, ctx}{ctx} 
-\end{quote}
-
-In words: the analysis stores no context for allocated objects. For virtual method calls, the context is the allocation site of the receiver object. For static method calls, the context for the called method is that of the calling method.
-
-The above definition offers a first glimpse of the possibilities that we explore in this paper, and can serve as motivation. In static calls, the context of the caller method is copied, i.e., the receiver object of the caller method is used as the new context. Why not try \cons{MergeStatic}{invo, ctx}{invo}, instead of the current \cons{MergeStatic}{invo, ctx}{ctx}?  Isn't it perhaps better to use call-sites to differentiate static invocations, instead of blindly copying the context of the last non-static method called? A simple answer is that \args{invo} is an entity of the wrong type, since \args{C} = \args{H}. The only entity of type \args{H} we have available at a static call-site is the current context, \args{ctx}. But if we let \args{C} = \args{H $\cup$ I}, we have a context type that is a hybrid of both an allocation site and an invocation site, and which allows the above alternative definition of \consname{MergeStatic}. We explore this and other such directions in depth in Section~\ref{sec:hybrid:main}.
-
-\paragraph{2-object-sensitive with a 1-context-sensitive heap (2obj+H).}
-In this case, the heap context consists of one allocation site (\args{HC} = \args{H}) and the context consists of two allocation sites (\args{C} = \args{H $\times$ H}). The definitions of constructor functions are:\footnote{We use auxiliary constructor functions \args{pair}, \args{triple} and accessors \args{first}, \args{second}, and \args{third}, with the expected meaning, in order to construct and deconstruct contexts with 2 or 3 elements. This has the added advantage that our context-depth is statically bounded---we never create lists of unknown length. Since our most complex constructor is \args{triple}, the possible number of distinct contexts is cubic in the size of the input program.}
-
-\begin{quote}
-\cons{Record}{heap, ctx}{first(ctx)} \\
-\cons{Merge}{heap, hctx, invo, ctx}{pair(heap, hctx)} \\
-\cons{MergeStatic}{invo, ctx}{ctx} 
-\end{quote}
-
-In words: the context of a virtual method (see \consname{Merge}) is a 2-element list consisting of the receiver object and its (heap) context. The heap context of an object (fixed at allocation, via \consname{Record}) is the first context element of the allocating method, i.e., the receiver object on which it was invoked. Therefore, the context of a virtual method is the receiver object together with the ``parent'' receiver object (the receiver object of the method that allocated the receiver object of the virtual call). Again, static calls just copy the context of the caller method.
-
-Although there can be other definitions of the \consname{Merge} function, yielding alternative 2-obj+H analyses, it has been shown \cite{popl:2011:Smaragdakis} that the above is the most precise and scalable. In intuitive terms, we use as method context the most precise abstraction of the receiver object available to the analysis.
-
-\paragraph{2-type-sensitive with a 1-context-sensitive heap (2type+H).}
-A type-sensitive analysis is step-by-step analogous to an object-sensitive one, but instead of using allocation sites (i.e., instructions) a type-sensitive analysis uses the name of the class containing the allocation site. In this way, all allocation sites in methods declared in the same class (though not inherited methods) are merged. This approximation was introduced by Smaragdakis et al.~\cite{popl:2011:Smaragdakis} and yields much more scalable analyses at the expense of moderate precision loss (as we also determine in our experiments).
-
-In order to define type-sensitive analyses we need an auxiliary function which maps each heap abstraction to the class containing the allocation.
-%---encoded in our input Datalog relations in Figure~\ref{fig:hybrid:input} by \relname{HeapType}
-
-$\mathcal{C_A}: H \rightarrow T$
-
-Now we can define a 2type+H analysis by mapping $\mathcal{C_A}$ over the context of a 2obj+H analysis. The heap context uses a type instead of an allocation site (\args{HC} = \args{T}) and the calling context uses two types (\args{C} = \args{T $\times$ T}).
-
-\begin{quote}
-\cons{Record}{heap, ctx}{first(ctx)} \\
-\cons{Merge}{heap, hctx, invo, ctx}{pair($\mathcal{C_A}$(heap), hctx)} \\
-\cons{MergeStatic}{invo, ctx}{ctx} 
-\end{quote}
-
-But just having a type as a context element does not tell us how good the context will be in improving precision. Thus, the selection of type is of paramount importance. As discussed in \cite{popl:2011:Smaragdakis} using the dynamic type of the heap object would be an awful design decision---the method under analysis already gives us enough information about the type of the receiver object. A better approach is to use an upper bound of the dynamic type of the \emph{allocator} object.\footnote{If the allocation occurs in a method of class C, the allocator object must be of type C or a subclass of C that does not override the method containing the allocation site.}
-
-\paragraph{Other Analyses.}
-The above discussion omits several analyses in the literature, in order to focus on a manageable set with practical relevance. We do not discuss a 1-object-sensitive analysis with a context-sensitive heap (1obj+H) because it is a strictly inferior choice to other analyses (especially 2type+H) in practice: it is both much less precise and much slower. We do not present other varieties of type-sensitivity for a similar reason. Deeper contexts or heap contexts (e.g., 2call+H, 2obj+2H, 3obj, etc.) quickly make an analysis intractable for a substantial portion of realistic programs and modern JDKs. In short, we focus on the specific analyses (1call, 1call+H, 1obj, 2obj+H, 2type+H) that are of most practical interest: they are quite scalable over a variety of medium-to-large programs, and no other analysis supplants them by being uniformly better in both precision and performance.
-
 
 \section{Hybrid Context-Sensitive Analyses}
 \label{sec:hybrid:main}
@@ -396,24 +98,24 @@ The first kind of context combination is a straightforward one: both kinds of co
 
 The insight is that by using every information available at each point we can get more precise analyses. Although that is proved to be true, experimental results also show that this precision gain comes with an infeasibly high cost in most cases. Still, we present some analyses that fully combine call-site and object sensitivity as a middle step for understanding later improvements and also as a baseline when comparing more elaborate ways of context combination.
 
-\paragraph{Uniform 1-object-sensitive hybrid (U-1obj).}
+\paragraph[Uniform 1-object-sensitive]{Uniform 1-object-sensitive hybrid (U-1obj).}
 Enhancing a 1-object-sensitive analysis with call-site sensitivity results in an analysis with an empty heap context (\args{HC} = \args{\{$\star$\}}) but with a context that consists of both the allocation site of the receiver object and the invocation site of the method (\args{C} = \args{H $\times$ I}). The following definitions describe the analysis:
 
 \begin{quote}
 \cons{Record}{heap, ctx}{$\star$} \\
-\cons{Merge}{heap, hctx, invo, ctx}{pair(heap, invo)} \\
-\cons{MergeStatic}{invo, ctx}{pair(first(ctx), invo)} 
+\cons{Merge}{heap, hctx, invo, ctx}{\bl{pair}(heap, invo)} \\
+\cons{MergeStatic}{invo, ctx}{\bl{pair}(\bl{first}(ctx), invo)} 
 \end{quote}
 
 In words: a virtual method has as context the abstraction of its receiver object, extended with the method's invocation site.  A static method keeps a context consisting of the most significant part of the caller's context and the method's invocation site. Note that under the above definitions, the context of a U-1obj analysis is always a superset of that of 1obj, hence the analysis is strictly more precise.
 
-\paragraph{Uniform 2-object-sensitive with 1-context-sensitive heap hybrid (U-2obj+H).}
+\paragraph[Uniform 2-object-sensitive with 1-context-sensitive heap]{Uniform 2-object-sensitive with 1-context-sensitive heap hybrid (U-2obj+H).}
 A 2-object-sensitive analysis with a context-sensitive heap can be enhanced in the same way. A heap context consists of an allocation site (\args{HC} = \args{H}) and a method context consists of two allocation sites and one invocation site (\args{C} = \args{H $\times$ H $\times$ I}).  The constructor definitions for the analysis are:
 
 \begin{quote}
-\cons{Record}{heap, ctx}{first(ctx)} \\
-\cons{Merge}{heap, hctx, invo, ctx}{triple(heap, hctx, invo)} \\
-\cons{MergeStatic}{invo, ctx}{triple(first(ctx), second(ctx), invo)} 
+\cons{Record}{heap, ctx}{\bl{first}(ctx)} \\
+\cons{Merge}{heap, hctx, invo, ctx}{\bl{triple}(heap, hctx, invo)} \\
+\cons{MergeStatic}{invo, ctx}{\bl{triple}(\bl{first}(ctx), \bl{second}(ctx), invo)} 
 \end{quote}
 
 In words: an object's heap context is the receiver object of the method doing the allocation. A virtual method's context is its receiver object's allocation site and context (the latter being the allocation site of the object that allocated the receiver), followed by the invocation site of the method. On a static call, the heap part (i.e., first two elements) of the method context is kept unchanged, and extended with the invocation site of the call.
@@ -422,23 +124,23 @@ This analysis is also strictly more precise than the ``plain'' analysis it is ba
 
 Note here that in deeper analyses where some elements from the context are used in order to create new heap contexts, it is important which ones we choose to propagate. Different choices might result in analyses that behave quite differently both in terms of performance and precision. We can easily influence which context elements are selected for propagation, by changing their ordering in the context.
 
-\paragraph{Uniform 2-type-sensitive with 1-context-sensitive heap hybrid (U-2type+H).}
+\paragraph[Uniform 2-type-sensitive with 1-context-sensitive heap]{Uniform 2-type-sensitive with 1-context-sensitive heap hybrid (U-2type+H).}
 Isomorphically to object-sensitivity, we can enhance type-sensitive analyses with call-site information in the same way. When applied to a 2-type-sensitive analysis with a context-sensitive heap, this results in an analysis with a heap context of one type (\args{HC} = \args{T}) and a context of two types and an invocation site (\args{C} = \args{T $\times$ T $\times$ I})---mirroring the 2-object-sensitive analysis with a context sensitive heap. The definitions are almost identical:
 
 \begin{quote}
-\cons{Record}{heap, ctx}{first(ctx)} \\
-\cons{Merge}{heap, hctx, invo, ctx}{triple($\mathcal{C_A}$(heap), hctx, invo)} \\
-\cons{MergeStatic}{invo, ctx}{triple(first(ctx), second(ctx), invo)} 
+\cons{Record}{heap, ctx}{\bl{first}(ctx)} \\
+\cons{Merge}{heap, hctx, invo, ctx}{\bl{triple}($\mathcal{C_A}$(heap), hctx, invo)} \\
+\cons{MergeStatic}{invo, ctx}{\bl{triple}(\bl{first}(ctx), \bl{second}(ctx), invo)} 
 \end{quote}
 
 
 \subsection{Selective Hybrid Analyses}
 
-Another approach to hybrid call-site- and object-sensitive analyses is to maintain a context that varies inside the same analysis. We call such analyses \emph{selective hybrid analyses}, as opposed to the earlier ``uniform hybrid'' ones. In a selective hybrid analysis, the sets of contexts, \args{C} and \args{HC}, will be formed as the cartesian (?????) product of unions of sets. Depending on the information available at different analysis points where new contexts are formed, we shall create contexts of a different kind, instead of always keeping a combination of rigid form. We have already hinted at such opportunities in Section~\ref{sec:hybrid:instances}: at a static method call, an object-sensitive analysis does not have a heap object available to create a new context, hence it can at best propagate the context of the caller. Yet, an invocation site is available and can be used to distinguish different static calls, as long as we are allowed to use it as context. This observation generalizes: static invocations are a language feature that benefits highly from the presence of call-site-sensitive elements in the context. This is not hard to explain: For object-sensitive analyses, when analyzing a static invocation, we do not have much information to use in creating a new context, in contrast to a ``normal'' virtual invocation. Consequently, it is beneficial to be able to use the invocation site as a differentiator of static calls.
+Another approach to hybrid call-site- and object-sensitive analyses is to maintain a context that varies inside the same analysis. We call such analyses \emph{selective hybrid analyses}, as opposed to the earlier ``uniform hybrid'' ones. In a selective hybrid analysis, the sets of contexts, \args{C} and \args{HC}, will be formed as the cartesian (\todo{}) product of unions of sets. Depending on the information available at different analysis points where new contexts are formed, we shall create contexts of a different kind, instead of always keeping a combination of rigid form. We have already hinted at such opportunities in Section~\ref{sec:intro:model-instances}: at a static method call, an object-sensitive analysis does not have a heap object available to create a new context, hence it can at best propagate the context of the caller. Yet, an invocation site is available and can be used to distinguish different static calls, as long as we are allowed to use it as context. This observation generalizes: static invocations are a language feature that benefits highly from the presence of call-site-sensitive elements in the context. This is not hard to explain: For object-sensitive analyses, when analyzing a static invocation, we do not have much information to use in creating a new context, in contrast to a ``normal'' virtual invocation. Consequently, it is beneficial to be able to use the invocation site as a differentiator of static calls.
 
 Selective hybrid analyses are among the most interesting parts of our work and, to our knowledge, have never before arisen in the literature, far less specified, implemented, and evaluated.
 
-\paragraph{Selective 1-object-sensitive hybrid A (S$_A$-1obj).}
+\paragraph[Selective 1-object-sensitive (-A)]{Selective 1-object-sensitive hybrid A (S$_A$-1obj).}
 Trying to selectively enhance a 1-object-sensitive analysis (\args{HC} = \args{\{$\star$\}}) with call-site sensitive elements, we are presented with two options, relative to how contexts are created in static invocations. The first option is quite simple: we can keep only a single context element in both virtual and static invocations. Consequently, in virtual invocations the context will be an allocation site, but in static invocations it will be an invocation site (\args{C} = \args{H $\cup$ I}). The definitions needed are the following:
 
 \begin{quote}
@@ -449,38 +151,38 @@ Trying to selectively enhance a 1-object-sensitive analysis (\args{HC} = \args{\
 
 Note that this analysis is \emph{not} guaranteed to be more precise than the 1obj analysis it is based on. Nevertheless, it should be an excellent reference point for comparison and insights: it will suggest how much precision can be gained or lost by call-site-sensitivity as a replacement of object-sensitivity in static method calls.
 
-\paragraph{Selective 1-object-sensitive hybrid B (S$_B$-1obj).}
+\paragraph[Selective 1-object-sensitive (-B)]{Selective 1-object-sensitive hybrid B (S$_B$-1obj).}
 The second option for a selective hybrid enhancement of a 1-object-sensitive analysis is to add \emph{extra} information to the context of static calls. This means that context in virtual invocations is still an allocation site, but context in static invocations now consists of both the allocation site copied from the caller \emph{and} the invocation site. In this way, \args{C} = \args{H $\times$ (I $\cup$ \{$\star$\})}. That is, the context can be either just an allocation site or an allocation site and an invocation site. (This could also be written equivalently as \args{C} = \args{H $\cup$ (H $\times$ I)}, but the earlier form streamlines the definitions of constructors, as it makes all contexts be pairs, thus avoiding case-based definitions.)  In this way the constructor definitions become:
 
 \begin{quote}
 \cons{Record}{heap, ctx}{$\star$} \\
-\cons{Merge}{heap, hctx, invo, ctx}{pair(heap, $\star$)} \\
-\cons{MergeStatic}{invo, ctx}{pair(first(ctx), invo)} 
+\cons{Merge}{heap, hctx, invo, ctx}{\bl{pair}(heap, $\star$)} \\
+\cons{MergeStatic}{invo, ctx}{\bl{pair}(\bl{first}(ctx), invo)}
 \end{quote}
 
 This analysis has a context that is always a superset of the 1obj context and, therefore, is guaranteed to be more precise.
 
-\paragraph{Selective 2-object-sensitive with 1-context-sensitive heap hybrid (S-2obj+H).}
+\paragraph[Selective 2-object-sensitive with 1-context-sensitive heap]{Selective 2-object-sensitive with 1-context-sensitive heap hybrid (S-2obj+H).}
 When dealing with deeper analyses, the possible design decisions start to vary. For example, for a 2-object-sensitive analysis with a context-sensitive heap, an interesting choice is to have allocation sites as heap contexts (\args{HC} = \args{H}), and for method contexts to keep standard object-sensitive information for virtual calls but favor call-site-sensitivity for static calls. The constructor definitions for the above analysis are:
 
 \begin{quote}
-\cons{Record}{heap, ctx}{first(ctx)} \\
-\cons{Merge}{heap, hctx, invo, ctx}{triple(heap, hctx, $\star$)} \\
-\cons{MergeStatic}{invo, ctx}{triple(first(ctx), invo, second(ctx))} 
+\cons{Record}{heap, ctx}{\bl{first}(ctx)} \\
+\cons{Merge}{heap, hctx, invo, ctx}{\bl{triple}(heap, hctx, $\star$)} \\
+\cons{MergeStatic}{invo, ctx}{\bl{triple}(\bl{first}(ctx), invo, \bl{second}(ctx))} 
 \end{quote}
 
 (In this way, we have \args{C} = \args{H $\times$ (H $\cup$ I) $\times$ (H $\cup$ I $\cup$ \{$\star$\})}.) Note the interesting behavior of such an analysis: for virtual calls, the context is equivalent to that of 2obj+H. For the first static call (i.e., from inside a virtually called method), the context is a superset of 2obj+H, augmented by an invocation site. For further static calls (i.e., static calls inside statically called methods), however, the analysis favors call-site sensitivity (both the last two elements of context are invocation sites) and otherwise only remembers the most-significant element of the object-sensitive context. (The latter is important for creating high-quality heap contexts, when allocating objects.) It is interesting to see how this analysis fares relative to 2obj+H, since the analyses are in principle incomparable in precision.
 
-\paragraph{Selective 2-type-sensitive with 1-context-sensitive heap hybrid (S-2type+H).}
+\paragraph[Selective 2-type-sensitive with 1-context-sensitive heap]{Selective 2-type-sensitive with 1-context-sensitive heap hybrid (S-2type+H).}
 Finally, type-sensitive analyses can be enhanced with call-site sensitive information in much the same way. Mirroring our choices in S-2obj+H, the S-2type+H analysis has heap context \args{HC} = \args{T} and method context \args{C} = \args{T $\times$ (T $\cup$ I) $\times$ (T $\cup$ I $\cup$ \{$\star$\})}. The constructor definitions are isomorphic to the S-2obj+H analysis:
 
 \begin{quote}
-\cons{Record}{heap, ctx}{first(ctx)} \\
-\cons{Merge}{heap, hctx, invo, ctx}{triple($\mathcal{C_A}$(heap), hctx, $\star$)} \\
-\cons{MergeStatic}{invo, ctx}{triple(first(ctx), invo, second(ctx))} 
+\cons{Record}{heap, ctx}{\bl{first}(ctx)} \\
+\cons{Merge}{heap, hctx, invo, ctx}{\bl{triple}($\mathcal{C_A}$(heap), hctx, $\star$)} \\
+\cons{MergeStatic}{invo, ctx}{\bl{triple}(\bl{first}(ctx), invo, \bl{second}(ctx))} 
 \end{quote}
 
-\paragraph{Other analyses.}
+\paragraph[Other analyses]{Other analyses.}
 The above discussion does not nearly exhaust the space of hybrid combinations. Consider selective hybrids for a 2obj+H analysis: Many more design choices are possible than the one shown. One could change the heap context into an invocation site, or into a union of invocation and call-site (\args{HC} = \args{H $\cup$ I}). This combination is a bad choice, due to the poor payoff of call-site heap contexts. One could create context structures that let call-site- and object-sensitive context elements freely merge, e.g., \args{C} = \args{(H $\cup$ I) $\times$ (H $\cup$ I) $\times$ (H $\cup$ I $\cup$ \{$\star$\})}. This allows several different definitions of context constructors, but has the drawback of diverging significantly from object-sensitivity (i.e., allowing to skip even the most-significant object-sensitive context element), which misses the well documented precision and performance advantages of object-sensitivity, especially as a heap context.
 
 
@@ -489,13 +191,9 @@ The above discussion does not nearly exhaust the space of hybrid combinations. C
 
 We implemented and evaluated all aforementioned analyses using the \doop{} framework. There are interesting and subtle aspects in our measurements, but the executive summary is clear: uniform hybrid analyses are typically not good choices in practice: their precision is offset by a very high performance cost. A relative exception is the uniform type-sensitive hybrid analysis, U-2type+H, which, although higher-cost, is not prohibitively expensive and offers a reasonable precision/performance tradeoff.  Selective hybrid analyses, on the other hand, are not just interesting tradeoffs but clear winners: they match or (usually) outperform the object-sensitive analyses they are based on, while offering better precision, closely approaching the precision of the much more costly uniform hybrids. Overall, the best analyses in our evaluation set, both for highest-precision and for high performance with good precision, are selective hybrids.
 
-Our evaluation setting uses the LogicBlox Datalog engine, v.3.9.0, on a Xeon X5650 2.67GHz machine with only one thread running at a time and 24GB of RAM (i.e., ample for the analyses studied). We analyze the DaCapo benchmark programs (v.2006-10-MR2) under JDK 1.6.0\_37. This is a much larger set of libraries than earlier work \cite{oopsla:2009:Bravenboer,popl:2011:Smaragdakis}, which also results in differences in measurements, since the numbers shown integrate application- and library-level metrics. All runtime numbers are medians of three runs. As in other published work \cite{popl:2011:Smaragdakis,ecoop:2012:Ali}, jython and hsqldb are analyzed with reflection disabled and hsqldb has its entry point set manually in a special harness.
-
-%\subsection{Illustration}
+Our evaluation setting uses the \todo{} LogicBlox Datalog engine, v.3.9.0, on a Xeon X5650 2.67GHz machine with only one thread running at a time and 24GB of RAM (i.e., ample for the analyses studied). We analyze the DaCapo benchmark programs (v.2006-10-MR2) under JDK 1.6.0\_37. This is a much larger set of libraries than earlier work \cite{oopsla:2009:Bravenboer,popl:2011:Smaragdakis}, which also results in differences in measurements, since the numbers shown integrate application- and library-level metrics. All runtime numbers are medians of three runs. As in other published work \cite{popl:2011:Smaragdakis,ecoop:2012:Ali}, jython and hsqldb are analyzed with reflection disabled and hsqldb has its entry point set manually in a special harness.
 
 \begin{figure*}[tb!p]
-%\vspace{-0.5cm}
-%\hspace{-1cm}
 \begin{center}
 \begin{subfigure}[b]{0.45\textwidth}
 \includegraphics[width=\textwidth]{assets/hybrid/antlr.pdf}
@@ -524,10 +222,7 @@ Our evaluation setting uses the LogicBlox Datalog engine, v.3.9.0, on a Xeon X56
 \begin{subfigure}[b]{0.45\textwidth}
 \includegraphics[width=\textwidth]{assets/hybrid/xalan.pdf}
 \end{subfigure}
-\caption{Graphical depiction of performance vs. precision metrics for
-eight of our benchmarks over all analyses. Lower is better on both axes.
-The Y axis is truncated for readability. Out-of-bounds points are included
-at lower Y values, with their real running time in parentheses.}
+\caption{Graphical depiction of performance vs. precision metrics for eight of our benchmarks over all analyses. Lower is better on both axes. The Y axis is truncated for readability. Out-of-bounds points are included at lower Y values, with their real running time in parentheses.}
 \label{fig:hybrid:precision}
 \end{center}
 \end{figure*}
@@ -541,7 +236,7 @@ As can be seen, the selective hybrid analyses (S$_A$-1obj, S$_A$-1obj, S-2obj+H,
 
 \subsection{Detailed Results}
 
-Detailed results of our experiments are presented in Table~\ref{tab:hybrid:results}.  The table shows precision and performance metrics for all analyses. The precision metrics are:
+Detailed results of our experiments are presented in Tables \ref{tab:hybrid:results-a} and \ref{tab:hybrid:results-b}. The tables show precision and performance metrics for all analyses. The precision metrics are:
 \begin{inparaenum}[(1)]
 \item the average points-to set size (i.e., average over all variables of their
 points-to sets sizes),
@@ -748,7 +443,7 @@ S2type+H & & 6.10 & 43400 & 988 & 909 & \best{113} & \best{3.9} & & 7.16 & 50526
 \label{tab:hybrid:results-b}
 \end{table*}
 
-Since Table~\ref{tab:hybrid:results-a} and Table~\ref{tab:hybrid:results-b} have a high information density, we guide the reader through some of the most important findings below (see also a partial illustration in Figure~\ref{fig:hybrid:precision}).
+Since Tables~\ref{tab:hybrid:results-a}-\ref{tab:hybrid:results-b} have a high information density, we guide the reader through some of the most important findings below (see also a partial illustration in Figure~\ref{fig:hybrid:precision}).
 
 \begin{itemize}
 \item \textbf{\emph{General observations.}}
