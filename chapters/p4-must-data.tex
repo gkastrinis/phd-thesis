@@ -21,6 +21,18 @@ analysis typically has to employ flow-sensitivity, i.e., compute
 information per program point, taking into account the inherent
 control-flow of the program.
 
+
+%% In this work, we present a data structure that dramatically speeds up
+%% the performance of must-alias analysis.  The insights behind the data
+%% structure are quite general. We exploit two properties to get high
+%% efficiency. First, must-alias sets are \emph{equivalence classes}
+%% (must-alias is a symmetric, transitively-closed relation, unlike
+%% typical may-alias).  Second, complex program expressions (i.e.,
+%% \emph{access paths} of the form ``\args{var}(\args{.fld})*'') do not
+%% need to be represented explicitly, but can instead be implicit, and
+%% expanded when needed and up to the extent that must-alias information
+%% exists for them.
+
 %% A must-alias analysis has several applications:
 %% 
 %% \begin{itemize}

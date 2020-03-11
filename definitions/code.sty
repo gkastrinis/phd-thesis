@@ -24,6 +24,7 @@
 %%%%%%%%%%% DATALOG %%%%%%%%%%%
 \newcommand{\dlIf}{{\large{\code{$\leftarrow$}}}}
 \newcommand{\dlnot}{\textcolor{Red}{\textbf{!}}}
+\newcommand{\dlforall}{\textcolor{Red}{\large{\textbf{$\implies$}}}}
 
 % Relation name and arguments, without colors
 \newcommand{\argsRAW}[1]{{\small{\code{#1}}}}
@@ -34,6 +35,7 @@
 \newcommand{\consname}[1]{\textbf{\relname{#1}}}
 
 \newcommand{\rel}[2]{\texttt{\relname{#1}(\args{#2})}}
+\newcommand{\altrel}[2]{\texttt{\relname{\underline{#1}}(\args{#2})}}
 \newcommand{\cons}[3]{\texttt{\consname{#1}(\args{#2}) = \textbf{\args{#3}}}}
 
 % "Irrelevant" relation
@@ -55,8 +57,4 @@
 
 %%%\newcommand{\consapp}[2]{\consname{#1} (\args{#2})}
 %%%\newcommand{\cons}[3]{\consapp{#1}{#2} = \texttt{\textbf{\args{#3}}}}
-%%\newcommand{\altrelname}[1]{\textsc{\underline{#1}}}
-%%\newcommand{\altrel}[2]{\altrelname{#1} (\args{#2})}
 \newcommand{\dlarrow}{\textcolor{Bittersweet}{CHANGE!!!}}
-\newcommand{\dlforall}{{\large{\textbf{$\implies$}}}}
-%\newcommand{\tab}{\hspace{5 mm}}

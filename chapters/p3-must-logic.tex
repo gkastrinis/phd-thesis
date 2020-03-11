@@ -1,75 +1,25 @@
-\chapter{Must-Alias Analysis: Logical Model}\label{chapter:must-logic}
-%A Datalog Model of Must-Alias Analysis
-
+\chapter{Must-Alias Analysis: Logical Model}
+\label{chapter:must-logic}
 \epigraph{Logic, my dear Zoe, merely enables one to be wrong with authority.}{\textit{The 2nd Doctor} - Doctor Who}
 
+As previously mention at the beginning of Chapter~\ref{chapter:intro}, \emph{alias analysis} is closely related to \emph{pointer analysis} with the main difference being that the main goal of alias analysis is finding aliasing among program expressions (alias pairs) whereas the main goal of pointer analysis is to reason about the objects that program expressions may point to. In both case, one can be employed to support the reasoning of the other.
 
-% \emph{Pointer analysis} is the backbone of many realistic static analyses, as
-% it offers a scalable way to model heap behavior.  Pointer analysis typically
-% comes in two flavors: \emph{alias analysis}, which computes program expressions
-% that may alias, i.e., refer to the same heap object, and \emph{points-to
-% analysis}, which computes the heap objects that program variables and
-% expressions may refer to.
+The vast majority of pointer analysis techniques that have appeared in the recent research literature (e.g., \cite{pldi:1999:Yong,pldi:2003:Berndl,cc:2013:Kastrinis,pldi:2007:Hardekopf,article:2005:Milanova,pldi:2004:Whaley,pldi:2006:Sridharan}) are \emph{may}-analyses. That is, the techniques attempt to \emph{over}-approximate an unattainable, fully precise result (recall Section~\ref{sec:intro:may-must}). All possible alias pairs are guaranteed to be included in the outcome of a may-alias analysis. All possible abstract objects that may be referenced by a variable are included in the variable's may-points-to set. However, spurious inferences---which will never occur in program execution---may also be included in the analysis output.
 
-A \emph{must-alias} (or \emph{definite-alias}) analysis computes alias
-relationships (between program expressions) that are guaranteed to always hold
-during program execution. The analysis is typically flow-sensitive, i.e., it
-computes information per-program-point, respecting the control-flow of the
-program. A must-alias analysis has several applications:
+In contrast, an \emph{under}-approximate, \emph{must}-analysis (or \emph{definite}-analysis) is often desirable. A must-analysis computes aliasing or points-to relationships that are guaranteed to always hold during program execution, at the cost of missing some inferences. In practice, a must-alias analysis is more probable than a must-points-to analysis. Aliasing relationships are more generally provable from local inspection of the program text, whereas points-to facts are harder to establish in a conservative must- fashion. The difficulty is dual: First, the allocation sites of objects are often far from their use sites, making the establishment of must-points-to relationships unlikely. Second, must-points-to reasoning requires careful modeling of abstract vs. concrete objects. For instance, for techniques such as \emph{strong updates} (i.e., replacing the value of an object field at a store instruction) it is not sufficient to know the abstract object that the base expression must-points-to, since the abstract object may conflate many concrete objects during program execution (e.g., in a loop), and only one of them will have its field updated.
+
+A must-alias analysis is typically flow-sensitive, i.e., it computes information per-program-point, respecting the control-flow of the program (recall Section~\ref{sec:intro:flowSensitivity}). It offers several applications:
 
 \begin{itemize}
-    \item it is useful for %automatic
-        optimizations---e.g., constant folding,
-		common subexpression elimination, and register allocation;
-	\item it can increase the precision of bug detectors: Nikoli\'{c} and
-		Spoto~\cite{ictac:2012:Nikolic} report that a must-alias
-		analysis significantly increases the precision of both a null-reference
-		detector (46\% fewer warnings) and a non-termination detector (11\%
-		fewer warnings). Earlier work has reported similar
-		benefits~\cite{isola:2008:Ma};
-	%\item it can be used as an internal component in other analyses. For
-		%instance, the \textsc{Doop} framework for analysis of Java
-		%bytecode~\cite{oopsla:2009:Bravenboer} uses a must-alias analysis in
-		%order to perform ``strong updates'' at instructions that modify the
-		%heap. Earlier work has used must-alias analysis to similar
-	%  benefit~\cite{pldi:1994:Emami,popl:1998:Jagannathan}.
-	\item it can be used as an internal component as part of a more complex
-		analysis. For instance, must-alias results may enable an analysis to
-		perform ``strong updates'' at instructions that modify the heap.
-		Earlier work has used must-alias analysis to similar
-		benefit~\cite{pldi:1994:Emami,popl:1998:Jagannathan}.
-	%% \item it can be invaluable for better program understanding; the results of
-	%%	a must-inference are guaranteed facts, of immediate value to the human
-	%%	programmer.
-	%% \item it is ideal for bug detection that traditionally has a high
-	%% 	false-warnings rate. For instance, a may-analysis for null pointer
-	%% 	dereferences (either in may-alias or may-point-to form) is rarely of
-	%% 	engineering value, due to the preponderance of false warnings. In
-	%% 	contrast, a must-analysis for the same problem yields very few
-	%% 	warnings, but virtually all of them are actionable.
+\item it is useful for optimizations---e.g., constant folding, common subexpression elimination, and register allocation;
+\item it can increase the precision of bug detectors (that traditionally have a high false-warnings rate): Nikoli\'{c} and Spoto~\cite{ictac:2012:Nikolic} report that a must-alias analysis significantly increases the precision of both a null-reference detector (46\% fewer warnings) and a non-termination detector (11\% fewer warnings). Earlier work has reported similar benefits~\cite{isola:2008:Ma};
+\item it can be used as an internal component as part of a more complex analysis. For instance, must-alias results may enable an analysis to perform ``strong updates'' at instructions that modify the heap. Earlier work has used must-alias analysis to similar benefit~\cite{pldi:1994:Emami,popl:1998:Jagannathan};
+\item it can be invaluable for better program understanding; the results of a must-inference are guaranteed facts, of immediate value to the human programmer.
 \end{itemize}
 
-To illustrate must-alias reasoning, consider 
-%% The output of a must-alias analysis consists of must-alias pairs: expressions
-%% that are guaranteed to point to the same object.
-%Figure~\ref{fig:example}.
-the code below. In this example, \code{a2.next} and \code{a1} form an alias pair
-after line 8. (Other alias pairs include \code{a1.next} and \code{null} after line 7,
-\code{a2.next.next} and \code{a2} after line 11, and more.)
-Alias pairs are established via direct
-variable assignments, calls, as well as heap stores and loads. A must-alias analysis
-has to report aliases only when they are guaranteed to hold, and needs to
-invalidate them on store instructions or method calls that may change the
-fields of objects pointed by subexpressions in an alias pair.
+To illustrate must-alias reasoning, consider the code example in Figure~\ref{fig:must-logic:snippet}. In this example, \code{a2.next} and \code{a1} form an alias pair after line 8. (Other alias pairs include \code{a1.next} and \code{null} after line 7, \code{a2.next.next} and \code{a2} after line 11, and more.) Alias pairs are established via direct variable assignments, calls, as well as heap stores and loads. A \emph{must}-alias analysis has to report aliases only when they are guaranteed to hold, and needs to invalidate them on store instructions or method calls that may change the fields of objects pointed by sub-expressions in an alias pair.
 
-%\code{a1.next} is an alias for \code{a3} on (i.e., after) line 14.  However, line
-%15 invalidates that alias pair and instead establishes an aliasing relationship
-%between \code{a1.next} and \code{a2}.
-
-%%%% MANUAL PLACEMENT
-%\begin{figure}[htb!p]
-\vspace{-0.5cm}
-\begin{minipage}[l]{3in}
+\begin{figure}[htp]
 \begin{javacode}
 class Node {
 	Node next;
@@ -84,110 +34,20 @@ void main() {
 	a2.wrap();
 }
 \end{javacode}
-\end{minipage}
-%\caption{Simple illustration of must-alias inferences. }
-%\label{fig:example}
-%\end{figure}
+\caption{Code snippet for illustrating must-alias reasoning.}
+\label{fig:must-logic:snippet}
+\end{figure}
 
-For instance,
-line 10 invalidates the alias pair \code{a1.next} and \code{null}. However, the analysis
-is sound (i.e., it remains a must-analysis) if it also invalidates
-alias pairs for expressions involving \code{a2.next} or \code{a3.next}. The base
-specification of a must-alias analysis has to integrate such soundness safeguards,
-while interplay with other analyses (e.g., a may-not-alias analysis) can lead
-to more inferences.
+For instance, line 10 invalidates the alias pair \code{a1.next} and \code{null}. However, the analysis is sound (i.e., it remains a must-analysis---recall Section~\ref{sec:intro:soundness}) if it also invalidates alias pairs for expressions involving \code{a2.next} or \code{a3.next}. The base specification of a must-alias analysis has to integrate such soundness safeguards, while interplay with other analyses (e.g., a may-not-alias analysis) can lead to more inferences.
 
+This chapter presents a simple declarative model of a must-alias analysis over access paths (i.e., expressions of the form ``\texttt{\args{var}(\args{.fld})}*''). The model underlies the implementation of must-alias analysis in \doop{}, in which must-alias analysis is employed as an enhancer of its standard array of may-analyses (e.g., in order to enable ``strong updates''). The model is interesting in a few different ways:
 
-%% A must-analysis for
-%% pointers is invaluable for automatic optimizations, , as
-%% well as for better program understanding: the results of a
-%% must-inference are guaranteed facts, of immediate value to the human
-%% programmer.  Furthermore, must-analyses are ideal for bug detection
-%% that traditionally has a high false-warnings rate. For instance, a
-%% may-analysis for null pointer dereferences (either in may-alias or
-%% may-point-to form) is rarely of engineering value, due to the
-%% preponderance of false warnings. In contrast, a must-analysis for the
-%% same problem yields very few warnings, but virtually all of them are
-%% actionable.
-
-%% The vast majority of pointer analysis techniques that have appeared in
-%% the recent research literature (e.g.,
-%% \cite{mattmight:Yong:1999:Pointer,pldi/BerndlLQHU03,cc/KastrinisS13,antgrasshopper,article:2005:Milanova,pldi/WhaleyL04,pldi/SridharanB06})
-%% are \emph{may-analyses}. That is, the techniques attempt to
-%% \emph{over-approximate} the (unattainable) fully precise result.  All
-%% possible alias pairs are guaranteed to be included in the outcome of a
-%% may-alias analysis. All possible abstract objects that may be
-%% referenced by a variable are included in the variable's may-point-to
-%% set. However, spurious inferences 
-%% %(which will never occur in program execution) 
-%% may also be included in the analysis output.
-
-%% In contrast, an \emph{under-approximate}, \emph{must-analysis} is
-%% often desirable. A must-analysis computes aliasing or points-to
-%% relationships that are guaranteed to always hold during program
-%% execution, at the cost of missing some inferences.
-
-
-%% In practice, a must-analysis for pointers is often a must-alias
-%% analysis, and not a must-point-to analysis. 
-%% %Aliasing relationships are more generally provable from local
-%% %inspection of the program text, whereas
-%% Points-to facts are harder to establish than aliasing relationships in
-%% a conservative must- fashion. The difficulty is dual: First, the
-%% creation sites of objects are often far from their use sites, making
-%% the establishment of must-point-to relationships unlikely. Second,
-%% must-point-to reasoning requires careful modeling of abstract
-%% vs. concrete objects. For instance, for techniques such as
-%% \emph{strong updates} (i.e., replacing the value of an object field at
-%% a store instruction) it is not sufficient to know the abstract
-%% object that the base expression must-point-to, since the abstract
-%% object may conflate many concrete objects during program execution,
-%% and only one of them will have its field updated.
-
-%% In this work, we present a data structure that dramatically speeds up
-%% the performance of must-alias analysis.  The insights behind the data
-%% structure are quite general. We exploit two properties to get high
-%% efficiency. First, must-alias sets are \emph{equivalence classes}
-%% (must-alias is a symmetric, transitively-closed relation, unlike
-%% typical may-alias).  Second, complex program expressions (i.e.,
-%% \emph{access paths} of the form ``\args{var}(\args{.fld})*'') do not
-%% need to be represented explicitly, but can instead be implicit, and
-%% expanded when needed and up to the extent that must-alias information
-%% exists for them.
-
-In this work, we present a simple declarative model of a must-alias
-analysis over access paths (i.e., expressions of the form
-``\args{var}(\args{.fld})*'').  The model underlies the implementation
-of must-alias analysis in the \textsc{Doop}
-framework~\cite{oopsla:2009:Bravenboer}, which expresses several
-analyses of Java bytecode using Datalog specifications. \textsc{Doop}
-employs must-alias analysis as an enhancer of its standard array of
-may-analyses---e.g., in order to enable ``strong updates''.
-
-The model is interesting in a few different ways:
-
-\vspace{-1mm}
 \begin{itemize}
-\item It is an instance of a flow-sensitive analysis in Datalog. As such,
-  it introduces idioms and patterns also used in a multitude of other
-  (current or future) analyses in \textsc{Doop}.
-  
-\item The analysis is minimal, yet models the core features of a
-  general must-alias analysis in a handful of declarative rules.  In
-  this way, the analysis semantics are easily understood and can be
-  further enhanced. The rules allow configurability and employ several
-  techniques for conciseness and power. The use of context, in particular,
-  is crucial: the analysis introduces context variables, much like in
-  traditional may analyses (e.g., \cite{pldi:2013:Kastrinis,article:2015:Smaragdakis}), yet
-  uses the context highly unconventionally. Context is used as ``fuel'',
-  to guarantee the ``must'' nature of the analysis: must-alias inferences
-  are propagated inter-procedurally, with context extended for every
-  call. When maximum context depth is reached, inferences cannot propagate
-  any further.
+\item It is an instance of a flow-sensitive analysis in Datalog. As such, it introduces idioms and patterns also used in a multitude of other (current or future) analyses in \doop{}.
 
-\item The analysis gives rise to several observations, concerning the
-  representation of equivalence relations in a Datalog engine,
-  and the need for implicit encodings of aliasing.
+\item The analysis is minimal, yet models the core features of a general must-alias analysis in a handful of declarative rules. In this way, the analysis semantics are easily understood and can be further enhanced. The rules allow configurability and employ several techniques for conciseness and power. The use of context, in particular, is crucial: the analysis introduces context variables, much like in traditional may analyses (e.g., \cite{pldi:2013:Kastrinis,article:2015:Smaragdakis}), yet uses the context highly unconventionally. Context is used as ``fuel'', to guarantee the ``must'' nature of the analysis: must-alias inferences are propagated inter-procedurally, with context extended for every call. When maximum context depth is reached, inferences cannot propagate any further.
+
+\item The analysis gives rise to several observations, concerning the representation of equivalence relations in a Datalog engine, and the need for implicit encoding of aliasing.
 \end{itemize}
 
 %% The first element of the work is an analysis model that integrates
@@ -403,7 +263,7 @@ The model is interesting in a few different ways:
 %% must-alias information in a typical program.
 
 
-\section{Must-Alias Analysis Model}
+\section{Logical Model}
 \label{sec:model}
 
 %% The analysis remains sound
@@ -489,6 +349,61 @@ which
 models all features of Java bytecode. Yet the core of the analysis is
 represented well in the minimal language.
 
+
+
+
+\begin{figure}[tb!p]
+\begin{tabular}{l}
+\args{A} is an access path of the form \args{V}.(\args{F})* \\
+\end{tabular}
+%\caption[]{The domain of our input intermediate language.}
+%\label{fig:intro:input-domain}
+\end{figure}
+
+\begin{figure}[tb!p]
+\begin{tabular}{l l}
+\rel{Move}{i: I, to: V, from: V}                  & \comm{// i: to = from} \\
+\rel{Load}{i: I, to: V, base: V, fld: F}          & \comm{// i: to = base.fld} \\
+\rel{Store}{i: I, base: V, fld: F, from: V}       & \comm{// i: base.fld = from} \\
+
+
+\\
+\rel{InMethod}{i: I, meth: M} \\
+\altrel{Resolved}{var: V, type: T} \\
+\altrel{RootMethod}{meth: M} \\
+
+
+%\rel{VCall}{base: V, sig: S, invo: I, inMeth: M}  & \comm{// base.sig(...)} \\
+%\rel{SCall}{meth: M, invo: I, inMeth: M}          & \comm{// Class.meth(...)} \\
+
+%%%\rel{Alloc}{var: V, heap: H, inMeth: M}        & \comm{// var = new ...} \\
+%\rel{Move}{to: V, from: V}                        & \comm{// to = from} \\
+%\rel{Load}{to: V, base: V, fld: F}                & \comm{// to = base.fld} \\
+%\rel{Store}{base: V, fld: F, from: V}             & \comm{// base.fld = from} \\
+%\rel{VCall}{base: V, sig: S, invo: I, inMeth: M}  & \comm{// base.sig(...)} \\
+%\rel{SCall}{meth: M, invo: I, inMeth: M}          & \comm{// Class.meth(...)} \\
+%\\
+%\rel{FormalArg}{meth: M, i: $\mathbb{N}$, arg: V} \\ 
+%\rel{ActualArg}{invo: I, i: $\mathbb{N}$, arg: V} \\ 
+%\rel{FormalReturn}{meth: M, ret: V} \\                
+%\rel{ActualReturn}{invo: I, var: V} \\                
+%\rel{ThisVar}{meth: M, this: V} \\                    
+%\rel{HeapType}{heap: H, type: T} \\
+%\rel{LookUp}{type: T, sig: S, meth: M} \\            
+\end{tabular}\\
+%\caption[]{The input Datalog relations describing the program under analysis.}
+%\label{fig:intro:input}
+\end{figure}
+
+
+
+
+
+
+
+
+
+
 \begin{figure}[tb!p]
 %\begin{center}
 \hspace{-2.5mm}
@@ -502,19 +417,19 @@ represented well in the minimal language.
 %%   \small $C$ is a set of contexts \\
 %%   \small $A$ is $V$$(.F)*$: a set of access paths \\
   %%    \small $\mathbb{N}$ is the set of natural numbers \\
-  \begin{small}
-\begin{tabular}{r l r l}
-	$V$: & program variables &  $M$: & method identifiers \\
-	$S$: & method signatures &  $F$: & fields \\
-	$I$: & instructions &  $T$: & types \\
-	$C$: & contexts &  $\mathbb{N}$: & natural numbers \\
-  \multicolumn{4}{c}{$A$: access paths of the form $V$$(.F)*$} \\
-\end{tabular}  \end{small} \\
-\hhline{=}
-\hspace{-3mm}
+%  \begin{small}
+%\begin{tabular}{r l r l}
+%	$V$: & program variables &  $M$: & method identifiers \\
+%	$S$: & method signatures &  $F$: & fields \\
+%	$I$: & instructions &  $T$: & types \\
+%	$C$: & contexts &  $\mathbb{N}$: & natural numbers \\
+ % \multicolumn{4}{c}{$A$: access paths of the form $V$$(.F)*$} \\
+%\end{tabular}  \end{small} \\
+%\hhline{=}
+%\hspace{-3mm}
 \begin{tabular}{l l}
 %\rel{Alloc}{i: I, var: V, heap: H, inMeth: M}  & \args{\# i: var = new ...} \\
-\rel{Move}{i: I, to: V, from: V}                & \args{\# i: to = from} \\
+%%\rel{Move}{i: I, to: V, from: V}                & \args{\# i: to = from} \\
 \rel{Load}{i: I, to: V, base: V, fld: F}       & \args{\# i: to = base.fld}\\
 \rel{Store}{i: I, base: V, fld: F, from: V} & \args{\# i: base.fld = from} \\
 \rel{Call}{i: I, base: V, sig: S}              & \args{\# i: base.sig(..)}   \\
@@ -720,7 +635,7 @@ by bounding their length. %, and similarly for contexts.
 %% these relations.
 
 
-\subsection{Analysis Model}
+\subsection{Analysis}
 
 Figure~\ref{fig:rules-must-1} 
 %and \ref{fig:rules-must-2} 

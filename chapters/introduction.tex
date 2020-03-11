@@ -1,13 +1,12 @@
 \chapter{Introduction}
 \label{chapter:intro}
-\epigraph{Don’t be scared. All of this is new to you, and new can be scary. Now we all want answers. Stick with me---you might get some}{\textit{The 13th Doctor} - Doctor Who}
-% \epigraph{Sometimes a scream is better than a thesis.}{\textit{Manfred Eigen}}
+\epigraph{Don’t be scared. All of this is new to you, and new can be scary. Now we all want answers. Stick with me---you might get some.}{\textit{The 13th Doctor} - Doctor Who}
 
 Static program analysis is the cornerstone of several modern programming facilities and tools for program development and aided program understanding. Nowadays, it is an umbrella term for many different methodologies (\todo{}) all with the ultimate goal of inferring a program's properties, without the need of an actual execution. It is routinely employed in many different contexts: compilers, bug detectors, verifiers, security analyzers, IDEs, and a myriad other tools.
 
 The main intention of any \emph{static} program analysis algorithm is to reason about the set of all feasible behaviors (under some abstraction of behaviors) that a given program might exhibit under all possible executions. For example, could this method throw a runtime exception? or is that type cast possible to fail under some program input? etc.
 
-Pointer analysis (also known as \emph{points-to analysis}) is a fundamental subdomain of static program analysis that consists of computing some \emph{abstract memory model} for a given program. The essence of such an analysis is to compute a set of possible objects that a program variable or expression may point to during program execution. A straightforward endeavor at first, it quickly gets too complicated in practice due to all of the intricate details one has to take into account and the multitude of different features that mutually depend on each other. Although a challenging task, smart implementations of pointer analysis can bear many benefits to client analyses that will subsequently consume the results to reason about specialized behaviors (e.g., security vulnerabilities or potential optimization opportunities).
+Pointer analysis (also known as \emph{points-to analysis}) is a fundamental subdomain of static program analysis that consists of computing some \emph{abstract memory model} for a given program. The essence of such an analysis is to compute a set of possible objects that a program variable or expression may point to during program execution. A straightforward endeavor at first, it quickly gets too complicated in practice due to all of the intricate details one has to take into account and the multitude of different features that mutually depend on each other.\footnote{The analysis inputs are large and the analysis algorithms are typically quadratic or cubic, but try to maintain near-linear behavior in practice, by exploiting program properties and maintaining precision---more precise (i.e., smaller) inference sets lead to less work.} Although a challenging task, smart implementations of pointer analysis can bear many benefits to client analyses that will subsequently consume the results to reason about specialized behaviors (e.g., security vulnerabilities or potential optimization opportunities).
 
 A closely related analysis, sometimes wrongfully confused with pointer analysis, is \emph{alias analysis} in which one computes sets of program expressions that may alias (i.e., point to common objects) with each other. Pointer analysis could---although it is not the only possible alternative---be used to implement an alias analysis algorithm, and vice versa.
 
@@ -170,6 +169,7 @@ The flow-\emph{insensitive} analysis of \ref{sec:intro:flowSensitivity} will rep
 
 
 \section{May vs. Must Analyses}
+\label{sec:intro:may-must}
 
 Given an abstraction of behaviors (e.g., thrown exceptions) one can define two interesting sets regarding the potential behaviors that a given program will exhibit. Set $Any(P)$ is defined as containing all possible behaviors that a program $P$ \emph{will} exhibit in \emph{some} program execution (e.g., method $m1$ will throw exception $e1$ in one execution and exception $e2$ in another). Respectively, set $All(P)$ is defined as containing behaviors that will appear in \emph{every} program execution (e.g., method $m2$ will always throw exception $e3$ during any execution).
 \[
@@ -187,6 +187,7 @@ For the rest of this dissertation, unless otherwise noted, all described analyse
 
 
 \section{Soundness \& Completeness}
+\label{sec:intro:soundness}
 
 The term \emph{soundness}, and its converse \emph{completeness}, originate from formal mathematical logic where they are used in order to evaluate a \emph{proof} system under a given \emph{model}. The model is some kind of mathematical structure, such as sets over some domain of interest and the proof system is a set of rules with which \emph{properties} regarding the model are proven. A system is sound if and only if statements it can prove are indeed true in the model (concisely given as ``claim implies truth''). A system is complete if and only if what is true in the model can also be proven by the system (concisely given as ``truth implies claim'').
 
@@ -398,7 +399,7 @@ The specification of our points-to analysis as well as the input language are in
     \rel{CallGraph}{invo, callerCtx, meth, calleeCtx}, \\
     \rel{FormalReturn}{meth, from}, \rel{ActualReturn}{invo, to}. \\
 %
-\noindent\rule{\textwidth}{0.5pt}\\%\cline{1-1}
+\noindent\rule{\textwidth}{0.5pt}\\
 %
 \cons{Record}{heap, ctx}{?hctx}, \\
 \rel{VarPointsTo}{var, ctx, heap, ?hctx} \dlIf{} \\
@@ -419,7 +420,7 @@ The specification of our points-to analysis as well as the input language are in
     \rel{Store}{base, fld, from}, \rel{VarPointsTo}{from, ctx, heap, hctx}, \\
     \rel{VarPointsTo}{base, ctx, baseH, baseHCtx}. \\
 %
-\noindent\rule{\textwidth}{0.5pt}\\%\cline{1-1}
+\noindent\rule{\textwidth}{0.5pt}\\
 %
 \cons{Merge}{heap, hctx, invo, callerCtx}{?calleeCtx}, \\
 \rel{Reachable}{toMeth, ?calleeCtx}, \\
@@ -597,7 +598,7 @@ Both aforementioned contributions aim for more scalable analyses that achieve su
 \begin{itemize}[$\bullet$]
 \item Chapter~\ref{chapter:must-logic} examines how to compose a declarative model of a rich family of must-alias analyses, with emphasis on a careful and compact modeling, while at the same time exposing the key points where the algorithm's inference power can be adjusted.
 
-This chapter presents research previously published in... \todo{}
+This chapter presents research previously published in \emph{A Datalog Model of Must-Alias Analysis}~\cite{soap:2017:Balatsouras}.
 
 \item Chapter~\ref{chapter:must-data} builds upon the previous chapter and goes forth to provide a specialized data structure that by exploiting the nature of a must-alias analysis it achieves high performance without any sacrifice on the accuracy of its results. We explore the data structure's performance in both an imperative (implemented in Java) and a declarative (implemented in Datalog) setting and contrast it extensively with prior techniques.
 

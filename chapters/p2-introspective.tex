@@ -3,36 +3,6 @@
 \epigraph{Do what I do. Hold tight and pretend it’s a plan!}{\textit{The 11th Doctor} - Doctor Who}
 %\epigraph{The problem with introspection is that it has no end.}{\textit{Philip K. Dick}}
 
-%\emph{Points-to analysis} is probably the most common whole-program
-%static analysis, and often serves as a substrate for a variety of
-%high-level program analysis tasks. Points-to analysis computes the set
-%of objects (abstracted as their allocation sites) that a program
-%variable may point to during runtime. The promise, as well as the
-%challenge, of points-to analysis is to yield usefully precise
-%information without sacrificing scalability: the analysis inputs are
-%large and the analysis algorithms are typically quadratic or cubic,
-%but try to maintain near-linear behavior in practice, by exploiting
-%program properties and maintaining precision. Indeed precision and
-%performance often go hand-in-hand in a good points-to analysis
-%algorithm: better algorithms are often found to be both more precise
-%and faster, because smaller points-to sets lead to less work
-%\cite{article:2008:tosem:Lhotak}.
-
-%\emph{Context-sensitivity} is a common way of pursuing precision and
-%scalability in points-to analysis. It consists of qualifying local
-%variables and objects with context information: the analysis unifies
-%information (e.g., ``what objects this method argument can point to'')
-%over all possible executions that map to the same context value, while
-%separating executions that map to different contexts. In this way,
-%context-sensitivity attempts to avoid precision loss from merging the
-%behavior of different dynamic program paths. Context-sensitivity comes
-%in many flavors, depending on the kind of context information, such as
-%\emph{call-site-sensitivity}
-%\cite{col:1981:Sharir,thesis:Shivers},
-%\emph{object-sensitivity}
-%\cite{issta:2002:Milanova,article:2005:Milanova}, and
-%\emph{type-sensitivity}~\cite{popl:2011:Smaragdakis}.
-
 Previous chapters already presented \emph{context-sensitivity} as a common way of pursuing precision and scalability in points-to analysis. An oft-remarked fact about context-sensitivity, however, is that even the best algorithms have a common failure mode when they cannot maintain precision. Past literature reports that ``the performance of a (\todo{}) deep-context analysis is bimodal'' \cite{popl:2011:Smaragdakis}; ``context-sensitive analyses have been associated with very large numbers of contexts'' \cite{cc:2006:Lhotak}; ``algorithms completely hit a wall after a few iterations, with the number of tuples exploding exponentially''~\cite{pldi:2011:Liang}. The experimental results in chapter~\ref{chapter:hybrid} (Tables~\ref{tab:hybrid:results-a}-\ref{tab:hybrid:results-b}) show a failure to run a 2-object-sensitive analysis in under 90mins for 2 of 10 DaCapo benchmarks, while 2 more benchmarks take more than 1,000sec, although most other benchmarks of similar or larger size get analyzed in under 200sec.
 
 Thus, when context-sensitivity works, it works formidably, in terms of both precision and performance. When it fails, however, it fails miserably, quickly exploding in complexity. In contrast, context-insensitive analyses uniformly scale well, for the same inputs. Figure~\ref{fig:introspect:intro} vividly demonstrates this phenomenon for the DaCapo benchmarks, analyzed with the \doop{} framework~\cite{oopsla:2009:Bravenboer} under a context-insensitive (insens) analysis and a 2-object-sensitive analysis with a context-sensitive heap (2objH). (The chart truncates the analysis time of the longest-running benchmarks. Two of them, hsqldb and jython, timed out after 90mins on a 24GB machine, and would not terminate even for much longer timeouts.) As can be seen, context-insensitive analyses vary relatively little in performance, while context-sensitivity often causes running time (and memory use) to explode.
@@ -50,44 +20,11 @@ Faced with this unpredictability of context-sensitivity, a common reaction is to
 
 We can ask ourselves, why does this scalability barrier arise? The core problem is that, for some objects or methods, the points-to information is imprecise enough that more context does not help, while incurring a heavy overhead \cite{popl:2011:Smaragdakis}. Consider a method argument that was found to point to $n$ objects by a less precise analysis. Further analyzing the method in $c$ different contexts (or, equivalently, increasing context depth by 1) will ideally yield $n/c$ points-to facts per context, perfectly splitting the previous $n$-object points-to set, thus yielding both precision and scalability. In the worst case, however, increasing the context depth will result in $c$ copies of $n$ points-to facts each: the extra context depth will not have yielded more precision, but will have multiplied the space and time costs. When this occurs, the analysis cost explodes for greater context depths.
 
-The focus of this chapter is on the detection and prevention of pathological behavior in context-sensitive analyses, with minimal intervention. In this way, we achieve many of the precision benefits of context-sensitivity without sacrificing scalability. It does not seem possible to know in advance (e.g., by identifying syntactic features of the program) which program elements may be responsible for pathological behavior. Nevertheless, we argue that it is possible to identify such elements with a scalable context-insensitive analysis. We introduce the concept of \emph{introspective context-sensitivity}: during a first, context-insensitive, analysis pass, the analysis observes symptoms indicating that the cost may get out of hand for deeper context. This detects exactly the pathology identified above. In its simplest form, the analysis will ask ``which program sites currently have points-to information that may grow too large for an extra level of context?'' Using a configurable second pass\footnote{In theory, this pattern could be repeated for more passes.}, such sites will be re-analyzed with shallow context, even though the rest of the program will be re-analyzed with a deeper context. Note that this approach adaptively tunes the precision of the analysis for the entire program, and not only for a single goal, as in earlier \emph{refinement-based}~\cite{pldi:2006:Sridharan} or \emph{pruning}~\cite{pldi:2011:Liang} techniques---our related work section includes a detailed discussion. (\todo{})
+The focus of this chapter is on the detection and prevention of pathological behavior in context-sensitive analyses, with minimal intervention. In this way, we achieve many of the precision benefits of context-sensitivity without sacrificing scalability. It does not seem possible to know in advance (e.g., by identifying syntactic features of the program) which program elements may be responsible for pathological behavior. Nevertheless, we argue that it is possible to identify such elements with a scalable context-insensitive analysis. We introduce the concept of \emph{introspective context-sensitivity}: during a first, context-insensitive, analysis pass, the analysis observes symptoms indicating that the cost may get out of hand for deeper context. This detects exactly the pathology identified above. In its simplest form, the analysis will ask ``which program sites currently have points-to information that may grow too large for an extra level of context?'' Using a configurable second pass\footnote{In theory, this pattern could be repeated for more passes.}, such sites will be re-analyzed with shallow context, even though the rest of the program will be re-analyzed with a deeper context.
 
-%As a general pattern, this approach is familiar. Even in the context of
-%points-to analysis, the pattern of performing a coarse-grained
-%analysis and using it to tune a finer-grained one has been explored
-%before---e.g., by Sridharan and Bod\'{\i}k~\cite{pldi:2006:Sridharan} and by Liang
-%and Naik~\cite{pldi:2011:Liang}. Nevertheless, such
-%past approaches differ from our approach in terms of both external
-%applicability and impact: they fundamentally apply to demand-driven
-%(as opposed to all-points) analyses and they either do not target
-%context depth or only apply to specific kinds of context---our related
-%work section includes a detailed discussion.
+In intuitive terms, introspective context-sensitivity performs a cost-benefit calculation, with an emphasis on the potential cost of increasing context depth, since cost can be estimated more reliably. Fairly simple---yet not always obvious---heuristics can estimate this cost well. 
 
-%The key of our introspective approach is in exploring how exactly to
-%use the outcome of a context-insensitive analysis to preemptively
-%identify and eliminate sources of worst-case behavior for a
-%context-sensitive analysis. 
-%In intuitive terms, introspective
-%context-sensitivity performs a cost-benefit calculation, with an
-%emphasis on the potential cost of increasing context depth.
-%, because cost can
-%be estimated more reliably. 
-%Fairly simple, yet not always obvious, heuristics 
-%can estimate this cost well. 
-%For instance, we can avoid refining methods at call
-%sites that pass arguments with large points-to sets, avoid refining
-%objects with both large points-to sets \emph{and} many variables
-%pointing to them, etc.
-
-%(i.e., analyzing
-%context-sensitively) any methods with large cumulative sizes of
-%points-to sets (over all the method's variables) or objects with large
-%points-to sets in any of their fields. As we will see, such
-%``obvious'' heuristics are strictly inferior to slightly more
-%sophisticated ones that address the complexity explosion at its core.
-%Sample good heuristics include ``determine whether to refine
-%per-invocation-site and not per method'', ``avoid refining objects
-%pointed to by many vars'', and more.
+As a general pattern, this approach is familiar. Even in the context of points-to analysis, the pattern of performing a coarse-grained analysis and using it to tune a finer-grained one has been explored before, as in earlier \emph{refinement-based}~\cite{pldi:2006:Sridharan} or \emph{pruning}~\cite{pldi:2011:Liang} techniques. Nevertheless, such past approaches differ from our approach in terms of both external applicability and impact: they fundamentally apply to demand-driven (as opposed to all-points on the entire program) analyses and they either do not target context depth or only apply to specific kinds of context---our related work section includes a detailed discussion \todo{}.
 
 The net outcome of our work is not a ``first line of defense'' analysis, but an ``if all else fails'' analysis. Users are still better advised to first use traditional context-sensitive algorithms, in the hope that these will scale well and provide good precision. When this fails, however, we show that we can provide a highly reliable knob for filtering out worst-case performance at a small cost in precision. Our experiments demonstrate that the user can ``dial-in'' scalability, to the exact level required. For instance, as seen in Figure~\ref{fig:introspect:intro}, a precise 2objH analysis fails to run in under 90mins on a 24GB machine for 3 of our experimental subjects. However, we can get an introspective context-sensitive analysis to scale to all benchmarks in under 12mins, while still gaining significant precision over a context-insensitive analysis. Yet another introspective analysis scales to all but one benchmark in under 20mins, while sacrificing a fraction of precision (keeping about 2/3 of the precision gains of a full 2objH analysis). For call-site sensitive analyses, the gains are even more pronounced, with several benchmarks exhibiting at least 300\% speedups, without sacrificing nearly any precision.
 
@@ -155,7 +92,7 @@ Therefore, we can effect any change we want to the context-sensitivity of an ana
     \commrel{Reachable}{meth, ctx}, \commrel{Alloc}{var, heap, meth}, \\
     \rel{ObjectToRefine}{heap}. \\
 %
-\noindent\rule{\textwidth}{0.5pt}\\%\cline{1-1}
+\noindent\rule{\textwidth}{0.5pt}\\
 %
 \cons{Merge}{heap, hctx, invo, callerCtx}{?calleeCtx}, \\
 \commrel{Reachable}{toMeth, ?calleeCtx}, \\
@@ -261,14 +198,7 @@ The above metrics and heuristics can be easily implemented as short analyses ove
 
 \section{Evaluation}
 
-Our evaluation setting uses the \todo{} LogicBlox Datalog engine, v.3.9.0, on a Xeon E5530 2.4GHz machine with only one thread running at a time and 24GB of RAM. We analyze the DaCapo benchmark programs (v.2006-10-MR2) with Open JDK 1.6.0\_24. We run all benchmarks with default \doop{} settings, including full reflection support.
-%precision enabled, unlike prior
-%published work \cite{popl:2011:Smaragdakis,lhotak-callgraph12} which
-%disables reflection for jython and hsqldb. 
-We selected a priori 6 of the Dacapo benchmarks as our experimental subjects: these are the programs that exhibit scalability problems based on past literature (e.g., Chapter~\ref{chapter:hybrid}). Other benchmarks typically run in half the time of the fastest benchmark of our set for deep context-sensitive analyses.
-%% This is disproved for antlr in Figure 1.
-% for a 2objH analysis.
-Since our technique is explicitly not a ``first line of defense'', benchmarks that are already certain to scale are out of scope.
+Our evaluation setting uses the \todo{} LogicBlox Datalog engine, v.3.9.0, on a Xeon E5530 2.4GHz machine with only one thread running at a time and 24GB of RAM. We analyze the DaCapo benchmark programs (v.2006-10-MR2) with Open JDK 1.6.0\_24. We run all benchmarks with default \doop{} settings, including full reflection support. We selected a priori 6 of the Dacapo benchmarks as our experimental subjects: these are the programs that exhibit scalability problems based on past literature (e.g., Chapter~\ref{chapter:hybrid}). Other benchmarks typically run in half the time of the fastest benchmark of our set for deep context-sensitive analyses. Since our technique is explicitly not a ``first line of defense'', benchmarks that are already certain to scale are out of scope.
 
 \begin{figure*}[h!tp]
 \begin{center}
@@ -277,7 +207,6 @@ Since our technique is explicitly not a ``first line of defense'', benchmarks th
 \includegraphics[scale=0.54]{assets/introspective/2objHmeths.pdf} \\
 \includegraphics[scale=0.54]{assets/introspective/2objHcasts.pdf}
 \end{center}
-%\vspace{-0.65cm}
 \caption{Performance and precision (3 separate metrics: calls that cannot be devirtualized, reachable methods, casts that cannot be eliminated) for introspective context-sensitive variants of a \textbf{2objH} analysis, compared with baselines (2objH and insensitive).}
 \label{fig:introspect:2objH-chart}
 \end{figure*}
@@ -290,7 +219,6 @@ Since our technique is explicitly not a ``first line of defense'', benchmarks th
 \includegraphics[scale=0.54]{assets/introspective/2typeHmeths.pdf} \\
 \includegraphics[scale=0.54]{assets/introspective/2typeHcasts.pdf}
 \end{center}
-%\vspace{-0.65cm}
 \caption{Performance and precision (3 separate metrics: calls that cannot be devirtualized, reachable methods, casts that cannot be eliminated) for introspective context-sensitive variants of a \textbf{2typeH} analysis, compared with baselines (2typeH and insensitive).}
 \label{fig:introspect:2typeH-chart}
 \end{figure*}
@@ -302,7 +230,6 @@ Since our technique is explicitly not a ``first line of defense'', benchmarks th
 \includegraphics[scale=0.54]{assets/introspective/2callHvcalls.pdf} \\
 \includegraphics[scale=0.54]{assets/introspective/2callHmeths.pdf} \\
 \includegraphics[scale=0.54]{assets/introspective/2callHcasts.pdf}
-%\vspace{-0.65cm}
 \end{center}
 \caption{Performance and precision (3 separate metrics: calls that cannot be devirtualized, reachable methods, casts that cannot be eliminated) for introspective context-sensitive variants of a \textbf{2callH} analysis, compared with baselines (2callH and insensitive).}
 \label{fig:introspect:2callH-chart}
@@ -346,5 +273,4 @@ Finally, note that we used identical introspection heuristics (Heuristic-A and H
 
 We introduced introspective context-sensitivity: an approach to making context-sensitive analyses scale. The approach consists of defining an analysis with two separate kinds of context. Each program element is analyzed with one kind, selected based on external input. Then, by first running an inexpensive context-insensitive analysis, we can identify program elements that should be treated with a more precise context and others that should be treated less precisely to avoid an explosion in complexity. Our technique applies to any kind of context abstraction and yields scalability \emph{\`{a} la carte}: the user can select a scalability profile and achieve it for a price in precision. As shown in our experiments, this price is not too steep. The precision loss of introspective context-sensitivity can be minuscule (as is for call-site-sensitive analyses), while the scalability gain is substantial.
 
-%\bigbreak
 We believe that introspective context-sensitivity is a big step forward in pointer analysis. It is not just an effective technique, but an effective technique that addresses the major current pain point in practical applications of points-to analyses.

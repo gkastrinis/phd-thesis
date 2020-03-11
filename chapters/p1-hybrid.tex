@@ -26,59 +26,6 @@ In all, this chapter describes the following contributions:
 \item We show experimentally, over large Java benchmarks and the Java JDK, that hybrid context-sensitivity works remarkably well. Our experiments establish that different programming language constructs are best analyzed with different kinds of context. The selective application of a combined context achieves the same \emph{effective} precision as keeping both contexts at all times, at a fraction of the cost, and is typically faster even than keeping only an object context. For instance, in the practically important case of a 2-object-sensitive analysis with a context-sensitive heap, we get an average speedup of 1.53x \emph{and} a more precise analysis. Similarly, for the simple and popular 1-object-sensitive analysis, we get an average speedup of 1.12x combined with significant increase in precision.
 \end{itemize}
 
-%\todo{}
-%The rest of the chapter introduces a model for points-to analysis (Section~\ref{sec:hybrid:model}) and shows how instantiating the model yields several well-known analyses. In Section~\ref{sec:hybrid:analyses} we discuss the many choices for combining object- and call-site-sensitivity, as well as the most promising points in this design space. Our evaluation results follow in Section~\ref{sec:hybrid:evaluation}
-
-
-% In this paper, we offer a unified formal framework that captures the
-% object-sensitive analyses defined in the literature and allows a
-% deeper understanding of their differences. Additionally, we implement
-% an array of object-sensitive analyses and draw insights about how the
-% choice of context relates to scalability and precision. We discover
-% that the seemingly simple difference of how an analysis context is
-% chosen results in large differences in precision and performance. We
-% use the name \emph{full-object sensitivity} to refer to (a slight
-% generalization of) the original statement of object-sensitivity by
-% Milanova et al.
-% % A ``full-object sensitive'' analysis uses the full abstract receiver
-% %object (or as much of it as allowed by the analysis parameters) as
-% %context for a called method.
-% We argue that full-object sensitivity is an excellent choice in the
-% design space, while the choice of context made in past actual
-% implementations 
-% %(mainly of the \textsc{Paddle} framework
-% %\cite{thesis:Lhotak,1377494}) 
-% is sub-optimal and results in substantial loss of
-% precision. Concretely, a practical outcome of our work is to establish
-% a 2-full-object-sensitive analysis with a 1-object-sensitive heap
-% (shortened to ``2full+1H'') as an analysis that is often (though not
-% always) feasible with current technology and impressively precise.
-% %For a rough illustration,
-% %a 2full+1H analysis improves over the precision of a
-% %traditional-context 2obj+1H analysis by amounts comparable to those
-% %observed when switching from a context-insensitive analysis to a
-% %1obj+1H analysis (largely considered the current state-of-the-art
-% %feasible and precise analysis).
-
-% Perhaps even more importantly, our understanding of the impact of
-% context on the effectiveness of an analysis leads to defining a new
-% variant that combines scalability with good precision.  Namely, we
-% introduce the idea of a \emph{type-sensitive} analysis, which is
-% defined to be directly analogous to an object-sensitive analysis, yet
-% approximates (some) context elements using types instead of full
-% allocation sites. In contrast to past uses of types in points-to
-% analysis (e.g.,
-% \cite{Sundaresan:2000:PVM,Agesen:1995:CPA:646153.679533,Plevyak:1994:PCT:191080.191130}
-% and see Ryder \cite{Ryder:2003:DPR} for several examples) we
-% demonstrate that the types used as contexts should \emph{not} be the
-% types of the corresponding objects. Instead, the precision of our
-% type-sensitive analysis is due to replacing the allocation site of an
-% object $o$ (which would be used as context in an object-sensitive
-% analysis) with an upper-bound of the dynamic type of $o$'s allocator
-% object.  The result is a substantial improvement that establishes a
-% new sweet spot in the practical tradeoff of points-to analysis
-% precision and performance.
-
 
 \section{Hybrid Context-Sensitive Analyses}
 \label{sec:hybrid:main}
