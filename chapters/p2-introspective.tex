@@ -43,14 +43,14 @@ Overall, this chapter describes the following contributions:
 
 We demonstrate introspective context-sensitivity via incremental changes to the existing model for context-sensitive, flow-insensitive points-to analysis algorithms presented in Section~\ref{sec:intro:model}. As previously mentioned, the logical formalism of this model is very close to the core components of our actual analysis implementation.
 
-\textbf{Input relations.}
+\paragraphhead{Input relations.}
 Two additional input relations are added to those presented in Figure~\ref{fig:intro:input} and are used exclusively for the purposes of introspective context-sensitivity. \relname{SiteToRefine} and \relname{ObjectToRefine} encode the program points (invocation site/method combinations, and allocation sites) that will employ a different context abstraction from the rest.
 
 \begin{figure}[hb]
-\begin{tabular}{l}
+\begin{datalog}
 \rel{SiteToRefine}{invo: I, meth: M} \\ 
-\rel{ObjectToRefine}{heap: H} \\
-\end{tabular}\\
+\rel{ObjectToRefine}{heap: H}
+\end{datalog}
 \caption[]{Additional input Datalog relations expanding those of Figure~\ref{fig:intro:input}.}
 \label{fig:introspect:input}
 \end{figure}
@@ -62,10 +62,10 @@ No additional output relations need to be added to those of Figure~\ref{fig:intr
 As previously mentioned, the base rules of any analysis are not concerned with what kind of context-sensitivity is used. The context flavor and depth aspects are completely hidden mainly behind constructor functions \consname{Record} and \consname{Merge}. These functions are sufficient for modeling a very large variety of context-sensitive analyses. In addition to those two, introspective context-sensitivity adds two more constructor functions to act as counterparts---\consname{RecordRefined} and \consname{MergeRefined}. They are directly analogous to \consname{Record} and \consname{Merge} but just apply to different program points. These constructors are the machinery for introspective context-sensitivity: they vary the context-sensitivity of the analysis for a subset of the heap objects and methods.
 
 \begin{figure}[htp]
-\begin{tabular}{l}
+\begin{datalog}
 \cons{RecordRefined}{heap: H, ctx: C}{newHCtx: HC} \\
-\cons{MergeRefined}{heap: H, hctx: HC, invo: I, ctx: C}{newCtx: C} \\
-\end{tabular}
+\cons{MergeRefined}{heap: H, hctx: HC, invo: I, ctx: C}{newCtx: C}
+\end{datalog}
 \caption[]{Additional constructors of contexts that filter which objects and which call-sites/target methods should have a different (i.e., more precise) context in introspective context-sensitivity.}
 \label{fig:introspect:output}
 \end{figure}
@@ -84,7 +84,7 @@ Therefore, we can effect any change we want to the context-sensitivity of an ana
 \cons{Record}{heap, ctx}{?hctx}, \\
 \commrel{VarPointsTo}{var, ctx, heap, ?hctx} \dlIf{} \\
     \commrel{Reachable}{meth, ctx}, \commrel{Alloc}{var, heap, meth}, \\
-    \dlnot{} \rel{ObjectToRefine}{heap}. \\
+    ! \rel{ObjectToRefine}{heap}. \\
 \\
 \comm{// Duplicate rule, for introspective context-sensitivity} \\
 \cons{RecordRefined}{heap, ctx}{?hctx}, \\
@@ -97,20 +97,20 @@ Therefore, we can effect any change we want to the context-sensitivity of an ana
 \cons{Merge}{heap, hctx, invo, callerCtx}{?calleeCtx}, \\
 \commrel{Reachable}{toMeth, ?calleeCtx}, \\
 \commrel{VarPointsTo}{this, ?calleeCtx, heap, hctx}, \\
-\commrel{CallGraph}{invo, callerCtx, toMeth, ?calleeCtx} \dlIf{} \\
+\commrel{CallGraphEdge}{invo, callerCtx, toMeth, ?calleeCtx} \dlIf{} \\
     \commrel{VCall}{base, sig, invo, inMeth}, \\
     \commrel{Reachable}{inMeth, callerCtx}, \\
     \commrel{VarPointsTo}{base, callerCtx, heap, hctx},\\
     \commrel{HeapType}{heap, heapT}, \\
     \commrel{Lookup}{heapT, sig, toMeth},\\
     \commrel{ThisVar}{toMeth, this}, \\
-    \dlnot{} \rel{SiteToRefine}{invo, toMeth}. \\
+    ! \rel{SiteToRefine}{invo, toMeth}. \\
 \\
 \comm{// Duplicate rule, for introspective context-sensitivity} \\
 \cons{MergeRefined}{heap, hctx, invo, callerCtx}{?calleeCtx}, \\
 \commrel{Reachable}{toMeth, ?calleeCtx}, \\
 \commrel{VarPointsTo}{this, ?calleeCtx, heap, hctx}, \\
-\commrel{CallGraph}{invo, callerCtx, toMeth, ?calleeCtx} \dlIf{} \\
+\commrel{CallGraphEdge}{invo, callerCtx, toMeth, ?calleeCtx} \dlIf{} \\
     \commrel{VCall}{base, sig, invo, inMeth}, \\
     \commrel{Reachable}{inMeth, callerCtx}, \\
     \commrel{VarPointsTo}{base, callerCtx, heap, hctx},\\
@@ -183,7 +183,7 @@ The above metrics and heuristics can be easily implemented as short analyses ove
 \begin{figure}[h]
 \begin{datalog}
 \rel{HeapsPerInvocationPerArg}{invo, arg, heap} \dlIf{} \\
-    \rel{CallGraph}{invo, \_, \_, \_},\\
+    \rel{CallGraphEdge}{invo, \_, \_, \_},\\
     \rel{ActualArg}{invo, \_, arg},\\
     \rel{VarPointsTo}{arg, \_, heap, \_}.\\
 \\

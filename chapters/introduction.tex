@@ -125,6 +125,7 @@ because instructions are examined as if happening in any order.
 
 
 \section{Static Single Assignment Form}
+\label{sec:intro:ssa}
 
 In compiler design, \emph{static single assignment form} (also known as SSA) is a kind of code transformation in which every local variable is assigned only once. Existing local variables in the original source code are split into \emph{versions} (e.g., variable $x$ might be split into $x_1$ and $x_2$) with each version being assigned only once. At program points where the value of the original variable is read and there are multiple valid versions, as in the point where the branches of an \emph{if-else} statement merge, a \emph{phi-node} statement is used. This special statement bears the semantics of somehow ``choosing'' a specific variable version to read.
 
@@ -149,11 +150,7 @@ y = phi(x_1, x_2);
 \caption{Example code before and after an SSA transformation}
 \end{figure}
 
-In the context of static program analysis, SSA is often used to approximate the
-benefits of a flow-sensitive analysis, particularly pertaining to the handling
-of local variables. This is not the case for other, more complicated language
-features such as heap accesses and method invocations, but SSA provides an easy
-way to pick the low-hanging fruit.
+In the context of static program analysis, SSA is often used to approximate the benefits of a flow-sensitive analysis, particularly pertaining to the handling of local variables. This is not the case for other, more complicated language features such as heap accesses and method invocations, but SSA provides an easy way to pick the low-hanging fruit.
 
 \setlength\intextsep{15pt}
 \begin{wrapfigure}{ht}{.12\textwidth}
@@ -201,6 +198,7 @@ It is noteworthy that every static program analysis is also making negative clai
 
 
 \section{Precision \& Recall}
+\label{sec:intro:precision-recall}
 
 Both a may- and a must-analysis operate under the premise of computing an approximation of reality and thus there will always be claims that are either extraneous or missing. Of course, any analysis should do its best to get as close to the truth, even if the actual set of behaviors will always be out of grasp. This calls for some \emph{quantitative} way to measure an analysis's quality. Two such metrics have been proposed. \emph{Precision} indicates how many of the analysis claims are actually part of the truth, whereas \emph{recall} indicates how many of the actual true claims are also reported by the analysis. For a formal definition supposing that:
 \begin{itemize}
@@ -235,35 +233,35 @@ The term \emph{soundiness}, specific to the context of static program analysis, 
 
 \begin{figure}[htb!]
 \begin{subfigure}{.47\textwidth}
-    \includegraphics[scale=.45]{assets/intro/venn-soundness-a.pdf}
+    \includegraphics[scale=.45]{assets/introduction/venn-soundness-a.pdf}
     \caption{Behavior sets of actual program executions}
     \label{fig:intro:soundness-a}
 \end{subfigure}
 \hfill
 \begin{subfigure}{.47\textwidth}
-    \includegraphics[scale=.45]{assets/intro/venn-soundness-b.pdf}
+    \includegraphics[scale=.45]{assets/introduction/venn-soundness-b.pdf}
     \caption{Mathematical ideals $Any(P)$ (union) and $All(P)$ (intersection)}
     \label{fig:intro:soundness-b}
 \end{subfigure}
 \begin{subfigure}{.47\textwidth}
-    \includegraphics[scale=.45]{assets/intro/venn-soundness-c.pdf}
+    \includegraphics[scale=.45]{assets/introduction/venn-soundness-c.pdf}
     \caption{Any sound-may analysis (green) in relation to $Any(P)$}
     \label{fig:intro:soundness-c}
 \end{subfigure}
 \hfill
 \begin{subfigure}{.47\textwidth}
-    \includegraphics[scale=.45]{assets/intro/venn-soundness-d.pdf}
+    \includegraphics[scale=.45]{assets/introduction/venn-soundness-d.pdf}
     \caption{Any sound-must analysis (red) in relation to $All(P)$}
     \label{fig:intro:soundness-d}
 \end{subfigure}
 \begin{subfigure}{.47\textwidth}
-    \includegraphics[scale=.45]{assets/intro/venn-soundness-e.pdf}
+    \includegraphics[scale=.45]{assets/introduction/venn-soundness-e.pdf}
     \caption{Any unsound analysis (orange) in relation to both ideals}
     \label{fig:intro:soundness-e}
 \end{subfigure}
 \hfill
 \begin{subfigure}{.47\textwidth}
-    \includegraphics[scale=.45]{assets/intro/venn-soundness-f.pdf}
+    \includegraphics[scale=.45]{assets/introduction/venn-soundness-f.pdf}
     \caption{Any \emph{soundy} analysis (blue) in relation to both ideals}
     \label{fig:intro:soundness-f}
 \end{subfigure}
@@ -279,12 +277,13 @@ Figure \ref{fig:intro:soundness} attempts to shed some light on how different ki
 Most of the following work and algorithms have been expressed in the \doop{} framework \cite{oopsla:2009:Bravenboer}. \doop{} is written in the \emph{declarative} language Datalog, and although Datalog has been used for points-to analyses in the past, this was the first implementation to express full end-to-end context-sensitive analyses for Java\footnote{More specifically, the soon-to-be presented algorithms operate on Java bytecode---the stack-based intermediate language used in the Java VM---rather than on Java source, and thus they could, in theory, be applied to any programming language that targets the Java VM.}, declaratively. This includes handling key analysis elements such as call-graph construction as well as logic dealing with various semantic complexities of the Java language such as native code, reflection and exceptions. Nowadays, \doop{} offers a wide array of intricate analyses displaying a variety of properties.
 
 \subsection*{A Datalog Primer}
+\label{sec:intro:datalog}
 
 The declarative power of \doop{} stems from the expressiveness of Datalog. Datalog has been described in the past, at a higher level, either as Prolog without function symbols or as SQL with support of recursion. Programs written in Datalog are essentially logic specifications that, as a side-effect, are also executable. One simply models the semantics for each language feature of interest along with any reasoning rules of the desired analysis, and the underlying engine is responsible for combining the logic specification with input facts and, after applying a specialized computation, inferring anything that follows given the rules and the respective input.
 
 The aforementioned specialized computation is known as a \emph{fixpoint} computation. All valid Datalog rules are monotonic, i.e., can only reason about the inference of additional facts, and this is exploited by the underlying engine in order to efficiently compute new facts in a repeating fashion until knowledge from previous steps cannot be applied to infer anything new in the current step. Datalog programs are contained in the \texttt{PTime} complexity class, i.e., they can be computed in polynomial time, and vice versa, any polynomial algorithm can be implemented as a Datalog program. Additionally, because of the monotonic nature of rules, termination is always guaranteed.\footnote{We will later relax these constraints by adding language extensions that will push Datalog programs over the \texttt{PTime} class and might invalidate the termination guarantees offered by the language. We will do so in a principled way, allowing for greater flexibility on the algorithms that we can express.}
 
-A Datalog program is mainly a collection of rules with each rule contributing to a common knowledge base. Each rule has two parts (separated by ``\dlIf{}''); the \emph{rule-body}, on the right, that describes what conditions need to hold in order to infer something new, and the \emph{rule-head}, on the left, that describes what new knowledge is inferred each time. Both parts are collections of \emph{relations} that are conceptually similar to database tables. Relations can be connected to each other either via commas (``\code{,}''), denoting a logical \texttt{AND} connection similar to a database join, or via semicolons (``\code{;}''), denoting a logical \texttt{OR} connection.
+A Datalog program is mainly a collection of rules with each rule contributing to a common knowledge base. Each rule has two parts (separated by ``\dlIf{}''); the \emph{rule-body}, on the right, that describes what conditions need to hold in order to infer something new, and the \emph{rule-head}, on the left, that describes what new knowledge is inferred each time. Both parts are collections of \emph{relations} that are conceptually similar to database tables. Relations can be connected to each other either via commas (``\code{,}''), denoting a logical \texttt{AND} connection similar to a database join, or via semicolons (``\code{;}''), denoting a logical \texttt{OR} connection. Finally, relations can be negated by prepending an exlamation mark (``\code{!}''). Negation is stratified: it is only applied to predicates that are either input predicates or whose computation can complete before the current rule's evaluation. We also permit multiple predicates in a rule head, as syntactic sugar for replicating the rule body.
 
 A classic example is given below. \relname{Parent} represents the obvious parent relationship between individuals abstracted by the two arguments, whereas \relname{Ancestor} represents an ancestry relationship of any depth. 
 
@@ -302,7 +301,7 @@ The first rule simply states that any parent relationship is also an ancestry on
 
 We model a spectrum of flow-insensitive (recall Section~\ref{sec:intro:flowSensitivity}), context-sensitive points-to analyses and joint (also known as \emph{on-the-fly} or \emph{online}) call-graph construction as a parametric Datalog program. Rules in a Datalog program are monotonic logical inferences that repeatedly apply to infer more facts until fixpoint. Our rules do not use negation in a recursive cycle, or other non-monotonic logic constructs, resulting in a declarative specification: the order of evaluation of rules cannot affect the final result. The same abstract model applies to a wealth of analyses. We use it to model a context-insensitive Andersen-style \cite{thesis:Andersen} analysis, as well as several context-sensitive analyses, both call-site-sensitive and object-sensitive ones.
 
-The input language is a representative simplified intermediate language that models well the Java bytecode representation\footnote{The Java bytecode is a stack-based intermediate language used in the Java VM, for reasons of compactness. For analysis purposes, however, it is common to translate it into equivalent but more conventional notations, such as the Jimple intermediate language of the Soot framework~\cite{cascon:1999:Vall,cc:2000:Vall}. Therefore, it might be more accurate to say that out intermediate language is a simplified form of Jimple, rather than a simplified form of the Java bytecode.}, but also other high-level intermediate languages. It does not, however, model languages such as C or C++ that can create pointers through an address-of operator. The techniques used in that space are fairly different---e.g., \cite{pldi:2007:Hardekopf,popl:2009:Hardekopf}---although our main hybrid approach is likely to be applicable there as well. Also, even though we model regular object fields and static methods, we omit static fields. Their treatment is a mere engineering complexity, as it does not interact with context choice.
+The input language is a representative simplified intermediate language that models well the Java bytecode representation\footnote{The Java bytecode is a stack-based intermediate language used in the Java VM, for reasons of compactness. For analysis purposes, however, it is common to translate it into equivalent but more conventional notations, such as the Jimple intermediate language of the Soot framework~\cite{cascon:1999:Vall,cc:2000:Vall}. Therefore, it might be more accurate to say that out intermediate language is a simplified form of Jimple, rather than a simplified form of the Java bytecode.}, but also other high-level intermediate languages. It does not, however, model languages such as C or C++ that can create pointers through an address-of operator. The techniques used in that space are fairly different---e.g., \cite{pldi:2007:Hardekopf,popl:2009:Hardekopf}---although our main hybrid approach is likely to be applicable there as well. Also, even though we model regular object fields and static methods, we omit static fields, arrays, exceptions, etc. Their treatment is a mere engineering complexity, as it does not interact with context choice, and indeed the actual implementations in the \doop{} framework do cover all the intricacies of Java bytecode.
 
 \begin{figure}[tb!p]
 \begin{tabular}{l}
@@ -335,7 +334,7 @@ The domain of our intermediate language (i.e., the different value sets that con
 
 \begin{figure}[tb!p]
 \begin{tabular}{l l}
-\rel{Alloc}{var: V, heap: H, inMeth: M}        & \comm{// var = new ...} \\
+\rel{Alloc}{var: V, heap: H, inMeth: M}           & \comm{// var = new ...} \\
 \rel{Move}{to: V, from: V}                        & \comm{// to = from} \\
 \rel{Load}{to: V, base: V, fld: F}                & \comm{// to = base.fld} \\
 \rel{Store}{base: V, fld: F, from: V}             & \comm{// base.fld = from} \\
@@ -349,7 +348,7 @@ The domain of our intermediate language (i.e., the different value sets that con
 \rel{ThisVar}{meth: M, this: V} \\                    
 \rel{HeapType}{heap: H, type: T} \\
 \rel{LookUp}{type: T, sig: S, meth: M} \\            
-\end{tabular}\\
+\end{tabular}
 \caption[]{The input Datalog relations describing the program under analysis.}
 \label{fig:intro:input}
 \end{figure}
@@ -375,15 +374,19 @@ The specification of our points-to analysis as well as the input language are in
 \end{itemize}
 
 \begin{figure}[tb!p]
+\begin{datalog}
 \rel{VarPointsTo}{var: V, ctx: C, heap: H, hctx: HC} \\
-\rel{CallGraph}{invo: I, callerCtx: C, meth: M, calleeCtx: C} \\
+\rel{CallGraphEdge}{invo: I, callerCtx: C, toMeth: M, calleeCtx: C} \\
 \rel{FldPointsTo}{baseH: H, baseHCtx: HC, fld: F, heap: H, hctx: HC} \\
 \rel{InterProcAssign}{to: V, toCtx: C, from: V, fromCtx: C} \\
 \rel{Reachable}{meth: M, ctx: C} \\
-\\
+%
+\noindent\rule{\textwidth}{0.5pt}\\
+%
 \cons{Record}{heap: H, ctx: C}{?newHCtx: HC} \\
 \cons{Merge}{heap: H, hctx: HC, invo: I, ctx: C}{?newCtx: C} \\
 \cons{MergeStatic}{invo: I, ctx: C}{?newCtx: C}
+\end{datalog}
 \caption[]{The core Datalog output relations and constructors of contexts.}
 \label{fig:intro:output}
 \end{figure}
@@ -392,12 +395,12 @@ The specification of our points-to analysis as well as the input language are in
 \begin{figure}[tb!p]
 \begin{datalog}
 \rel{InterProcAssign}{to, calleeCtx, from, callerCtx} \dlIf{} \\
-    \rel{CallGraph}{invo, callerCtx, meth, calleeCtx}, \\
-    \rel{FormalArg}{meth, i, to}, \rel{ActualArg}{invo, i, from}. \\
+    \rel{CallGraphEdge}{invo, callerCtx, toMeth, calleeCtx}, \\
+    \rel{FormalArg}{toMeth, i, to}, \rel{ActualArg}{invo, i, from}. \\
 \\
 \rel{InterProcAssign}{to, callerCtx, from, calleeCtx} \dlIf{} \\
-    \rel{CallGraph}{invo, callerCtx, meth, calleeCtx}, \\
-    \rel{FormalReturn}{meth, from}, \rel{ActualReturn}{invo, to}. \\
+    \rel{CallGraphEdge}{invo, callerCtx, toMeth, calleeCtx}, \\
+    \rel{FormalReturn}{toMeth, from}, \rel{ActualReturn}{invo, to}. \\
 %
 \noindent\rule{\textwidth}{0.5pt}\\
 %
@@ -425,7 +428,7 @@ The specification of our points-to analysis as well as the input language are in
 \cons{Merge}{heap, hctx, invo, callerCtx}{?calleeCtx}, \\
 \rel{Reachable}{toMeth, ?calleeCtx}, \\
 \rel{VarPointsTo}{this, ?calleeCtx, heap, hctx}, \\
-\rel{CallGraph}{invo, callerCtx, toMeth, ?calleeCtx} \dlIf{} \\
+\rel{CallGraphEdge}{invo, callerCtx, toMeth, ?calleeCtx} \dlIf{} \\
     \rel{VCall}{base, sig, invo, inMeth}, \\
     \rel{Reachable}{inMeth, callerCtx}, \\
     \rel{VarPointsTo}{base, callerCtx, heap, hctx},\\
@@ -435,7 +438,7 @@ The specification of our points-to analysis as well as the input language are in
 \\
 \cons{MergeStatic}{invo, callerCtx}{?calleeCtx}, \\
 \rel{Reachable}{toMeth, ?calleeCtx}, \\
-\rel{CallGraph}{invo, callerCtx, toMeth, ?calleeCtx} \dlIf{} \\
+\rel{}{invo, callerCtx, toMeth, ?calleeCtx} \dlIf{} \\
     \rel{SCall}{toMeth, invo, inMeth}, \\
     \rel{Reachable}{inMeth, callerCtx}.
 \end{datalog}
@@ -446,7 +449,7 @@ The specification of our points-to analysis as well as the input language are in
 Figure~\ref{fig:intro:output} shows the intermediate and output relations, as well as three \emph{constructor} functions, responsible for producing new contexts. Figure~\ref{fig:intro:baserules} shows the points-to analysis and call-graph computation. We explain the contents of both figures in more detail below:
 
 \begin{itemize}
-\item There are five output or intermediate computed relations (\relname{VarPointsTo}, $\ldots$, \relname{Reachable}\footnote{\relname{Reachable} is somewhat of a special case, since we assume it is also used as an input relation: it needs to initially hold methods that are always reachable, such as the programs's \code{main} method, the constructor of class \code{java.lang.ClassLoader}, and more. We ignore this technicality in the model, rather than burden our rules with a separate input relation.}). Every occurrence of a method or local variable in computed relations is qualified with a context (i.e., an element of set \args{C}), while every occurrence of a heap object is qualified with a heap context (i.e., an element of \args{HC}). The main output relations are \relname{VarPointsTo} and \relname{CallGraph}, encoding our points-to and call-graph results. The \relname{VarPointsTo} relation links a variable (\args{var}) to a heap object (\args{heap}). Other intermediate relations (\relname{FldPointsTo}, \relname{InterProcAssign}, \relname{Reachable}) correspond to standard concepts and are introduced for conciseness. For instance, \relname{InterProcAssign} (which encodes all parameter and return value passing) unifies much of the treatment of static and virtual method calls.
+\item There are five output or intermediate computed relations (\relname{VarPointsTo}, $\ldots$, \relname{Reachable}\footnote{\relname{Reachable} is somewhat of a special case, since we assume it is also used as an input relation: it needs to initially hold methods that are always reachable, such as the programs's \code{main} method, the constructor of class \code{java.lang.ClassLoader}, and more. We ignore this technicality in the model, rather than burden our rules with a separate input relation.}). Every occurrence of a method or local variable in computed relations is qualified with a context (i.e., an element of set \args{C}), while every occurrence of a heap object is qualified with a heap context (i.e., an element of \args{HC}). The main output relations are \relname{VarPointsTo} and \relname{}, encoding our points-to and call-graph results. The \relname{VarPointsTo} relation links a variable (\args{var}) to a heap object (\args{heap}). Other intermediate relations (\relname{FldPointsTo}, \relname{InterProcAssign}, \relname{Reachable}) correspond to standard concepts and are introduced for conciseness. For instance, \relname{InterProcAssign} (which encodes all parameter and return value passing) unifies much of the treatment of static and virtual method calls.
 
 \item The base rules are not concerned with what kind of context-sensitivity is used. The same rules can be used for a context-insensitive analysis (by only ever creating a single context object and a single heap context object), for a call-site-sensitive analysis, or for an object-sensitive analysis, for any context depth. These aspects are completely hidden behind constructor functions \consname{Record}, \consname{Merge}, and \consname{MergeStatic}. The first two follow the usage and naming convention of Smaragdakis et al.~\cite{popl:2011:Smaragdakis}, while \consname{MergeStatic} is new and used to differentiate the treatment of static calls---this is a crucial element of our approach.
 

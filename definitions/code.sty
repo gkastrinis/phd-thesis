@@ -23,8 +23,9 @@
 
 %%%%%%%%%%% DATALOG %%%%%%%%%%%
 \newcommand{\dlIf}{{\large{\code{$\leftarrow$}}}}
-\newcommand{\dlnot}{\textcolor{Red}{\textbf{!}}}
-\newcommand{\dlforall}{\textcolor{Red}{\large{\textbf{$\implies$}}}}
+\newcommand{\dlforall}{\textcolor{Black}{\large{\textbf{$\forall$}}}}
+\newcommand{\dlThen}{{\textcolor{Black}{\large{\code{$\rightarrow$}}}}}
+\newcommand{\dlAll}{\textcolor{Green}{\texttt{\textsc{All}}}}
 
 % Relation name and arguments, without colors
 \newcommand{\argsRAW}[1]{{\small{\code{#1}}}}
@@ -32,11 +33,14 @@
 % With color
 \newcommand{\args}[1]{\textcolor{Bittersweet}{\argsRAW{#1}}}
 \newcommand{\relname}[1]{\textcolor{NavyBlue}{\relnameRAW{#1}}}
+\newcommand{\altrelname}[1]{\textcolor{NavyBlue}{\relnameRAW{\underline{#1}}}}
 \newcommand{\consname}[1]{\textbf{\relname{#1}}}
 
 \newcommand{\rel}[2]{\texttt{\relname{#1}(\args{#2})}}
-\newcommand{\altrel}[2]{\texttt{\relname{\underline{#1}}(\args{#2})}}
-\newcommand{\cons}[3]{\texttt{\consname{#1}(\args{#2}) = \textbf{\args{#3}}}}
+\newcommand{\altrel}[2]{\texttt{\altrelname{#1}(\args{#2})}}
+
+\newcommand{\consapp}[2]{\texttt{\consname{#1}(\args{#2})}}
+\newcommand{\cons}[3]{\texttt{\consapp{#1}{#2} = \textbf{\args{#3}}}}
 
 % "Irrelevant" relation
 \newcommand{\commrel}[2]{\textcolor{Gray}{\texttt{\relnameRAW{#1}(\argsRAW{#2})}}}
@@ -54,7 +58,3 @@
 \gdef {\makebox[\wd\spacewd][l]{%
 \textcolor{white}{\fontfamily{lmtt}\selectfont\large\smash{\char32}}}}% 
 }
-
-%%%\newcommand{\consapp}[2]{\consname{#1} (\args{#2})}
-%%%\newcommand{\cons}[3]{\consapp{#1}{#2} = \texttt{\textbf{\args{#3}}}}
-\newcommand{\dlarrow}{\textcolor{Bittersweet}{CHANGE!!!}}
