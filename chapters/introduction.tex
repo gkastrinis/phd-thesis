@@ -155,11 +155,11 @@ In the context of static program analysis, SSA is often used to approximate the 
 \setlength\intextsep{15pt}
 \begin{wrapfigure}{ht}{.12\textwidth}
 \centering
-\begin{javacodeNoLines}
+\begin{javacode*}{xleftmargin=10pt,linenos=false}
 x_1 = 1;
 y = x_1;
 x_2 = 2;
-\end{javacodeNoLines}
+\end{javacode*}
 \end{wrapfigure}
 
 The flow-\emph{insensitive} analysis of \ref{sec:intro:flowSensitivity} will report quite different results when analyzing the SSA-form analogue of the example code (given on the side): ``$x_1$ has the value 1'', ``$y$ has the value 1'', and ``$x_2$ has the value 2''. The analysis is still examining instructions without taking order into account, and is unable to answer questions such as ``what is the value of variable $x$ at the end of the method'' (whether the value of $x_1$ or $x_2$ is the final one), but nevertheless it has managed to reclaim some of the precision that was previously lost---i.e., regarding the value of variable $y$.

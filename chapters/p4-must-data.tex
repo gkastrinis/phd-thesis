@@ -61,7 +61,7 @@ class B {
 \end{subfigure}%
 \hfill
 \begin{subfigure}{.45\textwidth}
-\begin{javacode2}
+\begin{javacode*}{firstnumber=11}
 void main(String[] args) {
     B b1 = new B(null);
     A a1 = new A(null, b1);
@@ -72,7 +72,7 @@ void main(String[] args) {
         a2 = new A(a1, b1);
     b1.container = a2;
 }
-\end{javacode2}
+\end{javacode*}
 \end{subfigure}
 \caption{Code snippet to illustrate certain points of our algorithms.}
 \label{fig:must-data:snippet}
@@ -270,581 +270,71 @@ Thus, the declarative data structure is less efficient than its imperative count
 
 
 \section{Implementation and Experiments}
-\todo{}
 
-We implemented an analysis that functionally matches the published
-specification~\cite{soap/Balatsouras17} of the must-alias analysis in the
-\textsc{Doop} framework~\cite{oopsla:2009:Bravenboer}. \textsc{Doop} is
-a declarative framework for Java bytecode analysis, with analyses
-written in the Datalog language. In contrast, our implementation is in
-Java, since our optimized alias graph data structure has imperative
-features in its full form. Finally, to also eliminate language-level
-factors of the Datalog-vs-Java implementations, we also produced an
-optimized Datalog implementation, based on our purely functional data
-structure.
+We implemented an analysis that functionally matches the one present in the \doop{} framework that is implemented in Datalog (whose core ideas are aptly captured in the model of the previous chapter). In contrast, our implementation is in Java, since our optimized alias graph data structure has imperative features in its full form. Finally, to also eliminate language-level factors of the Datalog-vs-Java implementations, we also produced an optimized Datalog implementation, based on our purely functional data structure.
 
-\begin{figure*}[h]
-  \begin{minipage}[b]{\linewidth}
-    \centering
-    % left bottom right top
-    \includegraphics[clip,width=0.77\linewidth, height=0.4275\linewidth]{assets/must-data/time.eps}
-  \end{minipage}
-  \caption{Execution time (sec.) of the analysis. We only show the numbers for the Java and Datalog naive versions, to avoid crowding the chart.}
-    \label{fig:time}
+The three implementations are functionally equivalent, with very minor variations, due to clear engineering differences: The original Datalog analysis has to bound the access path length for aliases to a finite number, while the optimized data structure implicitly stores aliases for longer access paths. This may allow inferring more aliases even for shorter access paths. Also, for engineering simplicity, the Java implementation incorporates just a naive fixpoint computation. In each fixpoint iteration, it keeps track of a set of instructions whose alias graphs might be affected by the current changes, and those are the instructions that will be inspected in the next iteration. This process is repeated until there are no further instructions for consideration. The fixpoint computation is only crudely tuned for performance and the algorithm is eager to mark an instruction as a candidate for the next iteration.
+
+Since the analyses are virtually equivalent, we next compare them only on speed. (For context, however: the analysis is quite effective and computes far from trivial results. It produces enough must-alias inferences to determine unique points-to targets for 20-40\% of local variables in all benchmarks. Its current main uses inside \doop{} are to enable strong updates in a may-point-to analysis, as well as to produce results for inspection by humans, to aid program comprehension.)
+
+We use a 64-bit machine with an Intel(R) Xeon(R) E5-2687W v4 (24-cores) CPU at 3.00GHz. The machine has 512GB of RAM. All measurements are single-threaded (though, as is common, Java runs its garbage collector in extra threads) and all executions occupy only a small fraction of the available RAM. We experiment with the DaCapo benchmark programs~\cite{oopsla:2006:Blackburn} v.2006-10-MR2 and v.9.12-bach under JDK 1.7.0\_45.  We use the LogicBlox Datalog engine, v.3.10.14.
+
+
+\paragraphhead{Speed across benchmarks.}
+Figure~\ref{fig:must-data:time-chart} shows the performance effect of our optimized data structure on analyzing the benchmark programs. We bounded the access path length (for the original Datalog analysis) to 3 and the analysis context depth to 2.
+
+\begin{figure*}[htp]
+\centering
+\includegraphics[clip,width=0.77\linewidth, height=0.4275\linewidth]{assets/must-data/time.eps}
+\caption{Execution time (sec.) of the analysis. We only show the numbers for the Java and Datalog naive versions, to avoid crowding the chart.}
+\label{fig:must-data:time-chart}
 \end{figure*}
 
-%of Section~\ref{sec:datastructure}.
-The three
-implementations are functionally equivalent, with very minor
-variations, due to clear engineering differences: The
-original Datalog analysis has to bound the access path length for aliases to a
-finite number, while the optimized data structure implicitly stores
-aliases for longer access paths.
-%% This may allow inferring more aliases even for shorter access paths. Also, for engineering simplicity, the
-%% Java implementation incorporates just a naive fixpoint computation.
-%% In each fixpoint iteration, it keeps track of a set of instructions whose
-%% alias graphs might be affected by the current changes, and those are
-%% the instructions that will be inspected in the next iteration. This process
-%% is repeated until there are no further instructions for consideration.
-%% The fixpoint computation is only crudely tuned for performance and
-%% the algorithm is eager to mark an instruction as a candidate for the next iteration.
+Note that the figure is log-scale. Across all benchmarks, the difference between the optimized implementations and the original is typically at least an order of magnitude and often close to two.  The speedup of the two optimized implementations (vs. the original) is also shown more explicitly in Figure~\ref{fig:must-data:speedup-chart}: over half the benchmarks enjoy speedups of over 20x for both the Java and the Datalog optimized implementation. The Java version of the data structure achieves a median speedup of 25.7x (min. 8.4x, max. 68.9x), while the Datalog version has a median speedup of 24.6x (min. 5.4x, max. 47.3x).  The analysis time typically drops from over ten minutes to under half a minute. 
 
-%% Since the analyses are virtually equivalent, we next compare them only
-%% on speed. (For context, however: the analysis is quite effective and computes
-%% far from trivial results. It produces enough must-alias inferences to
-%% determine unique points-to targets for 20-40\% of local variables in
-%% all benchmarks. Its current main uses inside \textsc{Doop} are to
-%% enable strong updates in a may-point-to analysis, as well as to
-%% produce results for inspection by humans, to aid program
-%% comprehension.)
+\begin{figure*}[htp]
+\centering
+\includegraphics[clip,width=0.77\linewidth, height=0.4275\linewidth]{assets/must-data/speedup.eps}
+\caption{Speedup of the two analyses employing optimized data structure.}
+\label{fig:must-data:speedup-chart}
+\end{figure*}
 
-We use a 64-bit machine with an Intel(R) Xeon(R) E5-2687W v4 (24-cores) CPU
-at 3.00GHz. The machine has 512GB of RAM. All measurements are single-threaded
-(though, as is common, Java runs its garbage collector in extra threads) and
-all executions occupy only a small fraction of the available RAM. We experiment
-with the DaCapo benchmark programs~\cite{oopsla:2006:Blackburn} v.2006-10-MR2 and
-v.9.12-bach under JDK 1.7.0\_45.  We use the LogicBlox Datalog engine,
-v.3.10.14.
+It is not hard to see why the explicit representation is not competitive. Figure~\ref{fig:must-data:pairs-chart} correlates the number of aliased access-path pairs (computed by the original analysis) and execution time. (This applies to context-qualified access paths, in the application and libraries alike, as long as the library code is reachable from application code with the given context depth.) This metric reflects the size (in tuples) of the corresponding relation in the Datalog database. It clearly suggest that maintaining access path relationships explicitly can prove quite costly.
 
-\paragraph{Speed across benchmarks.}
+\begin{figure*}[htp]
+\centering
+\includegraphics[clip,width=\linewidth]{assets/must-data/pairs.eps}
+\caption{Number of pairs of (instruction-and-context-qualified) access paths that must alias vs. analysis time.}
+\label{fig:must-data:pairs-chart}
+\end{figure*}
 
-Figure~\ref{fig:time} shows the performance effect of our optimized
-data structure on analyzing the benchmark programs. We bounded the
-access path length (for the original Datalog analysis) to 3 and the
-analysis context depth to 2.
+Furthermore, the setup explicitly downplays the benefits of our optimized data structure: First, the ``optimized'' running time also includes import time and computing must-point-to results for checking the equivalence of analyses. The latter is quite costly, since it requires re-expanding the compactly-preserved access paths. The true computation times of the optimized analysis are about one-third of the times listed in Figure~\ref{fig:must-data:time-chart}. Second, the configuration parameters (context depth of 1 and access paths of at most length 2) are very modest, to present the explicit representation in the best possible (while still realistic) light. Changing these parameters can incur dramatic slowdowns for the explicit representation, as we examine next.
 
 
-Note that the figure is log-scale. Across all benchmarks, the
-difference between the optimized implementations and the original is
-typically at least an order of magnitude and often close to two.  The
-speedup of the two optimized implementations (vs. the original) is
-also shown more explicitly in Figure~\ref{fig:speedup}: over half the
-benchmarks enjoy speedups of over 20x for both the Java and the Datalog
-optimized implementation. The Java version of the data structure achieves
-a median speedup of 25.7x (min. 8.4x, max. 68.9x), while the Datalog
-version has a median speedup of 24.6x (min. 5.4x, max. 47.3x). 
-The analysis time typically drops from over ten minutes to under half a minute. 
+\paragraphhead{Varying access-path length.}
+To further see the performance advantage of the optimized representation of must-alias information, one can vary the maximum access path length allowed for computations of the original, explicit (Datalog) implementation. Figure~\ref{fig:must-data:aplength-chart} shows how running time varies for maximum access path lengths of 2, 3 (same as in Figure~\ref{fig:must-data:time-chart}), 4 and 5. The numbers are for the xalan benchmark. The speedup readily grows to over 75x for an allowed access path length of 5. The optimized Datalog implementation is shown as a baseline although it should be (and is) largely unaffected by the change of maximum access path length.
 
-\begin{figure*}[h]
-  \begin{minipage}[b]{\linewidth}
-    \centering
-    % left bottom right top
-    \includegraphics[clip,width=0.77\linewidth, height=0.4275\linewidth]{assets/must-data/speedup.eps}
-  \end{minipage}
-  \caption{Speedup of the two analyses employing optimized data structure.}
-    \label{fig:speedup}
+\begin{figure*}[htp]
+\centering
+\includegraphics[clip,width=\linewidth]{assets/must-data/length.eps}
+\caption{Execution time when varying maximum access-path length. Optimized Datalog running time given as a baseline.}
+\label{fig:must-data:aplength-chart}
 \end{figure*}
 
 
+\paragraphhead{Varying context depth.}
+Similar observations can be made by varying the context depth of the analysis. As seen in Figure~\ref{fig:must-data:ctxdepth-chart}, although the running time of the optimized implementation grows slowly, the running time of the explicit representation of alias relationships gets dramatically higher. For a context depth of 4, the explicit representation did not terminate after one-and-a-half hour.
 
-%focuses on the
-%speedup gains from deploying such a data
-%structure. Figure~\ref{fig:pairs} gives a bird's eye view of a
-%complexity metric for the inference process.
+\begin{figure*}[htp]
+\centering
+\includegraphics[clip,width=\linewidth]{assets/must-data/depth.eps}
+\caption{Execution time when varying maximum context depth.}
+\label{fig:must-data:ctxdepth-chart}
+\end{figure*}
 
-%% %a high-level as well as complexity metrics for
-%% %the inference process. The number of access-path points-to entries
-%% %denotes how many access path are guaranteed to point to the most recent
-%% %abstract object allocated at a known instruction. This is a good
-%% %metric for mapping the must-alias inference to a more readily
-%% %consumable quantity.
-
-%% \begin{figure}
-%%   \setlength{\tabcolsep}{6pt}
-%%   \centering
-%%   \begin{tabular}{||l| r| r| r| r| r||}
-%%     \toprule
-%%     Benchmark &      optimized &      explicit & speedup & must-alias & access path         \\
-%%               &  time (sec)    &  time (sec)   &         & \#pairs    &  must-point-to   \\
-%%               &                &               &         &  (Ks)      &  \# entries (Ks) \\
-%%     \midrule
-%%     antlr     &	39 &	1000 &	25.6  &	12130 &		1969   \\ 
-%%     bloat     &	24 &	591  &	24.6  &  9606 &	    2268   \\ 
-%%     chart     &	38 &	1238 &	32.6  &	22089 &		3976   \\ 
-%%     eclipse   &	22 &	561  &	25.5  &	 8973 &	    1941   \\ 
-%%     fop       &	28 &	527  &	18.8  &	 6571  &		1897   \\ 
-%%     hsqldb    &	22 &	493  &	22.4  &	 6429  &		1893   \\ 
-%%     luindex   &	13 &	398  &	30.6  &	 6303  &		1901   \\ 
-%%     lusearch  &	15 &	416  &	27.7  &	 6887  &		1911   \\ 
-%%     pmd       &	41 &	581  &	14.2  &	 9280  &		2059   \\ 
-%%     xalan     &	47 &	658  &	14.0  &	 9979  &		1969   \\   
-%%     \bottomrule
-%%   \end{tabular}
-%%   \caption{Execution time and main complexity metrics for our analysis
-%%     implementations, for context depth of 1 and maximum access path
-%%     length of 2. ``Optimized'' refers to our Java-based, optimized
-%%     alias graph structure. ``Explicit'' is the Datalog implementation,
-%%     maintaining all alias pairs explicitly. Also shown: the number of
-%%     alias pairs inferred, as well as the number of must-point-to
-%%     relationships for access paths.}
-
-%%   \label{fig:time}
-%% \end{figure}
-
-
-It is not hard to see why the explicit representation is not
-competitive.  Figure~\ref{fig:pairs} correlates the number of aliased
-access-path pairs (computed by the original analysis) and execution
-time.  (This applies to context-qualified access paths, in the
-application and libraries alike, as long as the library code is
-reachable from application code with the given context depth.) This
-metric reflects the size (in tuples) of the corresponding relation in
-the Datalog database. It clearly suggest that maintaining access path
-relationships explicitly can prove quite costly.
-
-\begin{figure}[h]
-  \begin{minipage}[b]{\linewidth}
-    \centering
-    % left bottom right top
-    \includegraphics[clip,width=\linewidth]{assets/must-data/pairs.eps}
-  \end{minipage}
-  \caption{Number of pairs of (instruction-and-context-qualified) access paths that must alias vs. analysis time.}
-    \label{fig:pairs}
-\end{figure}
-
-%% Furthermore, the setup
-%% explicitly downplays the benefits of our optimized data structure:
-%% First, the ``optimized'' running time also includes import time and
-%% computing must-point-to results for checking the equivalence of
-%% analyses.  The latter is quite costly, since it requires re-expanding
-%% the compactly-preserved access paths. The true computation times of
-%% the optimized analysis are about one-third of the times listed in
-%% Figure~\ref{fig:time}. Second, the configuration parameters (context
-%% depth of 1 and access paths of at most length 2) are very modest, to
-%% present the explicit representation in the best possible (while still
-%% realistic) light. Changing these parameters can incur dramatic
-%% slowdowns for the explicit representation, as we examine next.
-
-
-\paragraph{Varying access-path length.} To further see the performance
-advantage of the optimized representation of must-alias information,
-one can vary the maximum access path length allowed for computations
-of the original, explicit (Datalog) implementation.
-Figure~\ref{fig:aplength} shows how running time varies for maximum
-access path lengths of 2, 3 (same as in Figure~\ref{fig:time}), 4 and
-5. The numbers are for the xalan benchmark. The speedup readily grows
-to over 75x for an allowed access path length of 5. The optimized
-Datalog implementation is shown as a baseline although it should be (and
-is) largely unaffected by the change of maximum access path length.
-
-\begin{figure}[h]
-  \begin{minipage}[b]{\linewidth}
-    \centering
-    % left bottom right top
-    \includegraphics[clip,width=\linewidth]{assets/must-data/length.eps}
-  \end{minipage}
-  \caption{Execution time when varying maximum access-path length. Optimized
-    Datalog running time given as a baseline.}
-    \label{fig:aplength}
-\end{figure}
-
-
-%for which the optimized representation achieved the \emph{lowest} speedup (14x) in Figure~\ref{fig:time}.
-
-
-%% \begin{figure}
-%%   \setlength{\tabcolsep}{6pt}
-%%   \centering
-%%   \begin{tabular}{||l| r| r| r| r| r||}
-%%     \toprule
-%%   Access path   &      optimized &      explicit & speedup  & must-alias & access path         \\
-%%     length      & time  (sec)    & time (sec)    &          &  \#pairs   &  must-point-to   \\
-%%                 &                &               &          &    (Ks)    &  \# entries  (Ks)\\
-%%     \midrule
-%%     1 &     47 & 290	                         & 6.2      & 	3399    & 	1953  \\
-%%     2 &     47 & 658	                         & 14.0     & 	9979    &   1969  \\
-%%     3 &     47 & 1521                            & 32.4     & 18528    & 	1971  \\
-%%     \bottomrule
-%%   \end{tabular}
-%%   \caption{Analysis results (for the xalan benchmark) when varying the
-%%     maximum access path length. This restriction does not affect our
-%%     optimized implementation, whose running time is included in every
-%%     row only for reference.}
-
-%%   \label{fig:aplength}
-%% \end{figure}
-
-
-\paragraph{Varying context depth.} Similar observations can be made by varying
-the context depth of the analysis. As seen in
-Figure~\ref{fig:ctxdepth}, although the running time of the optimized
-implementation grows slowly, the running time of the explicit
-representation of alias relationships gets dramatically higher. For a
-context depth of 4, the explicit representation did not terminate
-after one-and-a-half hour.
-
-\begin{figure}[h]
-  \begin{minipage}[b]{\linewidth}
-    \centering
-    % left bottom right top
-    \includegraphics[clip,width=\linewidth]{assets/must-data/depth.eps}
-  \end{minipage}
-  \caption{Execution time when varying maximum context depth.}
-    \label{fig:ctxdepth}
-\end{figure}
-
-
-%% \begin{figure}
-%%   \setlength{\tabcolsep}{6pt}
-%%   \centering
-%%   \begin{tabular}{||l| r| r| r| r| r||}
-%%     \toprule
-%%     Context   &      optimized &      explicit & speedup & must-alias & access path         \\
-%%     depth     & time  (sec)    & time (sec)    &         &  \#pairs   &  must-point-to   \\
-%%               &                &               &         &    (Ks)    &  \# entries (Ks) \\
-%%     \midrule
-%%     0 &  45 & 	92  & 	2.0	 &  1177 & 	1794 \\  
-%%     1 &  47 & 	658 & 	14.0 & 	9979 & 	1969 \\  
-%%     2 &  56 & 	1449&	25.9 &  33439&	2610 \\  
-%%     \bottomrule
-%%   \end{tabular}
-%%   \caption{Analysis results (for the xalan benchmark) when varying the maximum
-%%    context depth of the analysis.}
-
-%%   \label{fig:context}
-%% \end{figure}
-
-Recall the two claimed benefits of the optimized representation: long access paths
-are represented implicitly, and equivalence classes are represented with linear
-space and time complexity, instead of quadratic. It is the latter factor that
-comes into play when context depth increases: alias sets grow in size, by exploiting
-inter-procedural inference (e.g., aliasing established at the caller and
-propagated through formal arguments) in addition to local instructions.
-
-In all, the optimized representation fulfills its promise of a much more economical
-representation of must-alias (equivalence) relations. 
-
-
-
-%% The minimal model of earlier sections captures the essence of our
-%% full-fledged implementation. Our framework, \textsc{MaDoop}, is built
-%% on top of the \textsc{Doop} Datalog framework for may-point-to
-%% analysis of Java bytecode~\cite{oopsla:2009:Bravenboer}. Whereas
-%% \textsc{Doop} is a flow-insensitive points-to analysis framework
-%% (ignoring the order of instructions in a method), \textsc{MaDoop} adds
-%% flow-sensitive modeling of the Java bytecode program (a full
-%% control-flow graph over basic blocks). All program structure
-%% information is represented as logical tables, which are subsequently
-%% processed by about 300 logical rules.
-
-
-%% To demonstrate the framework experimentally, we apply it to the DaCapo
-%% benchmark programs~\cite{oopsla:2006:Blackburn} v.2006-10-MR2 under JDK
-%% 1.7.0\_21.  We use the LogicBlox Datalog engine, v.3.10.19, on a Xeon
-%% E5530 2.4GHz machine with only one thread running at a time and 24GB
-%% of RAM.  When a may-analysis is needed, we employ the most precise
-%% analysis that scales to large programs in the \textsc{Doop}
-%% framework---a 2-object-sensitive analysis with a context-sensitive
-%% heap (2objH).
-
-%% We study five of the DaCapo benchmarks: antlr, chart, luindex,
-%% lusearch, pmd. We wanted a small enough set for human inspection of
-%% alias pairs at select program points, as well as programs for which a
-%% 2objH analysis terminates. The scalability of our own must-alias
-%% analysis is not a concern: as discussed earlier, a must-alias analysis
-%% is naturally incremental. Hence, scalability to large programs is largely not
-%% an issue: we can apply the analysis to just the application classes or
-%% to a smaller hand-selected subset of the program code.
-
-%% Figure~\ref{fig:info} presents statistics on the sizes of the
-%% benchmarks, in terms of application code deemed reachable by the
-%% \textsc{Doop} may-point-to analysis (2objH), as well as the running
-%% time of this analysis. We also include the execution time for the
-%% preparatory computation over the may-analysis results (``must
-%% pre-analysis'' column)---i.e., the time to compute our
-%% required input predicates, \altrelname{Resolved},
-%% \altrelname{MayAlias} and \altrelname{CallMayStoreToField}.
-
-%% %% \begin{figure}[t]
-%% %%   \small
-%% %%   \centering
-%% %%   \begin{tabular}{lrrrrr}
-%% %%     \toprule
-%% %%     &&&& \multicolumn{2}{c}{may analysis time}
-%% %%     \\
-%% %%     \cmidrule(lr){5-6}
-%% %%     Bench. & instructions & methods & classes & core (2objH) & must
-%% %%                                                                   pre-analysis
-%% %%     \\
-%% %%     \midrule
-%% %%     antlr    & 65518 & 1638 & 229 &  7m48s & 3m41s \\ %.18s \\
-%% %%     chart    & 29126 & 1176 & 516 & 18m46s & 4m21s \\ %.07s \\
-%% %%     luindex  & 19732 &  693 & 351 &   4m5s & 1m51s \\ %.90s \\
-%% %%     lusearch & 26473 & 1049 & 351 &  4m28s & 1m58s  \\ %.78s \\
-%% %%     pmd      & 49114 & 1880 & 554 &  5m25s & 3m18s \\ %.22s \\
-%% %%     \bottomrule
-%% %%   \end{tabular}
-%% %%   \caption{Statistics for reachable application code, 2objH
-%% %%     may-point-to analysis and must pre-analysis.}
-%% %%   \label{fig:info}
-%% %% \end{figure}
-
-%% \begin{figure}[t]
-%%   \small
-%%   \centering
-%%   \begin{tabular}{lrrrr}
-%%     \toprule
-%%     &&& \multicolumn{2}{c}{may analysis time}
-%%     \\
-%%     \cmidrule(lr){4-5}
-%%     Benchmark & methods & classes & core (2objH) & must
-%%                                                                   pre-analysis
-%%     \\
-%%     \midrule
-%%     antlr    & 1638 & 229 &  7m48s & 3m41s \\ %.18s \\
-%%     chart    & 1176 & 516 & 18m46s & 4m21s \\ %.07s \\
-%%     luindex  &  693 & 351 &   4m5s & 1m51s \\ %.90s \\
-%%     lusearch & 1049 & 351 &  4m28s & 1m58s  \\ %.78s \\
-%%     pmd      & 1880 & 554 &  5m25s & 3m18s \\ %.22s \\
-%%     \bottomrule
-%%   \end{tabular}
-%%   \caption{Statistics for reachable application code, 2objH
-%%     may-point-to analysis and must pre-analysis.}
-%%   \label{fig:info}
-%% \end{figure}
-
-%% Our must-alias analysis is run with a maximum access path length of
-%% 3. Context depth varies per experiment, as discussed below.
-
-%% \paragraph{Comparison with Intra-Procedural Analysis.}
-
-%% As a first measure of the value of our inter-procedural must-alias
-%% analysis, we compare it against intra-procedural analyses. Traditional
-%% compilers can already compute aliases using intra-procedural data-flow
-%% analysis and employ them for optimizations such as common
-%% subexpression elimination, constant folding, or register allocation.
-%% It is interesting to consider whether there is benefit from considering
-%% more precisely the effects of called methods, in order to infer more
-%% local aliases.
-
-%% For this experiment, we ran our analysis algorithm (with a context
-%% depth of 1) over the entire application portion of the
-%% benchmarks. That is, the size of our \funcname{RootMethod} set is the
-%% number of methods shown in Figure~\ref{fig:info}.
-
-%% The first and last settings shown in Figure~\ref{fig:exp1} (``intra-procedural'' and
-%% ``inter-procedural'', respectively) present a
-%% purely intra-procedural analysis and our full inter-procedural
-%% algorithm.
-%% %The former is
-%% %produced from our framework with the inter-procedural propagation
-%% %rules disabled. 
-%% The intra-procedural analysis does not exploit aliasing
-%% inferences from other methods, and conservatively invalidates alias
-%% pairs at method calls and heap stores.
-
-%% \begin{figure*}[t]
-%%   \small
-%%   \centering
-%%   \begin{tabular}{lrcrrcrrcrrcr}
-%%     \toprule
-%%     \multicolumn{13}{c}{\normalsize \emph{Alias pairs}} \\
-%%     % \cmidrule(l){2-13}
-%%     \midrule
-%%     & \multicolumn{3}{c}{intra-procedural}
-%%     & \multicolumn{3}{c}{intra-proc.$^{+\text{may}}$}
-%%     & \multicolumn{3}{c}{inter-proc.$_{-\text{may}}$}
-%%     & \multicolumn{3}{c}{inter-procedural} \\
-%%     \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(l){11-13}
-%%     & \multirow{2}{2em}{per insn.} & \multirow{2}{2em}{per ret.} & time
-%%     & \multirow{2}{2em}{per insn.} & \multirow{2}{2em}{per ret.} & time
-%%     & \multirow{2}{2em}{per insn.} & \multirow{2}{2em}{per ret.} & time
-%%     & \multirow{2}{2em}{per insn.} & \multirow{2}{2em}{per ret.} & time
-%%     \\ Bench. \\
-%%     \midrule
-%%     antlr    &  7 &  3 & 1m37s & 41 &  6 & 3m21s &  34 & 19 & 14m25s & 105 & 27 & 37m37s \\
-%%     chart    & 10 &  4 & 1m37s & 15 &  6 & 1m34s &  26 & 20 &  3m31s & 34 & 24  &  4m57s \\
-%%     luindex  &  4 &  3 & 0m36s &  7 &  6 & 0m59s &   7 &  7 &  1m26s & 12 & 12  &  1m34s \\
-%%     lusearch &  5 &  3 & 0m53s &  6 &  5 & 0m54s &   8 &  6 &  1m22s & 12 & 10  &  1m56s \\
-%%     pmd      & 13 &  3 & 2m26s & 15 &  4 & 2m19s &  23 & 17 &  7m59s & 27 & 19  &  9m39s \\
-%%     \bottomrule
-%%   \end{tabular}
-%%   \caption{Average \#alias pairs per program element (divided by 2,
-%%     i.e., with equivalent symmetric pairs removed), and timings for
-%%     various settings.}
-%%   \label{fig:exp1}
-%% \end{figure*}
-
-%% The main metric to watch for in this comparison is ``alias
-%% pairs per instruction'', i.e., the first of the three columns in every
-%% grouping of numbers. As can be seen, the full inter-procedural analysis
-%% (last of the four settings shown in Figure~\ref{fig:exp1}) yields
-%% significantly richer information than the intra-procedural analysis
-%% (first setting). With only intra-procedural information, we can infer
-%% at most one half, and often less than one third, of the alias pairs.
-%% The alias pairs shown are unconditional (i.e., for context
-%% \funcname{All}) with symmetric pairs removed. The numbers are over the
-%% Jimple intermediate language of the Soot framework and, thus, the
-%% alias pairs are more numerous than one would expect from program
-%% inspection, due to the introduction of several temporary
-%% variables. 
-
-%% \begin{figure*}[t]
-%%   \small
-%%   \centering
-%%   \begin{tabular}{lrrrrrr}
-%%     \toprule
-%%     & \multicolumn{3}{c}{\emph{Alias pairs} under 1-must-context}
-%%     & \multicolumn{3}{c}{\emph{Alias pairs} under 5-must-context} \\
-%%     \cmidrule(lr){2-4} \cmidrule(lr){5-7}
-%%     Benchmark & per instr. & per all-return & time
-%%               & per instr. & per all-return & time
-%%     \\
-%%     \midrule
-%%     antlr    & 10 &  8 & 0m51s & 19 & 12 &  2m48s \\
-%%     chart    & 25 & 13 & 1m25s & 30 & 18 &  1m21s \\
-%%     luindex  &  8 &  6 & 0m20s &  9 &  7 &  0m25s \\
-%%     lusearch &  6 &  5 & 0m22s &  9 &  7 &  1m12s \\
-%%     pmd      &  6 &  4 & 0m25s & 11 &  9 & 10m12s \\
-%%     \bottomrule
-%%   \end{tabular}
-%%   \caption{Alias pairs (with equivalent symmetric pairs removed, i.e., numbers divided by 2), and timings
-%%   for different contexts of the must-alias analysis.}
-%%   \label{fig:exp2}
-%% \end{figure*}
-
-
-%% \paragraph{Value of May-Analysis for Must- Inference.}
-
-%% Figure~\ref{fig:exp1} shows two more settings of our analysis:
-%% intra-procedural$^{+\text{may}}$ and inter-procedural$_{-\text{may}}$.
-%% These help us quantify how exactly may-analysis information
-%% contributes to the must-analysis.
-
-%% The intra-procedural$^{+\text{may}}$ setting does intra-procedural
-%% must-alias reasoning but invalidates access paths by employing the
-%% inter-procedural may-alias analysis. That is, of the three predicates
-%% computed by the may-analysis, the intra-procedural$^{+\text{may}}$
-%% analysis does \emph{not} use predicate \altrelname{Resolved} to do
-%% virtual method resolution, but \emph{does} use predicates
-%% \altrelname{MayAlias} and \altrelname{CallMayStoreToField}, in order
-%% to decide when to invalidate access paths at call and store
-%% instructions. 
-%% %
-%% Conversely, the inter-procedural$_{-\text{may}}$ analysis \emph{does}
-%% use predicate \altrelname{Resolved} to do virtual method resolution,
-%% but does \emph{not} use predicates \altrelname{MayAlias} and
-%% \altrelname{CallMayStoreToField}, instead invalidating alias
-%% information conservatively at store and call instructions.
-
-%% These variations of settings give us a picture of the separate benefit
-%% from various kinds of inter-procedurality (may vs. must reasoning).
-%% As can be seen, inter-procedural reasoning benefits greatly from both
-%% kinds of inter-procedural may-analysis information. 
-%% %%SPACE
-%% %The inter-procedural$_{-\text{may}}$ setting is significantly less
-%% %effective than the full inter-procedural analysis, while still
-%% %typically much better than intra-procedural$^{+\text{may}}$, which, in
-%% %turn, is better than the purely intra-procedural setting.
-%% %
-%% %%SPACE
-%% Note that all of the above configurations were produced via
-%% straightforward configuration of our full implementation.
-%% This is testament to the inherent configurability of a modular,
-%% declarative framework.
-%% %This ease of
-%% %experimentation is testament to the inherent configurability of a
-%% %modular, declarative framework, as opposed to a monolithic
-%% %implementation.
-
-%% \paragraph{Timings.}
-
-%% Figure~\ref{fig:exp1} also shows the running time for our analysis, as
-%% well as for intra-procedural analyses. As can be seen, the must-alias
-%% analysis is quite fast. In the case of antlr, the analysis time blows up,
-%% but so do the inferred facts. Generally, our timings do not aim
-%% to reflect an ideal implementation of the declarative
-%% rules. Specifically, our Datalog
-%% engine does not use union-find trees for the equivalence classes of
-%% reflexively and transitively closed relations, thus incurring
-%% significant overhead.
-%% %We have tried to minimize such overhead within the parameters allowed
-%% %by the execution engine but a manual implementation can likely fare
-%% %better. 
-%% On the other hand, our implementation is heavily optimized in terms of
-%% rule execution and indexing (for fast combination of relations), to an
-%% extent that a manual implementation will have difficulties matching.
-
-
-%% \paragraph{Results for Human Inspection.}
-
-%% For human inspection of aliases, we have found it useful to produce
-%% all alias pairs that hold (unconditionally, i.e., under an
-%% \funcname{All} context) for \emph{all} return statements of a method.
-%% This ``forall'' intersection of aliasing information over all
-%% return sites offers a good summary of the method's effects, and
-%% is more concise than alias information at a single given
-%% instruction.
-
-%% Figure~\ref{fig:exp1} shows the sizes of the sets computed in this
-%% fashion, as the second of the three columns for every analysis
-%% setting.  As can be seen, the full inter-procedural must-alias
-%% analysis is again significantly more information-rich than any other
-%% setting. The sizes of the resulting alias sets (from 10 to 27)
-%% are small enough for human inspection and typically
-%% quite informative.
-
-
-
-%% \paragraph{Exploring Parts of the Program, Using Context.}
-
-%% To explore parts of the program only conditionally (with alias pairs
-%% qualified by context), we selected at random 20 methods in each of the
-%% benchmarks. We ran the analysis with these methods in the
-%% \funcname{RootMethod} set, and different maximum context depth values,
-%% to allow exploration of code outside that set as much as the context
-%% depth permits.
-
-%% Figure~\ref{fig:exp2} shows the result of this experiment, for context
-%% depth settings of 1 and 5. The alias pairs shown are computed \emph{at
-%%   the root methods only}, i.e., they do not count alias pairs in the
-%% methods analyzed under a non-\funcname{All} context, but they do count
-%% the impact of such methods on the alias information at the original
-%% root method set.
-
-%% The execution time demonstrates the incrementality of the must-alias
-%% analysis---its running time was often negligible.
-%% %%SPACE
-%% % (Recall that much of
-%% %the time shown is spent computing queries over the \emph{may-}
-%% %analysis, in order to populate input tables \altrelname{Resolved},
-%% %\altrelname{MayAlias}, and \altrelname{CallMayStoreToField}, and not
-%% %on the must-alias analysis itself.)
-
-%% For a deeper context, the analysis produces often significantly richer
-%% facts. Since the methods of origin are randomly selected, the number of
-%% extra alias pairs (when mapped back at the root
-%% methods) varies, but is generally consistent.
-
-
-
-
+Recall the two claimed benefits of the optimized representation: long access paths are represented implicitly, and equivalence classes are represented with linear space and time complexity, instead of quadratic. It is the latter factor that comes into play when context depth increases: alias sets grow in size, by exploiting inter-procedural inference (e.g., aliasing established at the caller and propagated through formal arguments) in addition to local instructions.
 
 
 \section{Conclusions}
-\label{sec:conclusions}
 
-We presented a data structure for the its optimized implementation of
-must-alias analysis over access paths. The algorithmic improvements
-afforded by the specialized data structure yield a large
-performance advantage, often approaching two orders of magnitude.
+We presented a data structure for the its optimized implementation of must-alias analysis over access paths. In all, the optimized representation fulfills its promise of a much more economical representation of must-alias (equivalence) relations. The algorithmic improvements afforded by the specialized data structure yield a large performance advantage, often approaching two orders of magnitude.
