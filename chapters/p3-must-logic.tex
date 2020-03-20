@@ -136,7 +136,7 @@ We assume a constructor function \consname{AP} that produces access paths. For i
 
 Additionally, we manipulate access paths with two functions, \consname{PrimeAP} and \consname{UnprimeAP}. \consname{PrimeAP} takes an access path and returns a new one by ``priming'' the base variable of the original. \consname{UnprimeAP} reverses this mapping. For instance, \cons{PrimeAP}{``v.fld''}{``v\textbf{'}.fld''}. \consname{UnprimeAP} only applies to access paths with primed variables as their base---otherwise the rule fails to match. Priming and unpriming of access paths is done at method call and return sites, to mark access paths that arrive from callers. This is necessary for avoiding confusion of variables in recursive calls.
 
-Similarly, we construct new contexts using function \consname{NewContext}. The definition of this constructor serves to configure the analysis for different context settings, as discussed later. If \consname{NewContext} does not return a value (e.g., because the maximum context depth has been reached), the current rule employing the constructor will not produce facts. The constant \dlAll{} is used to signify the initial context.
+Similarly, we construct new contexts using function \consname{NewContext}. The definition of this constructor serves to configure the analysis for different context settings, as discussed later. If \consname{NewContext} does not return a value (e.g., because the maximum context depth has been reached), the current rule employing the constructor will not produce facts. The constant \ctxAll{} is used to signify the initial context.
 
 Constructors of access paths and contexts are much like other relations. In practical analyses, the space of access paths and contexts is made finite, by bounding their length. Therefore, all possible access paths and contexts could be computed prior to the analysis start and supplied as inputs. However, this is unlikely to be desirable in practice, for efficiency reasons, and is limiting in principle: by separating constructors, our model also allows analyses with unbounded access paths and contexts.
 
@@ -153,7 +153,7 @@ We have broken down our analysis model in four groups of rules. For conciseness,
 
 
 \paragraphhead{Base Rules.}
-Figure~\ref{fig:must-logic:baserules} lists six rules: one to initialize interesting analysis contexts and five for must-alias inferences. The former rule employs configuration predicate \altrelname{RootMethod}. This predicate designates methods that are to be analyzed unconditionally: the inference is made under the special context value \dlAll{}. For a non-root method, aliasing inferences can only be made under a specific context, for which the method has been computed to be reachable. The results can then be used by the caller that produced that context. They are not, however, established as unconditional results (in an \dlAll{} context), which would be usable independently.
+Figure~\ref{fig:must-logic:baserules} lists six rules: one to initialize interesting analysis contexts and five for must-alias inferences. The former rule employs configuration predicate \altrelname{RootMethod}. This predicate designates methods that are to be analyzed unconditionally: the inference is made under the special context value \ctxAll{}. For a non-root method, aliasing inferences can only be made under a specific context, for which the method has been computed to be reachable. The results can then be used by the caller that produced that context. They are not, however, established as unconditional results (in an \ctxAll{} context), which would be usable independently.
 
 The above mechanism controls the application extent of the analysis. Recall that incrementality is a key benefit of a must-alias analysis. Therefore, it is desirable to be able to apply the algorithm as locally as the user may desire. The context mechanism is then used to explore other code, but only to the extent that such exploration benefits the root methods intended for analysis.
 
@@ -161,7 +161,7 @@ The next four \relname{MustAlias} rules handle one instruction kind each: \relna
 
 \begin{figure}[htp]
 \begin{datalog}
-\rel{Reachable}{meth, \dlAll{}} \dlIf{} \altrel{RootMethod}{meth}. \\
+\rel{Reachable}{meth, \ctxAll{}} \dlIf{} \altrel{RootMethod}{meth}. \\
 \\
 \rel{MustAlias}{i, ctx, \consapp{AP}{from}, \consapp{AP}{to}} \dlIf{} \\
     \rel{Move}{i, to, from}, \\
@@ -195,7 +195,7 @@ The other three rules handle aliasing induced at a method invocation site. Despi
 
 The third rule similarly identifies the first instruction of a called method. It then propagates to it all alias pairs that hold \emph{after all predecessor instructions}, \args{j}, of the calling instruction, \args{i}. The base variables of the alias pairs are ``primed'', as appropriate, to denote that they come from the caller.
 
-The fourth and final rule performs the inverse mapping of access paths from a return instruction to the call site. For alias pairs to propagate back (to the caller, with context \args{callerCtx}), they need to hold either in the appropriate context (\args{calleeCtx}, which matches \args{callerCtx} in the call graph), or unconditionally, i.e., with context \dlAll{}. Access paths are ``unprimed'' when propagating to the caller. Note that this implies that local alias pairs (e.g., among local variables of the callee) do not propagate to the caller.
+The fourth and final rule performs the inverse mapping of access paths from a return instruction to the call site. For alias pairs to propagate back (to the caller, with context \args{callerCtx}), they need to hold either in the appropriate context (\args{calleeCtx}, which matches \args{callerCtx} in the call graph), or unconditionally, i.e., with context \ctxAll{}. Access paths are ``unprimed'' when propagating to the caller. Note that this implies that local alias pairs (e.g., among local variables of the callee) do not propagate to the caller.
 
 Crucially, the handling of a method return is the \emph{only} point where a context can become stronger. \relname{MustAlias} facts that were inferred to hold under the more specific \args{calleeCtx} are now established, modulo unpriming, under \args{callerCtx}.
 
@@ -225,7 +225,7 @@ Crucially, the handling of a method return is the \emph{only} point where a cont
     \rel{MustCallGraphEdge}{\_, callerCtx, toMeth, calleeCtx}, \\
     \rel{FormalRet}{retInstr, toMeth, \_}, \\
     (\rel{MustAlias}{retInstr, calleeCtx, calleeAp1, calleeAp2} ; \\
-     \rel{MustAlias}{retInstr, \dlAll{}, calleeAp1, calleeAp2}), \\
+     \rel{MustAlias}{retInstr, \ctxAll{}, calleeAp1, calleeAp2}), \\
     \cons{UnprimeAP}{calleeAp1}{?ap1}, \cons{UnprimeAP}{calleeAp2}{?ap2}.
 \end{datalog}
 \caption[]{Datalog rules for inter-procedural propagation of alias pairs.}
@@ -296,7 +296,7 @@ What can our context be, however? In previous chapters, or typical context-sensi
 
 The analysis then propagates \relname{MustAlias} pairs from (all predecessors of) call site \args{invo} under context \args{ctx} to the first instruction of a called method, \args{toMeth}, under context \args{?newCtx}. Thus, \args{?newCtx} should be enough to establish that these inferences \emph{must} hold. There is no room for conflating information from multiple execution paths (i.e., callers and calling contexts).\footnote{One could imagine doing so under the premise that all such calling contexts agree on the aliases they establish at the beginning of the callee function. However, this is unlikely to arise often in practice.}
 
-The requirement that \consapp{NewContext}{invo, ctx} produce contexts that uniquely identify both \args{invo} and \args{ctx} means that context can only grow from an original source in our analysis. Consider a set of three methods, \code{meth1}, \code{meth2}, and \code{meth3}, each calling the next. If we allow \consname{NewContext} to produce contexts that are stacks of invocation sites, \args{i}, each starting with \dlAll{} and growing up to depth 2, then starting from \code{meth1} we will propagate its aliases to \code{meth2}, which will propagate the resulting combined aliases to \code{meth3}. The propagation will stop there, i.e., the aliases of \code{meth1} cannot influence inferences for callees of \code{meth3}. However, \code{meth3} (assuming it is included in the root methods) will itself also be analyzed with a context of \dlAll{}, allowing its own aliases (independently derived from those of \code{meth1} or \code{meth2}) to be a source of a similar propagation.
+The requirement that \consapp{NewContext}{invo, ctx} produce contexts that uniquely identify both \args{invo} and \args{ctx} means that context can only grow from an original source in our analysis. Consider a set of three methods, \code{meth1}, \code{meth2}, and \code{meth3}, each calling the next. If we allow \consname{NewContext} to produce contexts that are stacks of invocation sites, \args{i}, each starting with \ctxAll{} and growing up to depth 2, then starting from \code{meth1} we will propagate its aliases to \code{meth2}, which will propagate the resulting combined aliases to \code{meth3}. The propagation will stop there, i.e., the aliases of \code{meth1} cannot influence inferences for callees of \code{meth3}. However, \code{meth3} (assuming it is included in the root methods) will itself also be analyzed with a context of \ctxAll{}, allowing its own aliases (independently derived from those of \code{meth1} or \code{meth2}) to be a source of a similar propagation.
 
 
 \paragraphhead{Representation of Equivalence Classes.}

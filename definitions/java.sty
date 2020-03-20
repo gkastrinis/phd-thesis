@@ -1,0 +1,18 @@
+\setminted[java]{style=friendly}
+
+\newminted[javacode]{java}{%
+    % mathescape,
+    % autogobble,
+    tabsize=4,
+    fontsize=\footnotesize,
+    xleftmargin=30pt,
+    linenos
+}
+
+\newenvironment{javaBox}
+{\VerbatimEnvironment\vspace{2mm}\begin{minipage}[l]{\linewidth}\begin{javacode*}{linenos=false}}
+{\end{javacode*}\end{minipage}\vspace{2mm}}
+
+\newenvironment{javaBoxLn}
+{\VerbatimEnvironment\vspace{2mm}\begin{minipage}[l]{\linewidth}\begin{javacode}}
+{\end{javacode}\end{minipage}\vspace{2mm}}

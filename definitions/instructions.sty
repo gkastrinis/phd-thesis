@@ -1,3 +1,19 @@
+%\newcommand{\instr}[1]{{{\small \code{#1}}}}
+
+\NewDocumentCommand{\unknowninstr}{ o }{%
+  \IfValueTF {#1}{#1:\ }{}
+  {\instr{<unknown>}}
+}
+\NewDocumentCommand{\foo}{ o }{%
+  \IfValueTF {#1}{#1:\ }{}
+  {\instr{<Alloc>}}
+}
+
+
+
+
+
+
 %--------------------------------------------------------------------
 % LLVM Styling
 %--------------------------------------------------------------------
@@ -9,7 +25,6 @@
 \newcommand{\constant}[1]{#1}
 \newcommand{\op}[1]{#1}
 \newcommand{\tp}[1]{{\small {\texttt{#1}}}}
-\newcommand{\instr}[1]{{{\small \code{#1}}}}
 
 \newcommand{\functions}{\mathbb{F}}
 \newcommand{\gvars}{\mathbb{G}}
@@ -18,9 +33,7 @@
 
 % Points-to relations
 
-\newcommand{\aptin}[4]{{{#1}: {#2} \xrightarrow{\text{IN}}_{#3} #4}}
-\newcommand{\aptout}[4]{{{#1}: {#2} \xrightarrow{\text{OUT}}_{#3} #4}}
-%\newcommand{\aptout}[3]{\var{#1} \mapsto^{#2}_{\text{OUT}} \alloc{#3}}
+
 \newcommand{\cpt}[2]{\constant{#1} \mapsto \alloc{#2}}
 \newcommand{\opt}[2]{\op{#1} \mapsto \alloc{#2}}
 \newcommand{\derefpt}[2]{\alloc{#1} \leadsto \alloc{#2}}
@@ -28,12 +41,11 @@
 \newcommand{\cp}[2]{\text{\emph{copy}}\;(\alloc{#1},\, \alloc{#2})}
 
 % Other input or output
-\newcommand{\calls}[4]{{#1} \xrightarrow{calls}^{#2}_{#3} {#4}}
-\newcommand{\nextinsn}[2]{{#1} \xrightarrow{next} {#2}}
-\newcommand{\formalarg}[2]{\ensuremath{{\emph{arg}}^{\var{#1}}_{#2}}}
-\newcommand{\actualarg}[2]{\ensuremath{{\emph{arg}}^{#1}_{#2}}}
-\newcommand{\subst}[2]{[{#1}/{#2}]}
-\newcommand{\reachable}[2]{{\overline{{#1}}^{#2}}}
+
+
+
+
+
 
 
 
@@ -99,10 +111,6 @@
   {\instr{return}\; \var{#2}}
 }
 
-\NewDocumentCommand{\unknowninstr}{ o }{%
-  \IfValueTF {#1}{#1:\ }{}
-  {\instr{<unknown>}}
-}
 
 % Field Access Instruction
 \NewDocumentCommand{\fieldaccess}{ o m m m }{%

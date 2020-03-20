@@ -1,23 +1,6 @@
-\newcommand{\code}[1]{\texttt{#1}}
-\newcommand{\comm}[1]{\textcolor{OliveGreen}{\textit{#1}}}
-
-%%%%%%%%%%% JAVA %%%%%%%%%%%
-\setminted[java]{style=friendly}
-
-\newminted[javacode]{java}{%
-    % mathescape,
-    % autogobble,
-    tabsize=4,
-    fontsize=\footnotesize,
-    xleftmargin=30pt,
-    linenos
-}
-
-%%%%%%%%%%% DATALOG %%%%%%%%%%%
 \newcommand{\dlIf}{{\large{\code{$\leftarrow$}}}}
 \newcommand{\dlforall}{\textcolor{Black}{\large{\textbf{$\forall$}}}}
 \newcommand{\dlThen}{{\textcolor{Black}{\large{\code{$\rightarrow$}}}}}
-\newcommand{\dlAll}{\textcolor{Green}{\texttt{\textsc{All}}}}
 
 % Relation name and arguments, without colors
 \newcommand{\argsRAW}[1]{{\small{\code{#1}}}}
@@ -40,7 +23,6 @@
 % Aggregation
 \newcommand{\aggregate}[3]{\texttt{\relname{#1}\{ #2 \} = \args{#3}}}
 
-
 %% Datalog Environment
 \newsavebox\spacewd
 \savebox\spacewd{\texttt{ }}
@@ -50,3 +32,7 @@
 \gdef {\makebox[\wd\spacewd][l]{%
 \textcolor{white}{\fontfamily{lmtt}\selectfont\large\smash{\char32}}}}% 
 }
+
+% Context Constants
+\newcommand{\ctxAll}{\textcolor{OliveGreen}{\texttt{\textsc{All}}}}
+\newcommand{\ctxInit}{\textcolor{OliveGreen}{\texttt{\textsc{Init}}}}

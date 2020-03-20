@@ -17,10 +17,11 @@
 \usepackage[dvipsnames]{xcolor}
 \usepackage{xparse} % NewDocumentCommand
 
-\usepackage{definitions/code}
-\usepackage{definitions/instructions}
+\usepackage{definitions/main}
+\usepackage{definitions/datalog}
+\usepackage{definitions/java}
+%\usepackage{definitions/instructions}
 \usepackage{definitions/mathpartir} % inference rules
-\usepackage{definitions/misc}
 
 \renewcommand{\textflush}{flushepinormal} % justify in epigraph
 
@@ -82,7 +83,7 @@
 \part{Achieving High-Confidence Results}
 \input{chapters/p3-must-logic}
 \input{chapters/p4-must-data}
-%\input{chapters/p5-defensive}
+\input{chapters/p5-defensive}
 
 \part{Epilogue}
 %\input{chapters/panda.tex}
