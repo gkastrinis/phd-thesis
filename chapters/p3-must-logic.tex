@@ -306,7 +306,7 @@ Relation \relname{MustAlias} encodes equivalence classes on access paths. Datalo
 In theory, this redundancy will greatly hinder performance. In practice, it is often affordable because of keeping access paths short and computing must-alias information where needed, due to the locality of such information. (Aliasing pairs rarely propagate much deeper than the point in code where they were first established.) The analysis is fully modular and can be applied to any subset of the program code. Still, future work should address this shortcoming in the general setting of Datalog computation of equivalence relations.
 
 
-\section{Conclusions}
+\section{Summary}
 
 The literature on must-alias analyses is sparse and the distance of specification to implementation is typically large. In our literature survey we have not found a single must-alias analysis publication that concretely refers to another and shows how its approach differs. Thus, we believe that our declarative model can offer a reference point for future work.
 

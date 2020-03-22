@@ -268,7 +268,7 @@ Based on our experimental results, introspective context-sensitivity achieves it
 Finally, note that we used identical introspection heuristics (Heuristic-A and Heuristic-B) with the same constants (see Section~\ref{sec:introspect:heuristics}) for all three context-sensitivity flavors and for all benchmarks. This suggests that there are significant opportunities for further tuning: different heuristics can be used, the constants can be optimized, the constants or the heuristics can be adapted per-benchmark or per-context flavor. However, the goal of our experiments is not to squeeze out a few percentage points of speedup but to show that the simple idea of introspective context-sensitivity can easily offer very useful tradeoffs in scalability and precision.
 
 
-\section{Conclusions}
+\section{Summary}
 
 We introduced introspective context-sensitivity: an approach to making context-sensitive analyses scale. The approach consists of defining an analysis with two separate kinds of context. Each program element is analyzed with one kind, selected based on external input. Then, by first running an inexpensive context-insensitive analysis, we can identify program elements that should be treated with a more precise context and others that should be treated less precisely to avoid an explosion in complexity. Our technique applies to any kind of context abstraction and yields scalability \emph{\`{a} la carte}: the user can select a scalability profile and achieve it for a price in precision. As shown in our experiments, this price is not too steep. The precision loss of introspective context-sensitivity can be minuscule (as is for call-site-sensitive analyses), while the scalability gain is substantial.
 

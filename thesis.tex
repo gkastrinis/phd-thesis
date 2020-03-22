@@ -6,10 +6,9 @@
 \usepackage{caption}
 \usepackage{epigraph}
 \usepackage{graphicx}
-\usepackage{hhline} % double lines, instead of \cline
 \usepackage{hyperref}
 \usepackage[utf8]{inputenc}
-\usepackage{minted}
+%\usepackage{minted} % included in diphdthesis instead to avoid warnings
 \usepackage{multirow}
 \usepackage[defblank]{paralist} % inparaenum
 \usepackage[skip=0cm,list=true,labelfont=it]{subcaption}
@@ -20,53 +19,40 @@
 \usepackage{definitions/main}
 \usepackage{definitions/datalog}
 \usepackage{definitions/java}
-%\usepackage{definitions/instructions}
+\usepackage{definitions/instructions}
 \usepackage{definitions/mathpartir} % inference rules
 
-\renewcommand{\textflush}{flushepinormal} % justify in epigraph
-
-%%%% TEMPORARY %%%%
-%\usepackage{comment}
 %\usepackage{pagecolor}
 %\pagecolor{black}
 %\color{white}
 \newcommand{\todo}{\textbf{\textcolor{Red}{FIX???}}}
+\renewcommand{\textflush}{flushepinormal} % justify in epigraph
 
-%%%% Metadata START %%%%
-\authorFirstEn{George}
-\authorFirstAbrEn{G.} % abbreviation of first name
-\authorMiddleEn{S.}   % abbreviation of father's first name
-\authorLastEn{Kastrinis}
-\authorFirstGr{Γεώργιος}
-\authorFirstAbrGr{Γ.}
-\authorMiddleGr{Σ.}
-\authorLastGr{Καστρίνης}
 
+%%%% METADATA %%%%
 %\titleEn{Precision, Completeness and Scalability for Static Pointer Analysis}
 \titleEn{Static Pointer Analysis: A Story of Scalable and  High-Confidence Results}
 %\titleEn{Scalable Static Pointer Analysis with High-Confidence Results}
 \titleGr{Αποδοτική Στατική Ανάλυση Δεικτών με Αξιόπιστα Αποτελέσματα}
 
-\input{committee}
-
-%%%% Abstract, synopsis, inscription, acknowledgments, and preface pages %%%%
 \abstractEn{\input{chapters/abstract-en}}
 \abstractGr{\input{chapters/abstract-gr}}
 \synopsisGr{\input{chapters/synopsis-gr}}
 \acksEn{\input{chapters/acknowledgments}}
 \prefaceEn{}
 
-%%%% Subject area and keywords %%%%
 \subjectAreaEn{Programming Languages, Static Analysis}
 \keywordsEn{Pointer Analysis; Alias Analysis; Object-Oriented Programming; Precision; Performance; Context-Sensitivity}
 
 \subjectAreaGr{Γλώσσες Προγραμματισμού, Στατική Ανάλυση}
 \keywordsGr{Ανάλυση Δεικτών, Ανάλυση Συνωνύμων, Αντικειμενοστρεφής Προγραμματισμός, Ακρίβεια, Απόδοση}
-%%%% Metadata END %%%%
+
+\input{metadata}
+%%%% METADATA %%%%
+
 
 \addbibresource{biblio/proceedings.bib}
 \addbibresource{biblio/thesis.bib}
-
 
 \begin{document}
 
@@ -86,9 +72,8 @@
 \input{chapters/p5-defensive}
 
 \part{Epilogue}
-%\input{chapters/panda.tex}
-%\input{chapters/related}
-%\input{chapters/conclusions}
+\input{chapters/related}
+\input{chapters/conclusions}
 
 \backmatter
 

@@ -69,7 +69,7 @@ Concretely, in this chapter we describe the following:
 
 We next describe the setting of defensive analysis and illustrate its principles and behavior.
 
-\subsection{Soundness and Design Decisions Overview}
+\subsection{Soundness and Design Decisions}
 
 Defensive analysis is a may-point-to analysis based on access paths, i.e., expressions of the form ``\texttt{\args{var}(\args{.fld})}*''). That is, the analysis computes \emph{the abstract objects} (i.e., allocation sites in the program text) \emph{that an access path may point to}. The analysis is flow-sensitive, hence we will be computing separate points-to information per program point. Both of these design decisions are integral elements of the analysis, as we will justify in Section~\ref{sec:sound:principles}.
 
@@ -303,7 +303,7 @@ We next present a rigorous model of our defensive analysis. The model is based u
 
 
 \begin{itemize}
-\item Instructions are linked into a control-flow graph, via relation \nextinstr[i]{j}.
+\item Instructions are linked into a control-flow graph, via relation \nextinstr{i}{j}.
 
 \item Objects can potentially identify their allocation instruction, e.g., \obj{o_{i}}.
 
@@ -414,13 +414,18 @@ Figure~\ref{fig:sound:rules} shows the analysis specification, in terms of const
     \hspace{0.5cm} \apin{j}{\code{ap}}{d}{\obj{o}}
     \hspace{0.5cm} \code{ap} = \code{v.*}
     \\
-    \Big\{
-    \forall \; \code{meth}', c': (\calls{i}{c}{c'}{\code{meth'}}) \implies \hspace{6cm} \\
-    (\exists \; j', \code{ap}': (\instr[j']{return})
+    \hspace{12cm}
+    \\
+    \hspace{3cm} \Big\{
+    \forall \; \code{meth}', c': (\calls{i}{c}{c'}{\code{meth'}}) \implies \Big(\exists \; j', \code{ap}': \hspace{3cm}
+    \\
+    \hspace{12cm}
+    \\
+    (\instr[j']{return})
     \land (j' \in \code{meth}') 
     \land (\code{ap} = \code{ap}'\subst{\formalarg{meth'}{n}}{\actualarg{i}{n}})
-    \land (\apin{j'}{\code{ap}'}{c'}{*}))
-    \Big\}
+    \land (\apin{j'}{\code{ap}'}{c'}{*})
+    \Big)\Big\}
     }
     { \apout{i}{\code{ap}\subst{\formalarg{meth}{n}}{\actualarg{i}{n}}}{c}{\obj{o}} }
     \end{math}
@@ -434,7 +439,7 @@ The first four rules of the analysis are rather straightforward. The \infer{Allo
 
 
 \paragraphhead{Store-2.}
-The \infer{Store-2} rule is the first one exhibiting the defensive and lazy features of the analysis. The rule performs a ``weak update'' on points-to sets of possibly affected access paths, as long as they are guaranteed to be bounded, i.e., they are non-empty. At a store instruction, \cmd{u.f = v}, if an access path \code{w.f} has a base explicitly different from \code{u} (with \code{f} being the same), then its points-to set is augmented with any element (\obj{o}) of the points-to set of \code{v}, while maintaining its original elements (\obj{o'}). This rule defensively adds more information to guarantee an over-approximation in the case of access paths that may be aliases for the same object. The subtlety of the rule lies in its handling of empty points-to sets. If \emph{either} of the points-to sets (of \code{v} or of \code{w.f}) is empty before the instruction, the rule does not match, hence the points-to set of \code{w.f} after the instruction does not acquire any contents. This is consistent with our sound handling: if the earlier contents or the update cannot be upper-bounded, then the resulting points-to set cannot be, either.
+The \infer{Store-2} rule is the first one exhibiting the defensive and lazy features of the analysis. The rule performs a ``weak update'' on points-to sets of possibly affected access paths, as long as they are guaranteed to be bounded, i.e., they are non-empty. At a store instruction, \codehl{u.f = v}, if an access path \code{w.f} has a base explicitly different from \code{u} (with \code{f} being the same), then its points-to set is augmented with any element (\obj{o}) of the points-to set of \code{v}, while maintaining its original elements (\obj{o'}). This rule defensively adds more information to guarantee an over-approximation in the case of access paths that may be aliases for the same object. The subtlety of the rule lies in its handling of empty points-to sets. If \emph{either} of the points-to sets (of \code{v} or of \code{w.f}) is empty before the instruction, the rule does not match, hence the points-to set of \code{w.f} after the instruction does not acquire any contents. This is consistent with our sound handling: if the earlier contents or the update cannot be upper-bounded, then the resulting points-to set cannot be, either.
 
 Note the contrast between rules \infer{Store-1} and \infer{Store-2}. We do not need to determine precisely the aliasing relationship between base variables \code{u} and \code{w}. If there is a chance that the variables are aliased, it is safe to conservatively add more possible values to the points-to set of \code{w.f}. In the case of \infer{Store-1}, however, we could do better than the conservative treatment and perform a strong update.
 
@@ -499,7 +504,7 @@ There are two main properties of the defensive analysis:
 There exists an evaluation order of the rules, such that the defensive analysis model is sound: all points-to sets computed are over-approximate, i.e., are either empty or contain all possible values arising during program execution, under the assumptions of Section~\ref{sec:sound:assumptions}.
 
 \begin{proof}
-The proof is inductive. Initially, all points-to/call-target sets encoded in relations \apin{}{}{}{}, \apout{}{}{}{}, \calls{}{}{}{} are empty. (We treat relation \apin{i}{\code{ap}}{c}{\obj{o}} as encoding a set of \obj{o}s for given $i,\code{ap},c$; relation \calls{i}{c}{c'}{\code{meth}} as encoding a set of \code{meth}s for given $i, c, c'$, etc.)
+The proof is inductive. Initially, all points-to/call-target sets encoded in relations \apinRAW{}, \apoutRAW{}, \calls{}{}{}{} are empty. (We treat relation \apin{i}{\code{ap}}{c}{\obj{o}} as encoding a set of \obj{o}s for given $i,\code{ap},c$; relation \calls{i}{c}{c'}{\code{meth}} as encoding a set of \code{meth}s for given $i, c, c'$, etc.)
 
 Therefore, we start from a trivially over-approximate state.
 
@@ -510,7 +515,7 @@ Thus, the inductive step applies to states after past rules have been evaluated 
 The inductive step of the proof is captured in a lemma:
 
 \begin{lemma}
-The analysis rules preserve soundness under full single-rule evaluation. That is, if relations \apin{}{}{}{}, \apout{}{}{}{}, and \calls{}{}{}{} encode over-approximate points-to/call-target sets before a full evaluation of a rule, they will encode over-approximate sets after a full evaluation.
+The analysis rules preserve soundness under full single-rule evaluation. That is, if relations \apinRAW{}, \apoutRAW{}, and \calls{}{}{}{} encode over-approximate points-to/call-target sets before a full evaluation of a rule, they will encode over-approximate sets after a full evaluation.
 \label{lemma:sound:rule}
 \end{lemma}
 
@@ -722,7 +727,7 @@ Figure~\ref{fig:sound:time} shows the running times of the analysis, plotted nex
 
 
 \paragraphhead{Client analysis: devirtualization.}
-Our baseline analysis, 2objH, is highly precise and effective in challenges such as devirtualizing calls (resolving virtual calls to a single target method). On average, it can devirtualize 89.3\% of the calls in the benchmarks studied (min: 78.5\%, max: 95.2\%). However, these results are unsound and a compiler cannot act upon them. For optimization clients, such as devirtualization, soundness is essential. Using sound results, a JIT compiler can skip dynamic tests (of the inline caching optimization) for all calls that the analysis soundly covers.
+Our baseline analysis, 2objH, is highly precise and effective in challenges such as devirtualizing calls (resolving virtual calls to a single target method). On average, it can devirtualize \textbf{89.3\%} of the calls in the benchmarks studied (min: \bad{78.5\%}, max: \best{95.2\%}). However, these results are unsound and a compiler cannot act upon them. For optimization clients, such as devirtualization, soundness is essential. Using sound results, a JIT compiler can skip dynamic tests (of the inline caching optimization) for all calls that the analysis soundly covers.
 
 Figure~\ref{fig:sound:devirt1} shows the virtual calls that defensive analysis devirtualizes, as a percentage of those devirtualized by the unsound analysis.
 
@@ -733,11 +738,11 @@ Figure~\ref{fig:sound:devirt1} shows the virtual calls that defensive analysis d
 \label{fig:sound:devirt1}
 \end{figure}
 
-As can be seen, defensive analysis manages to recover a large part of the benefit of an unsound analysis (median \textbf{44.8\%} for optimization under a context guard, \textbf{38.7\%} for unconditional, \ctxInit{} context, optimization), performing much better than the baseline intra-procedural must-analysis (at 14.6\%). This answers \textbf{RQ4} affirmatively: the coverage of defensive analysis translates into real benefit for realistic clients.
+As can be seen, defensive analysis manages to recover a large part of the benefit of an unsound analysis (median \best{44.8\%} for optimization under a context guard, \textbf{38.7\%} for unconditional, \ctxInit{} context, optimization), performing much better than the baseline intra-procedural must-analysis (at 14.6\%). This answers \textbf{RQ4} affirmatively: the coverage of defensive analysis translates into real benefit for realistic clients.
 
 
 \paragraphhead{Concurrency model.}
-A compiler (JIT or AOT) author may (rightly) remark that the concurrency model of Section~\ref{sec:sound:assumptions} is not appropriate for automatic optimizations. The Java concurrency model permits a lot more relaxed behaviors, so the analysis is not sound for full Java as stated. However, the benefit of defensive analysis is that it starts from a sound basis and can add to it conservatively, only when it is certain that soundness cannot possibly be violated. Accordingly, we can remove the assumption that all shared data are accessed while holding mutexes, by applying the load/store rules only when objects trivially do not escape their allocating thread. We show the updated numbers for the devirtualization client (now fully sound for Java!) in Figure~\ref{fig:sound:devirt2}. The difference in impact is minimal: \textbf{43\%} of virtual call sites can be devirtualized conditionally, under some context, while \textbf{36\%} can be devirtualized unconditionally. This helps answer \textbf{RQ5}: defensive analysis can yield actionable results for a well-known optimization, under the Java memory model, for a large portion of realistic programs.
+A compiler (JIT or AOT) author may (rightly) remark that the concurrency model of Section~\ref{sec:sound:assumptions} is not appropriate for automatic optimizations. The Java concurrency model permits a lot more relaxed behaviors, so the analysis is not sound for full Java as stated. However, the benefit of defensive analysis is that it starts from a sound basis and can add to it conservatively, only when it is certain that soundness cannot possibly be violated. Accordingly, we can remove the assumption that all shared data are accessed while holding mutexes, by applying the load/store rules only when objects trivially do not escape their allocating thread. We show the updated numbers for the devirtualization client (now fully sound for Java!) in Figure~\ref{fig:sound:devirt2}. The difference in impact is minimal: \best{43\%} of virtual call sites can be devirtualized conditionally, under some context, while \textbf{36\%} can be devirtualized unconditionally. This helps answer \textbf{RQ5}: defensive analysis can yield actionable results for a well-known optimization, under the Java memory model, for a large portion of realistic programs.
 
 \begin{figure}[tbh]
 \centering
@@ -783,7 +788,7 @@ Table~\ref{tab:sound:precision} shows average points-to set sizes for the defens
 As can be seen, the defensive analysis is highly precise when it produces non-empty points-to sets, typically yielding points-to set sizes very close to 1. 2objH is also a very precise analysis (for variables with bounded points-to sets), so it remains competitive, yet clearly less precise. Notably, points-to set sizes close to 1 are the Holy Grail of points-to analysis: such precision is actionable for nearly all conceivable clients of a points-to analysis.
 
 
-\section{Conclusions}
+\section{Summary}
 
 Static analysis has long suffered from unsoundness for perfectly realistic language features, such as reflection, native code, or dynamic loading. We presented a new analysis architecture that achieves soundness by being \emph{defensive}. Despite its conservative nature, the analysis manages to yield useful results for a large subset of the code in realistic Java programs, while being efficient and scalable. Additionally, the analysis is modular, as it can be applied to any subset of a program and will yield sound results.
 

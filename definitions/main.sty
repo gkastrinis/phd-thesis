@@ -3,7 +3,7 @@
 \newcommand{\doop}{\textsc{Doop}}
 
 \newcommand{\code}[1]{\texttt{#1}}
-\newcommand{\comm}[1]{\textcolor{OliveGreen}{\textit{#1}}}
+\newcommand{\codehl}[1]{\mintinline{java}{#1}}
 
 % Benchmarking results
 \newcommand{\best}[1]{\textbf{\textcolor{NavyBlue}{#1}}}
@@ -11,12 +11,10 @@
 \newcommand{\bl}[1]{\textcolor{Black}{#1}}
 
 
-
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}{Lemma}
-%\newtheorem{lemma}[theorem]{Lemma}
 
-%\renewcommand\qedsymbol{$\blacksquare$}
+\renewcommand\qedsymbol{$\blacksquare$}
 \renewenvironment{proof}[1][\proofname]{\par
     \pushQED{\qed}%
     \normalfont \topsep6\p@\@plus6\p@\relax
@@ -25,28 +23,3 @@
 }{%
     \popQED\endtrivlist%\@endpefalse
 }
-
-
-
-\newcommand{\infer}[1]{\textcolor{Green}{\texttt{\textsc{#1}}}}
-
-
-\newcommand{\cmd}[1]{\mintinline{java}{#1}}
-
-\NewDocumentCommand{\instr}{ o m }{%
-  \IfValueTF {#1}{\ensuremath{#1}:\ }{}
-  {\cmd{#2}}
-}
-\NewDocumentCommand{\unknown}{ o m }{%
-  \IfValueTF {#1}{\ensuremath{#1}:\ }{}
-  {\code{<unknown>}}
-}
-\newcommand{\obj}[1]{\ensuremath{\widehat{#1}}}
-\newcommand{\nextinstr}[2]{\ensuremath{#1 \xrightarrow{NEXT} #2}}
-\newcommand{\formalarg}[2]{\ensuremath{{\emph{arg}}^{\:\code{#1}}_{\:#2}}}
-\newcommand{\actualarg}[2]{\ensuremath{{\emph{arg}}^{\:#1}_{\:#2}}}
-\newcommand{\subst}[2]{[{#1}/{#2}]}
-\newcommand{\apin}[4]{\ensuremath{#1: {#2} \xrightarrow{IN}_{#3} #4}}
-\newcommand{\apout}[4]{\ensuremath{#1: {#2} \xrightarrow{OUT}_{#3} #4}}
-\newcommand{\calls}[4]{\ensuremath{#1 \xrightarrow{CALLS}^{#2}_{#3} {#4}}}
-\newcommand{\reachable}[2]{\ensuremath{\overline{{#1}}^{#2}}}
