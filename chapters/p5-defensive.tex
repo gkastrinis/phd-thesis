@@ -59,7 +59,7 @@ Concretely, in this chapter we describe the following:
 
 \item The analysis is efficient, leveraging its lazy representation of points-to sets. As a result, it can be made precise, beyond the limits of standard whole-program points-to analyses---e.g., for a 5-call-site-sensitive and flow-sensitive analysis. The analysis is also modular: it can be applied to any subset of the program, and will merely leave more points-to sets empty if other parts are unknown.
   
-\item We show that the analysis, though quite defensive, yields useful coverage. In measurements over large Java benchmarks, our analysis computes guaranteed over-approximate points-to sets ($Claim(P)$) for 34-74\% of the local variables of a conventional unsound analysis. (This number is much higher than that of a conventional sound but intra-procedural analysis.) Similar effectiveness is achieved for other metrics (e.g., number of calls de-virtualized), again with actionable, guaranteed-sound outcomes.
+\item We show that the analysis, though quite defensive, yields useful coverage. In measurements over large Java benchmarks, our analysis computes guaranteed overapproximate points-to sets ($Claim(P)$) for 34-74\% of the local variables of a conventional unsound analysis. (This number is much higher than that of a conventional sound but intra-procedural analysis.) Similar effectiveness is achieved for other metrics (e.g., number of calls de-virtualized), again with actionable, guaranteed-sound outcomes.
 
 \item The work brings some clarity to the domain of static analysis of opaque code. The approach allows, for the first time, to quantitatively weigh the benefits of sound inter-procedural analysis against its costs.
 \end{itemize}
@@ -81,7 +81,7 @@ In other words, an empty set can be thought to represent a bottom ($\bot$) value
 
 With this representation choice, the analysis does not need to expend effort in order to be sound. All points-to sets (for any valid access path, of any length) start off empty, i.e., if the analysis were to stop at that point it would report them as having $\top$ values, meaning ``the set can contain anything''. This is a sound answer, and is only subsequently refined.
 
-This lazy evaluation means that defensive analysis does not need to employ sophisticated mechanisms to simply be sound. For instance, instead of a precise over-approximate escape analysis, defensive analysis can use a simple analysis (including none at all) to compute straightforward cases when an object is guaranteed to never escape into opaque code.
+This lazy evaluation means that defensive analysis does not need to employ sophisticated mechanisms to simply be sound. For instance, instead of a precise overapproximate escape analysis, defensive analysis can use a simple analysis (including none at all) to compute straightforward cases when an object is guaranteed to never escape into opaque code.
 
 
 
@@ -117,7 +117,7 @@ The large potential for opaque code to affect inter-procedural analysis results 
 x = y.fld;
 \end{javaBox}
 
-Imagine that the analysis has (somehow) soundly computed all the objects that \code{y} may point to. It may also know all the places in the code where field \code{fld} is assigned and what is assigned to it. However, the analysis still cannot compute soundly the points-to set of \code{x} unless it also knows that all objects referenced by \code{y} can never escape to opaque code. This is hard to establish: not only do all sites of opaque code (reflection, unknown instructions, potential dynamic code generation sites, and more) need to be marked, but the analysis needs to know an over-approximation of which objects these sites can reach. This requires to have pre-computed an over-approximate (i.e., sound) points-to analysis, which is the problem we are trying to solve in the first place. Past work has dealt with this problem with unrealistic assumptions. For instance, Sreedhar et al.~\cite{pldi:2000:Sreedhar} present a call-specialization analysis that can handle dynamic class loading, but only if given the results of a sound may-point-to analysis as input.
+Imagine that the analysis has (somehow) soundly computed all the objects that \code{y} may point to. It may also know all the places in the code where field \code{fld} is assigned and what is assigned to it. However, the analysis still cannot compute soundly the points-to set of \code{x} unless it also knows that all objects referenced by \code{y} can never escape to opaque code. This is hard to establish: not only do all sites of opaque code (reflection, unknown instructions, potential dynamic code generation sites, and more) need to be marked, but the analysis needs to know an over-approximation of which objects these sites can reach. This requires to have pre-computed an overapproximate (i.e., sound) points-to analysis, which is the problem we are trying to solve in the first place. Past work has dealt with this problem with unrealistic assumptions. For instance, Sreedhar et al.~\cite{pldi:2000:Sreedhar} present a call-specialization analysis that can handle dynamic class loading, but only if given the results of a sound may-point-to analysis as input.
 
 Instead, defensive analysis pessimistically computes that a points-to set is $\top$ (i.e., can contain anything) unless it is certain that its contents are bounded. When can the analysis know this, however? Such a guarantee of bounded contents typically comes from having precisely tracked the contents of a variable or field all the way from its last assignment, and having established that no other code could have interfered. For instance, let us expand our earlier example:
 
@@ -463,7 +463,7 @@ The soundness of these rules is predicated on the \emph{object isolation} and \e
 
 
 \paragraphhead{Call.}
-The next rule uses points-to information to establish a sound call-graph. The \calls{i}{c}{c'}{\code{meth}} relation  over-approximates information using the same approach as points-to sets: for a given invocation site, $i$, and context, $c$, the relation holds either an empty set (i.e., no matching values exist for $(i, ctx)$---denoting an unbounded set of destinations---or an over-approximation (i.e., a superset) of all possible targets of the invocation at $i$ under $c$.
+The next rule uses points-to information to establish a sound call-graph. The \calls{i}{c}{c'}{\code{meth}} relation overapproximates information using the same approach as points-to sets: for a given invocation site, $i$, and context, $c$, the relation holds either an empty set (i.e., no matching values exist for $(i, ctx)$---denoting an unbounded set of destinations---or an over-approximation (i.e., a superset) of all possible targets of the invocation at $i$ under $c$.
 
 The rule is mostly a straightforward lookup of the target method, based on the receiver object's type. There are a couple of subtleties, however. The receiver object needs to have an upper-bounded (i.e., non-empty) points-to set, a new context is constructed using function $\mathcal{NC}$, and the target method is considered reachable under the new context. The exact definition of $\mathcal{NC}$ will determine the context-sensitivity of the analysis. (We will return to this point promptly in Section~\ref{sec:sound:discussion}.)
 
@@ -487,43 +487,43 @@ The handling of a method return is the only point where a context can become str
 \subsection{Reasoning}
 \label{sec:sound:reasoning}
 
-We prove the soundness of the analysis under an informal language model. We do not attempt to formalize the full effects of opaque code (e.g., what reflection or native code can or cannot do). Such a formalization would be tedious and partial, as new capabilities are added to reflection or dynamic loading APIs with every JDK version. Instead, we establish that the analysis rules always compute over-approximate finite points-to sets (or empty sets), and that this property cannot be affected by opaque code under the common informal understanding of the assumptions of Section~\ref{sec:sound:assumptions}. For instance, it is clear from the ``stack frame isolation'' assumption that local variables cannot change values except by action of the current instruction, i.e., that rule \infer{Frame-1} is alone responsible for soundly transferring such points-to information from the program point before an instruction to after.
+We prove the soundness of the analysis under an informal language model. We do not attempt to formalize the full effects of opaque code (e.g., what reflection or native code can or cannot do). Such a formalization would be tedious and partial, as new capabilities are added to reflection or dynamic loading APIs with every JDK version. Instead, we establish that the analysis rules always compute overapproximate finite points-to sets (or empty sets), and that this property cannot be affected by opaque code under the common informal understanding of the assumptions of Section~\ref{sec:sound:assumptions}. For instance, it is clear from the ``stack frame isolation'' assumption that local variables cannot change values except by action of the current instruction, i.e., that rule \infer{Frame-1} is alone responsible for soundly transferring such points-to information from the program point before an instruction to after.
 
 A detailed model that formally captures ``stack frame isolation'' is perhaps desirable assurance (in the vein of verified compilers) but adds nothing to the effort to \emph{invent} a realistic, sound points-to analysis. By analogy, sound compiler optimizations (i.e., ones that do not break the program) exist in virtually all mainstream compilers, but a minuscule fraction of those have been formally verified.
 
 There are two main properties of the defensive analysis: 
 
 \begin{itemize}
-\item Soundness: the analysis computes an over-approximation of points-to sets that may arise during any program execution. Any non-empty set contains a superset of its dynamic contents under any possible execution. Any empty set is considered trivially ``over-approximate'', to avoid special-casing all our statements. In effect, the analysis produces a set of soundness markers, $Claim(P)$, which coincide with the non-empty points-to sets. No claims are made about empty points-to sets.
+\item Soundness: the analysis computes an over-approximation of points-to sets that may arise during any program execution. Any non-empty set contains a superset of its dynamic contents under any possible execution. Any empty set is considered trivially ``overapproximate'', to avoid special-casing all our statements. In effect, the analysis produces a set of soundness markers, $Claim(P)$, which coincide with the non-empty points-to sets. No claims are made about empty points-to sets.
 
 \item Laziness: the analysis does not waste work; elements that enter a points-to set are never removed (by reverting the set to the $\top$ value---i.e., an empty set).
 \end{itemize}
 
 
 \begin{theorem}
-There exists an evaluation order of the rules, such that the defensive analysis model is sound: all points-to sets computed are over-approximate, i.e., are either empty or contain all possible values arising during program execution, under the assumptions of Section~\ref{sec:sound:assumptions}.
+There exists an evaluation order of the rules, such that the defensive analysis model is sound: all points-to sets computed are overapproximate, i.e., are either empty or contain all possible values arising during program execution, under the assumptions of Section~\ref{sec:sound:assumptions}.
 
 \begin{proof}
 The proof is inductive. Initially, all points-to/call-target sets encoded in relations \apinRAW{}, \apoutRAW{}, \calls{}{}{}{} are empty. (We treat relation \apin{i}{\code{ap}}{c}{\obj{o}} as encoding a set of \obj{o}s for given $i,\code{ap},c$; relation \calls{i}{c}{c'}{\code{meth}} as encoding a set of \code{meth}s for given $i, c, c'$, etc.)
 
-Therefore, we start from a trivially over-approximate state.
+Therefore, we start from a trivially overapproximate state.
 
-Importantly, the inductive step does \emph{not} hold for a single application of a rule. Intermediate states of evaluation may not be over-approximate: an element may enter a set before the rest of its contents. (For instance, consider a statement \instr{v = u} and prior points-to set \{\obj{o_1}, \obj{o_2}\} for \code{u}. A single application of the \relname{Move} rule for \obj{o_1} will leave the points-to set of \code{v} in a non-over-approximate state: the set will be missing the \obj{o_2} value.)
+Importantly, the inductive step does \emph{not} hold for a single application of a rule. Intermediate states of evaluation may not be overapproximate: an element may enter a set before the rest of its contents. (For instance, consider a statement \instr{v = u} and prior points-to set \{\obj{o_1}, \obj{o_2}\} for \code{u}. A single application of the \relname{Move} rule for \obj{o_1} will leave the points-to set of \code{v} in a non-overapproximate state: the set will be missing the \obj{o_2} value.)
 
 Thus, the inductive step applies to states after past rules have been evaluated fully. Consider a rule $R$ as a monotonic update to a set of values $s$. That is, $R(s) \supseteq s$. A rule has been fully evaluated at fixpoint, i.e., when $R(s) = s$. The next inductive step considers the state after a full evaluation of any rule.
 
 The inductive step of the proof is captured in a lemma:
 
 \begin{lemma}
-The analysis rules preserve soundness under full single-rule evaluation. That is, if relations \apinRAW{}, \apoutRAW{}, and \calls{}{}{}{} encode over-approximate points-to/call-target sets before a full evaluation of a rule, they will encode over-approximate sets after a full evaluation.
+The analysis rules preserve soundness under full single-rule evaluation. That is, if relations \apinRAW{}, \apoutRAW{}, and \calls{}{}{}{} encode overapproximate points-to/call-target sets before a full evaluation of a rule, they will encode overapproximate sets after a full evaluation.
 \label{lemma:sound:rule}
 \end{lemma}
 
 \begin{proof}[Proof sketch of Lemma~\ref{lemma:sound:rule}]
-The lemma is established by exhaustive examination of the rules. We mentioned key parts of the reasoning in our earlier presentation of the rules. All rules over complex access paths (i.e., of length $\geq 2$) affect the heap and require the ``concurrency model'' and ``object isolation'' assumptions of Section~\ref{sec:sound:assumptions}. Rules on plain-variable access paths use the ``stack-frame isolation'' assumption. Every rule is careful to produce values for points-to/call-target sets only if all input sets are non-empty (i.e., guaranteed over-approximate and bounded), and to consider all possible such values.  For rules \infer{Call}, \infer{Args}, and \infer{Ret} the lemma holds only under the previously-stated assumption on the $\mathcal{NC}$ constructor: the pair $(\code{meth}, c')$ needs to uniquely identify invocation instruction $i$ and context $c$. Consider, for example, rule \infer{Args}. We need to establish that the points-to set \apin{j}{\code{ap}\subst{\actualarg{i}{n}}{\formalarg{meth}{n}}}{c'}{} is over-approximate given that \apin{i}{\code{ap}}{c}{} is. (The rule form makes the former be a superset of the latter, we need to reason that they are actually the same set.) Instruction $j$ uniquely identifies method \code{meth} and actual-to-formal access-path rebasing can never merge access paths (since different formal variables cannot have the same names). If $c'$ and \code{meth} arise for only a single call-site and caller-context pair, $(i, c)$, then the property holds.
+The lemma is established by exhaustive examination of the rules. We mentioned key parts of the reasoning in our earlier presentation of the rules. All rules over complex access paths (i.e., of length $\geq 2$) affect the heap and require the ``concurrency model'' and ``object isolation'' assumptions of Section~\ref{sec:sound:assumptions}. Rules on plain-variable access paths use the ``stack-frame isolation'' assumption. Every rule is careful to produce values for points-to/call-target sets only if all input sets are non-empty (i.e., guaranteed overapproximate and bounded), and to consider all possible such values.  For rules \infer{Call}, \infer{Args}, and \infer{Ret} the lemma holds only under the previously-stated assumption on the $\mathcal{NC}$ constructor: the pair $(\code{meth}, c')$ needs to uniquely identify invocation instruction $i$ and context $c$. Consider, for example, rule \infer{Args}. We need to establish that the points-to set \apin{j}{\code{ap}\subst{\actualarg{i}{n}}{\formalarg{meth}{n}}}{c'}{} is overapproximate given that \apin{i}{\code{ap}}{c}{} is. (The rule form makes the former be a superset of the latter, we need to reason that they are actually the same set.) Instruction $j$ uniquely identifies method \code{meth} and actual-to-formal access-path rebasing can never merge access paths (since different formal variables cannot have the same names). If $c'$ and \code{meth} arise for only a single call-site and caller-context pair, $(i, c)$, then the property holds.
 \end{proof}
 
-The lemma establishes the inductive step of our proof. The sets computed by the analysis are initially over-approximate and remain over-approximate after every full evaluation of a single rule. At fixpoint, when full evaluation of any rule no longer changes the output sets, the property holds,  concluding the theorem's proof.
+The lemma establishes the inductive step of our proof. The sets computed by the analysis are initially overapproximate and remain overapproximate after every full evaluation of a single rule. At fixpoint, when full evaluation of any rule no longer changes the output sets, the property holds,  concluding the theorem's proof.
 \end{proof}
 \end{theorem}
 
@@ -580,7 +580,7 @@ A full-fledged analysis should cover more language features than the model of Se
 %% rule. (This is the approach currently taken in the
 %% implementation. Note that the first run computes the same sound
 %% superset of the callees as the full analysis, but for a subset of the
-%% call sites---the rest stay empty, i.e., trivially over-approximate.)
+%% call sites---the rest stay empty, i.e., trivially overapproximate.)
 
 %% In principle, this iteration could be repeated: any run of the
 %% may-point-to analysis can build a call-graph that is used to
