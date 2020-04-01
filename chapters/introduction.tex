@@ -2,7 +2,7 @@
 \label{chapter:intro}
 \epigraph{Don’t be scared. All of this is new to you, and new can be scary. Now we all want answers. Stick with me---you might get some.}{\textit{The 13th Doctor} - Doctor Who}
 
-Static program analysis is the cornerstone of several modern programming facilities and tools for program development and aided program understanding. Nowadays, it is an umbrella term for many different methodologies (\todo{}) all with the ultimate goal of inferring a program's properties, without the need of an actual execution. It is routinely employed in many different contexts: compilers, bug detectors, verifiers, security analyzers, IDEs, and a myriad other tools.
+Static program analysis is the cornerstone of several modern programming facilities and tools for program development and aided program understanding. Nowadays, it is an umbrella term for many different methodologies (Hoare logic~\cite{article:1969:Hoare,sam:1967:Floyd,lics:2002:Reynolds,csl:2001:OHearn}, model checking~\cite{icalp:1980:Emerson,lop:1981:Clarke,toplas:1986:Clarke,isp:1982:Queille}, symbolic execution~\cite{article:1976:King,article:1977:Howden,icas:2010:Pasareanu,article:1975:Boyer}, abstract interpretation~\cite{popl:1977:Cousot,article:1992:Cousot-LP,article:1992:Cousot-LC}, data-flow analysis~\cite{popl:1973:Kildall,book:2009:Khedker,book:1997:Muchnick,article:1977:Kam,popl:1995:Reps,book:1981:Sharir}, and so on) all with the ultimate goal of inferring a program's properties, without the need of an actual execution. It is routinely employed in many different contexts: compilers, bug detectors, verifiers, security analyzers, IDEs, and a myriad other tools.
 
 The main intention of any \emph{static} program analysis algorithm is to reason about the set of all feasible behaviors (under some abstraction of behaviors) that a given program might exhibit under all possible executions. For example, could this method throw a runtime exception? or is that type cast possible to fail under some program input? etc. As a result, virtually all interesting static program analysis questions are undecidable---indeed the prototypical undecidable problem, the \emph{halting problem}, is a static program analysis question: will a program terminate under all inputs?
 
@@ -27,7 +27,7 @@ We provide a number of techniques for implementing scalable static pointer and a
 
 \section{Pointer Analysis Crash Course}
 
-Before enumerating the scientific contributions of this dissertation, it is mandatory to introduce certain notions related to pointer analysis, that comprise the scientific and technical base of this work. This is by no means a detailed presentation of said notions---a more elaborate introduction will follow in Chapter~\ref{chapter:background}.
+Before enumerating the scientific contributions of this dissertation, it is mandatory to introduce certain concepts related to pointer analysis, that comprise the scientific and technical base of this work. This is by no means a detailed presentation of said concepts---a more elaborate introduction will follow in Chapter~\ref{chapter:background}.
 
 \paragraph*{Implementation Platform \& Target Language.}
 Most of the following work and algorithms have been expressed in the \doop{} framework \cite{oopsla:2009:Bravenboer}. \doop{} is a well established pointer analysis framework offering a wide variety of full-fledged algorithms for static pointer analysis of Java programs. More in Section~\ref{sec:back:doop}.
