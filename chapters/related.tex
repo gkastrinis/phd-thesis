@@ -21,12 +21,15 @@ An interesting recent approach to demand-driven analyses was introduced by Liang
 
 
 \section{Introspective Analysis}
+\label{sec:related:introspective}
 
 The effort to tune the context-sensitivity of an analysis is pervasive in the literature. Nevertheless, most approaches fundamentally differ from ours of Chapter~\ref{chapter:introspective}, either by trying to vary context-sensitivity based on syntactic properties or by trying to focus on only a part of the program that matters for answering a given query. In contrast, we attack the context-sensitive scalability problem  head-on, in the all-points points-to analysis setting, with context used all over the program and library.
 
 Typical scalable points-to analysis frameworks such as textsc{Wala}~\cite{www:wala} and \doop{}~\cite{oopsla:2009:Bravenboer} employ a multitude of low-level heuristics for tuning the precision and scalability of an analysis. These include using extra context for collection classes, using a heap context for arrays in an analysis without a context-sensitive heap, allocating strings or exceptions context-insensitively, treating library factory methods with deeper context, etc. Such heuristics are typically user-selected and prominent in the documentation of the respective frameworks, and have also appeared in the literature (e.g., \cite{pldi:2009:Tripp,cc:2013:Kastrinis}). However, all such approaches are mere hard-wired heuristics and do not address the major scalability problem that our approach aims to solve. The scalability issues identified in earlier literature and discussed throughout this paper are present after all such heuristics have been employed.
 
 A more general approach is the hybrid context-sensitivity of Chapter~\ref{chapter:hybrid}. Such a hybrid analysis attempts to emulate call-site sensitivity for static method calls and object-sensitivity for dynamic calls. The approach becomes interesting when context is deep (e.g., how are context elements merged when a dynamic call is made inside a static call?). Nevertheless, the hybrid context-sensitivity approach does not change the essence of the problem we are trying to solve. For hard-to-analyze applications, hybrid context-sensitive algorithms are equally unscalable as their component algorithms. For the purposes of our experimental study, which only tests the scalability of heavyweight benchmarks, hybrid context-sensitivity is virtually indistinguishable from object-sensitivity.
+
+In recent years there have been many more instantiations of introspective analysis, with very different metrics of cost and benefit. These modern instantiations outperform our original Heuristic-A and Heuristic-B but keep the same flavor: \textsc{Zipper}~\cite{oopsla:2018:Li} aims to achieve mostly-guaranteed precision with heuristically better scalability, whereas \textsc{Scaler}~\cite{esec-fse:2018:Li} achieves guaranteed scalability and typically significantly better precision than a context-insensitive analysis.
 
 More interesting applications of selective context-sensitivity have been explored in the context of \emph{demand-driven} pointer analysis. A demand-driven evaluation strategy reduces the cost of an analysis by computing only those results that are necessary for a client program analysis~\cite{oopsla:2005:Sridharan,pldi:2006:Sridharan,popl:2008:Zheng,pldi:2001:Heintze}. This is a useful approach for client analyses that focus on specific locations in a program, but if the client needs results from the entire program, then demand-driven analysis is typically slower than an exhaustive analysis.
 
@@ -72,6 +75,7 @@ Another conceptual relative of our data structure is the model presented by Madh
 
 
 \section{Defensive Analysis}
+\label{sec:related:defensive}
 
 There is certainly past work that attempt to ensure a sound whole-program analysis, but none matches the generality and applicability of our approach. We selectively discuss representative approaches.
 

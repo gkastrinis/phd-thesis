@@ -323,14 +323,15 @@ To further see the performance advantage of the optimized representation of must
 
 
 \paragraphhead{Varying context depth.}
-Similar observations can be made by varying the context depth of the analysis. As seen in Figure~\ref{fig:must-data:ctxdepth-chart}, although the running time of the optimized implementation grows slowly, the running time of the explicit representation of alias relationships gets dramatically higher. For a context depth of 4, the explicit representation did not terminate after one-and-a-half hour.
 
-\begin{figure*}[htp]
+\begin{figure*}[h!tp]
 \centering
 \includegraphics[clip,width=\linewidth]{assets/must-data/depth.eps}
 \caption{Execution time when varying maximum context depth.}
 \label{fig:must-data:ctxdepth-chart}
 \end{figure*}
+
+Similar observations can be made by varying the context depth of the analysis. As seen in Figure~\ref{fig:must-data:ctxdepth-chart}, although the running time of the optimized implementation grows slowly, the running time of the explicit representation of alias relationships gets dramatically higher. For a context depth of 4, the explicit representation did not terminate after one-and-a-half hour.
 
 Recall the two claimed benefits of the optimized representation: long access paths are represented implicitly, and equivalence classes are represented with linear space and time complexity, instead of quadratic. It is the latter factor that comes into play when context depth increases: alias sets grow in size, by exploiting inter-procedural inference (e.g., aliasing established at the caller and propagated through formal arguments) in addition to local instructions.
 

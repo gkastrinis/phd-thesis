@@ -22,6 +22,7 @@
 \usepackage{definitions/instructions}
 \usepackage{definitions/mathpartir} % inference rules
 
+%\usepackage{showframe}
 %\usepackage{pagecolor}
 %\pagecolor{black}
 %\color{white}
@@ -30,22 +31,18 @@
 
 
 %%%% METADATA %%%%
-%\titleEn{Precision, Completeness and Scalability for Static Pointer Analysis}
-\titleEn{Static Pointer Analysis: A Story of Scalable and  High-Confidence Results}
-%\titleEn{Scalable Static Pointer Analysis with High-Confidence Results}
-\titleGr{Αποδοτική Στατική Ανάλυση Δεικτών με Αξιόπιστα Αποτελέσματα}
-
+\titleEn{Explorations in Static Pointer Analysis: Adaptive Scalability and Strong Guarantees}
+\subjectAreaEn{Programming Languages, Static Analysis}
+\keywordsEn{Pointer Analysis; Alias Analysis; Object-Oriented Programming; Precision; Performance; Context-Sensitivity}
 \abstractEn{\input{chapters/abstract-en}}
-\abstractGr{\input{chapters/abstract-gr}}
-\synopsisGr{\input{chapters/synopsis-gr}}
 \acksEn{\input{chapters/acknowledgments}}
 \prefaceEn{}
 
-\subjectAreaEn{Programming Languages, Static Analysis}
-\keywordsEn{Pointer Analysis; Alias Analysis; Object-Oriented Programming; Precision; Performance; Context-Sensitivity}
-
+\titleGr{Εξερευνώντας το χώρο της Στατικής Ανάλυσης Δεικτών: Κλιμάκωση και Ισχυρές Εγγυήσεις}
 \subjectAreaGr{Γλώσσες Προγραμματισμού, Στατική Ανάλυση}
 \keywordsGr{Ανάλυση Δεικτών, Ανάλυση Συνωνύμων, Αντικειμενοστρεφής Προγραμματισμός, Ακρίβεια, Απόδοση}
+\abstractGr{\input{chapters/abstract-gr}}
+\synopsisGr{\input{chapters/synopsis-gr}}
 
 \input{metadata}
 %%%% METADATA %%%%
@@ -61,6 +58,7 @@
 \mainmatter
 
 \input{chapters/introduction}
+\input{chapters/background}
 
 \part{Achieving Scalability}
 \input{chapters/p1-hybrid}
