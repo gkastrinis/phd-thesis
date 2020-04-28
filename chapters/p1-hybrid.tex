@@ -17,8 +17,6 @@ The end result is analyses that closely track the precision of a combined call-s
 In all, this chapter describes the following contributions:
 
 \begin{itemize}
-\item \todo{} We model the parameter space of context-sensitive points-to analysis in a way that allows both call-site- and object-sensitivity, as well as combinations and switching of context at key points (in our case study, virtual calls vs. static calls). In this space, we map out choices that produce entirely different flavors of algorithms.
-
 \item We introduce the idea of hybrid call-site- and object-sensitivity where the two kinds of context are freely mixed and the mix is adjusted in response to analyzing different program features. The goal is to achieve the precision of keeping \emph{both} kinds of context together, but at the same cost as keeping only one.
 
 \item We implement our approach in the \doop{} framework and apply it to a large variety of algorithms with varying context depth.
@@ -138,7 +136,7 @@ The above discussion does not nearly exhaust the space of hybrid combinations. C
 
 We implemented and evaluated all aforementioned analyses using the \doop{} framework. There are interesting and subtle aspects in our measurements, but the executive summary is clear: uniform hybrid analyses are typically not good choices in practice: their precision is offset by a very high performance cost. A relative exception is the uniform type-sensitive hybrid analysis, U-2type+H, which, although higher-cost, is not prohibitively expensive and offers a reasonable precision/performance tradeoff.  Selective hybrid analyses, on the other hand, are not just interesting tradeoffs but clear winners: they match or (usually) outperform the object-sensitive analyses they are based on, while offering better precision, closely approaching the precision of the much more costly uniform hybrids. Overall, the best analyses in our evaluation set, both for highest-precision and for high performance with good precision, are selective hybrids.
 
-Our evaluation setting uses the \todo{} LogicBlox Datalog engine, v.3.9.0, on a Xeon X5650 2.67GHz machine with only one thread running at a time and 24GB of RAM (i.e., ample for the analyses studied). We analyze the DaCapo benchmark programs (v.2006-10-MR2) under JDK 1.6.0\_37. This is a much larger set of libraries than earlier work \cite{oopsla:2009:Bravenboer,popl:2011:Smaragdakis}, which also results in differences in measurements, since the numbers shown integrate application- and library-level metrics. All runtime numbers are medians of three runs. As in other published work \cite{popl:2011:Smaragdakis,ecoop:2012:Ali}, jython and hsqldb are analyzed with reflection disabled and hsqldb has its entry point set manually in a special harness.
+Our evaluation setting uses the LogicBlox Datalog engine, v.3.9.0, on a Xeon X5650 2.67GHz machine with only one thread running at a time and 24GB of RAM (i.e., ample for the analyses studied). We analyze the DaCapo benchmark programs (v.2006-10-MR2) under JDK 1.6.0\_37. This is a much larger set of libraries than earlier work \cite{oopsla:2009:Bravenboer,popl:2011:Smaragdakis}, which also results in differences in measurements, since the numbers shown integrate application- and library-level metrics. All runtime numbers are medians of three runs. As in other published work \cite{popl:2011:Smaragdakis,ecoop:2012:Ali}, jython and hsqldb are analyzed with reflection disabled and hsqldb has its entry point set manually in a special harness.
 
 \begin{figure*}[tb!p]
 \begin{center}

@@ -178,7 +178,7 @@ The main insight behind our Heuristic-Approach is that there are many program el
 Furthermore, a program element with very large cost, in terms of associated points-to facts, may be hopeless for good enough precision anyway. On the other hand, the above intuition could potentially unfold the other way: it is possible that context-sensitivity can productively distinguish seemingly-imprecise program elements (e.g., methods with large cumulative points-to sets, but also many callers) and maintain precision.
 
 \paragraph*{Implementation.}
-The above metrics and heuristics can be easily implemented as short analyses over the result of a context-insensitive points-to analysis. For instance, the implementation of the \emph{in-flow} metric (\#\ref{metric-arginflow}) is the following Datalog rules, which define an intermediate predicate and aggregate over it. (``\args{\_}'' is a nameless variable denoting any value, and ``\texttt{\{...\}}'' denotes an aggregate operation over the relations inside the curly brackets---in our case a total count of matching tuples.)
+The above metrics and heuristics can be easily implemented as short analyses over the result of a context-insensitive points-to analysis. For instance, the implementation of the \emph{in-flow} metric (\#\ref{metric-arginflow}) is the following Datalog rules, which define an intermediate predicate and aggregate over it. (``\args{\_}'' is a nameless variable denoting any value, and ``\texttt{\{...\}}'' denotes an aggregate operation over the relations inside the curly brackets ---in our case a total count of matching tuples.)
 
 \begin{figure}[h]
 \begin{datalog}
@@ -197,7 +197,7 @@ The above metrics and heuristics can be easily implemented as short analyses ove
 
 \section{Evaluation}
 
-Our evaluation setting uses the \todo{} LogicBlox Datalog engine, v.3.9.0, on a Xeon E5530 2.4GHz machine with only one thread running at a time and 24GB of RAM. We analyze the DaCapo benchmark programs (v.2006-10-MR2) with Open JDK 1.6.0\_24. We run all benchmarks with default \doop{} settings, including full reflection support. We selected a priori 6 of the Dacapo benchmarks as our experimental subjects: these are the programs that exhibit scalability problems based on past literature (e.g., Chapter~\ref{chapter:hybrid}). Other benchmarks typically run in half the time of the fastest benchmark of our set for deep context-sensitive analyses. Since our technique is explicitly not a ``first line of defense'', benchmarks that are already certain to scale are out of scope.
+Our evaluation setting uses the LogicBlox Datalog engine, v.3.9.0, on a Xeon E5530 2.4GHz machine with only one thread running at a time and 24GB of RAM. We analyze the DaCapo benchmark programs (v.2006-10-MR2) with Open JDK 1.6.0\_24. We run all benchmarks with default \doop{} settings, including full reflection support. We selected a priori 6 of the Dacapo benchmarks as our experimental subjects: these are the programs that exhibit scalability problems based on past literature (e.g., Chapter~\ref{chapter:hybrid}). Other benchmarks typically run in half the time of the fastest benchmark of our set for deep context-sensitive analyses. Since our technique is explicitly not a ``first line of defense'', benchmarks that are already certain to scale are out of scope.
 
 \begin{figure*}[h!tp]
 \begin{center}
@@ -257,7 +257,7 @@ As Figure~\ref{fig:introspect:2callH-chart} shows, introspective context-sensiti
 
 
 \subsection{Discussion}
-The above timings of introspective context-sensitivity do not include the cost of first running a context-insensitive analysis, and other timing overheads (relatively constant at about 100sec) related to computing the objects and sites to refine and re-running an analysis (our current implementation saves the first-run database and re-generates it from scratch \todo{}). We did not include these numbers in the timings in order to keep the presentation simpler but also because
+The above timings of introspective context-sensitivity do not include the cost of first running a context-insensitive analysis, and other timing overheads (relatively constant at about 100sec) related to computing the objects and sites to refine and re-running an analysis.\footnote{Our current implementation has to export facts to disk and re-import them back in memory, as well as regenerate a program representation in order to re-run an analysis.} We did not include these numbers in the timings in order to keep the presentation simpler but also because
 \begin{inparaenum}[(a)]
 \item our emphasis is on scalability and not on small-scale speed gains---we consider small differences in timings, e.g., in the chart and eclipse benchmarks of Figure~\ref{fig:introspect:2objH-chart}, to be negligible for our purposes; and
 \item these constant overheads can be factored out---e.g., with minor engineering we could have incurred them only once per benchmark and not once per run of every introspective analysis variation.
