@@ -42,7 +42,7 @@ Ideally, we would like a data structure that only explicitly maintains the initi
 \paragraphhead{Algorithms.}
 Once we have a data structure that satisfies the above requirements, what algorithms should we implement efficiently on this data structure? The basic algorithms behind most must-alias analysis inferences are straightforward. The analysis needs to copy alias classes (equivalence classes), add a single access path, remove a single access path, or rename variables in a set of alias classes. The only case that introduces some complexity is the one dealing with multiple predecessors of an instruction in the control-flow graph.
 
-In a \emph{must}-alias analysis setting, in order for an alias pair to be valid at the instruction where multiple control-flow paths meet, it should hold in each path. The operation we need here is that of taking the intersection of alias classes from many different sets (one for each predecessor instruction). For instance, in the code snippet of Figure~\ref{fig:must-data:snippet}, on line 19, we can infer that \{\code{a2.member} $\sim$ \code{b1}\} since it holds in both paths, but not that \{\code{a2.next} $\sim$ \code{a1}\}.
+In a must-alias analysis setting, in order for an alias pair to be valid at the instruction where multiple control-flow paths meet, it should hold in each path. The operation we need here is that of taking the intersection of alias classes from many different sets (one for each predecessor instruction). For instance, in the code snippet of Figure~\ref{fig:must-data:snippet}, on line 19, we can infer that \{\code{a2.member} $\sim$ \code{b1}\} since it holds in both paths, but not that \{\code{a2.next} $\sim$ \code{a1}\}.
 
 \begin{figure}[htb!p]
 \begin{subfigure}{.45\textwidth}

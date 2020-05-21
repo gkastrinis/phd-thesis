@@ -22,7 +22,7 @@ A must-alias analysis is typically flow-sensitive, i.e., it computes information
 
 To illustrate must-alias reasoning, consider the code example in Figure~\ref{fig:must-logic:snippet}. Even at this size, inspecting the program requires human effort. The output consists of must-alias pairs: expressions that are guaranteed to point to the same object---denoted by ``$\sim$''. In this example, \code{a2.next} and \code{a1} form an alias pair after line 8. (Other alias pairs include \{\code{a1.next} $\sim$ \code{null}\} after line 7, \{\code{a2.next.next} $\sim$ \code{a2}\} after line 11, and more.) Alias pairs are established by direct variable assignments---which are plentiful in a compiler intermediate language, although less so in original source code---as well as heap stores and loads. Other aliasing relationships hold throughout the program. Establishing them often requires some inter-procedural reasoning---e.g., to see the aliasing effects of the constructor call on lines 8, 9, or 10. Constructors feature prominently in the example, since they are one of the best sources of must-alias information in a typical program.
 
-A \emph{must}-alias analysis has to report aliases only when they are guaranteed to hold, and needs to invalidate them on store instructions or method calls that may change the fields of objects pointed by sub-expressions in an alias pair.
+A must-alias analysis has to report aliases only when they are guaranteed to hold, and needs to invalidate them on store instructions or method calls that may change the fields of objects pointed by sub-expressions in an alias pair.
 
 \begin{figure}[htb!p]
 \begin{javacode}
