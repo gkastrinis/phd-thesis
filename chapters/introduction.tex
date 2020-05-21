@@ -70,7 +70,7 @@ For the last two contributions, we shift our attention towards analyses that aim
 \begin{inparaenum}[(1)]
 \item it is useful for enabling optimizations such as constant folding and register allocation,
 \item it can increase the precision of bug detectors, e.g., greatly benefiting a null-reference detector and a non-termination detector, and
-\item it can be used internally as part of more complex analyses, e.g., one that can reason correctly about ``strong-updates'' at instructions that modify the heap.
+\item it can be used internally as part of more complex analyses, e.g., one that can reason correctly about ``strong updates'' at instructions that modify the heap.
 \end{inparaenum}
 In order to compute high-confidence, non-trivial results, the analysis needs to be flow-sensitive, i.e., compute information at each program point and propagate it forward while respecting the control-flow of the program.
 
@@ -78,7 +78,7 @@ Furthermore, we observe that a must-alias analysis exhibits certain properties t
 
 \paragraphhead{Fourth contribution.} For our last contribution, we revisit the setting of a may-analysis but this time while aiming to explore the potential of a truly \emph{sound}---instead of just soundy---yet \emph{practical} analysis. We present such an approach in a \emph{defensive} may-point-to analysis, which can guarantee soundness even in the presence of arbitrary opaque code.\footnote{Code that cannot be analyzed such as dynamically generated or native code, or dynamic language features such as reflection, \code{invokedynamic}, etc.} A key design tenet of our approach is \emph{laziness}: the analysis computes points-to relationships only for program expressions that are guaranteed to never escape into opaque code.
 
-The defensive nature of our analysis means that it might miss some valid inferences, but because of its laziness it will never waste work to compute sets that are not ``complete'', i.e. that may be missing elements due to opaque code. This frugal approach is what enables the great efficiency of the algorithm, allowing for a highly precise points-to analysis (such as a 5-call-site-sensitive, flow-sensitive analysis). Despite its conservative nature, the analysis yields sound, actionable results for a large subset of the program code, achieving (under worst-case assumptions) 34-74\% of the program coverage of an unsound state-of-the-art analysis for real-world programs.
+The defensive nature of our analysis means that it might miss some valid inferences, but because of its laziness it will never waste work to compute sets that are not ``complete'', i.e. that may be missing elements due to opaque code. This frugal approach is what enables the great efficiency of the algorithm, allowing for a highly precise points-to analysis (such as a 5-call-site-sensitive, flow-sensitive analysis). Despite its conservative nature, the analysis yields sound, actionable results for a large subset of the program code, achieving (under worst-case assumptions) \nums{34-74\%} of the program coverage of an unsound state-of-the-art analysis for real-world programs.
 
 
 \section{Outline}

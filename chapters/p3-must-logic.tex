@@ -20,7 +20,7 @@ A must-alias analysis is typically flow-sensitive, i.e., it computes information
 \item It can be invaluable for better program understanding; the results of a must-inference are guaranteed facts, of immediate value to the human programmer.
 \end{itemize}
 
-To illustrate must-alias reasoning, consider the code example in Figure~\ref{fig:must-logic:snippet}. Even at this size, inspecting the program requires human effort. The output consists of must-alias pairs: expressions that are guaranteed to point to the same object---denoted by ``$\sim$''. In this example, \code{a2.next} and \code{a1} form an alias pair after line 8. (Other alias pairs include \{\code{a1.next} $\sim$ \code{null}\} after line 7, \{\code{a2.next.next} $\sim$ \code{a2}\} after line 11, and more.) Alias pairs are established by direct variable assignments---which are plentiful in a compiler intermediate language, although less so in original source code---as well as heap stores and loads. Other aliasing relationships hold throughout the program. Establishing them often requires some inter-procedural reasoning---e.g., to see the aliasing effects of the constructor call on lines 8, 9, or 10. Constructors feature prominently in the example, since they are one of the best sources of must-alias information in a typical program.
+To illustrate must-alias reasoning, consider the code example in Figure~\ref{fig:must-logic:snippet}. Even at this size, inspecting the program requires human effort. The output consists of must-alias pairs: expressions that are guaranteed to point to the same object (denoted by ``$\sim$''). In this example, \code{a2.next} and \code{a1} form an alias pair after line 8. (Other alias pairs include \{\code{a1.next} $\sim$ \code{null}\} after line 7, \{\code{a2.next.next} $\sim$ \code{a2}\} after line 11, and more.) Alias pairs are established by direct variable assignments---which are plentiful in a compiler intermediate language, although less so in original source code---as well as heap stores and loads. Other aliasing relationships hold throughout the program. Establishing them often requires some inter-procedural reasoning---e.g., to see the aliasing effects of the constructor call on lines 8, 9, or 10. Constructors feature prominently in the example, since they are one of the best sources of must-alias information in a typical program.
 
 A must-alias analysis has to report aliases only when they are guaranteed to hold, and needs to invalidate them on store instructions or method calls that may change the fields of objects pointed by sub-expressions in an alias pair.
 
@@ -44,7 +44,7 @@ void main() {
 \label{fig:must-logic:snippet}
 \end{figure}
 
-For instance, line 10 invalidates the alias pair \{\code{a1.next} $\sim$ \code{null}\}---regardless of whether new alias pairs are established, via inter-procedural reasoning. However, the analysis is sound (i.e., it remains a must-analysis---recall Section~\ref{sec:back:soundness}) if it also invalidates alias pairs for expressions involving \code{a2.next} or \code{a3.next}. The base specification of a must-alias analysis has to integrate such soundness safeguards, while interplay with other analyses (e.g., a may-not-alias analysis) can lead to more inferences.
+For example, line 10 invalidates the alias pair \{\code{a1.next} $\sim$ \code{null}\}---regardless of whether new alias pairs are established, via inter-procedural reasoning. However, the analysis is sound (i.e., it remains a must-analysis---recall Section~\ref{sec:back:soundness}) if it also invalidates alias pairs for expressions involving \code{a2.next} or \code{a3.next}. The base specification of a must-alias analysis has to integrate such soundness safeguards, while interplay with other analyses (e.g., a may-not-alias analysis) can lead to more inferences.
 
 This chapter presents a simple declarative model of a must-alias analysis over access paths (i.e., expressions of the form ``\texttt{\args{var}(\args{.fld})}*''). The model underlies the implementation of must-alias analysis in \doop{}, in which must-alias analysis is employed as an enhancer of its standard array of may-analyses (e.g., in order to enable ``strong updates''). The model is interesting in a few different ways:
 
@@ -87,7 +87,7 @@ Our input relations, shown in Figure~\ref{fig:must-logic:input}, are similar to 
 
 The last two input relations are somewhat more advanced. \altrelname{Resolved} is a predicate that can be computed by an external call-graph or may-point-to analysis: it holds variables that are determined to only point to objects with a unique dynamic type, so that virtual method calls are resolved. (Note that the form of the predicate is context-insensitive, yet the analysis that computes it may be context-sensitive, for increased precision---the contexts are merely projected out.) Finally, \altrelname{RootMethod} is a predicate over methods, in order to start must-alias reasoning from a user-selected set of methods. As will be explained bellow, our analysis algorithm will venture beyond these root methods only to the extent that its context constructor allows.
 
-\begin{figure}[t!hbp]
+\begin{figure}[t]
 \begin{tabular}{l l}
 \rel{Move}{i: I, to: V, from: V}             & \comm{// i: to = from} \\
 \rel{Load}{i: I, to: V, base: V, fld: F}     & \comm{// i: to = base.fld} \\
@@ -113,7 +113,7 @@ Figure~\ref{fig:must-logic:output} shows the computed relations of our must-alia
  
 The other main computed relation represents intermediate results of the analysis. Relation \relname{MustCallGraphEdge} holds information for fully-resolved virtual calls: invocation site \args{invo} will call method \args{meth} under the given (caller and collee) contexts.
 
-\begin{figure}[hp]
+\begin{figure}[t]
 \begin{datalog}
 \rel{MustAlias}{i: I, ctx: C, ap1: A, ap2: A} \\
 \rel{MustCallGraphEdge}{invo: I, callerCtx: C, meth: M, calleeCtx: C} \\

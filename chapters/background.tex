@@ -102,12 +102,13 @@ x = 2;
 \end{wrapfigure}
 
 For the example on the side, a flow-sensitive analysis reasoning about the values of primitive expressions might report that:
-after line 1: ``$x$ has the value 1'',
-after line 2: ``$x$ has the value 1'' and ``$y$ has the value 1'', and
-after line 3: ``$x$ has the value 2'' and ``$y$ has the value 1''.
+after line 1: ``\code{x} has the value \code{1}'',
+after line 2: ``\code{x} has the value \code{1}'' and ``\code{y} has the value \code{1}'', and
+after line 3: ``\code{x} has the value \code{2}'' and ``\code{y} has the value \code{1}''.
 
 A flow-insensitive analysis might instead report that:
-``$x$ has either the value 1 or 2'' and ``$y$ has either the value 1 or 2'',
+``\code{x} has either the value \code{1} or \code{2}'' and
+``\code{y} has either the value \code{1} or \code{2}'',
 because instructions are examined as if happening in any order.
 }
 
@@ -115,7 +116,7 @@ because instructions are examined as if happening in any order.
 \section{Static Single Assignment Form}
 \label{sec:back:ssa}
 
-In compiler design, \emph{static single assignment form} (also known as SSA) is a property of an intermediate representation (IR) of the program in which every local variable is assigned only once. Existing local variables in the original source code are split into \emph{versions} (e.g., variable $x$ might be split into $x_1$ and $x_2$) with each version being assigned only once. At program points where the value of the original variable is read and there are multiple valid versions, as in the point where the branches of an \emph{if-else} statement merge, a \emph{phi-node} statement is used. This special statement bears the semantics of somehow ``choosing'' a specific variable version to read.
+In compiler design, \emph{static single assignment form} (also known as SSA) is a property of an intermediate representation (IR) of the program in which every local variable is assigned only once. Existing local variables in the original source code are split into \emph{versions} (e.g., variable \code{x} might be split into \code{x\_1} and \code{x\_2}) with each version being assigned only once. At program points where the value of the original variable is read and there are multiple valid versions, as in the point where the branches of an \emph{if-else} statement merge, a \emph{phi-node} statement is used. This special statement bears the semantics of somehow ``choosing'' a specific variable version to read.
 
 \begin{figure}[h]
 \begin{subfigure}{.45\textwidth}
@@ -151,14 +152,14 @@ x_2 = 2;
 \end{javacode*}
 \end{wrapfigure}
 
-The flow-\emph{insensitive} analysis of \ref{sec:back:flowSensitivity} will report quite different results when analyzing the SSA-form analogue of the example code (given on the side): ``$x_1$ has the value 1'', ``$y$ has the value 1'', and ``$x_2$ has the value 2''. The analysis is still examining instructions without taking order into account, and is unable to answer questions such as ``what is the value of variable $x$ at the end of the method'' (whether the value of $x_1$ or $x_2$ is the final one), but nevertheless it has managed to reclaim some of the precision that was previously lost---e.g., regarding the value of variable $y$.
+The flow-\emph{insensitive} analysis of \ref{sec:back:flowSensitivity} will report quite different results when analyzing the SSA-form analogue of the example code (given on the side): ``\code{x\_1} has the value \code{1}'', ``\code{y} has the value \code{1}'', and ``\code{x\_2} has the value \code{2}''. The analysis is still examining instructions without taking order into account, and is unable to answer questions such as ``what is the value of variable \code{x} at the end of the method'' (whether the value of \code{x\_1} or \code{x\_2} is the final one), but nevertheless it has managed to reclaim some of the precision that was previously lost---e.g., regarding the value of variable \code{y}.
 
 
 
 \section{May vs. Must Analyses}
 \label{sec:back:may-must}
 
-Given an abstraction of behaviors (e.g., thrown exceptions) one can define two interesting sets regarding the potential behaviors that a given program will exhibit. Set $Any(P)$ is defined as containing all possible behaviors that a program $P$ \emph{will} exhibit in \emph{some} program execution (e.g., method $m1$ will throw exception $e1$ in one execution and exception $e2$ in another). Respectively, set $All(P)$ is defined as containing behaviors that will appear in \emph{every} program execution (e.g., method $m2$ will always throw exception $e3$ during any execution).
+Given an abstraction of behaviors (e.g., thrown exceptions) one can define two interesting sets regarding the potential behaviors that a given program will exhibit. Set $Any(P)$ is defined as containing all possible behaviors that a program $P$ \emph{will} exhibit in \emph{some} program execution (e.g., method \code{meth1} will throw exception \code{e1} in one execution and exception \code{e2} in another). Respectively, set $All(P)$ is defined as containing behaviors that will appear in \emph{every} program execution (e.g., method \code{meth2} will always throw exception \code{e3} during any execution).
 \[
 Any(P) := \bigcup_{e \in Executions} Behaviors(P, e)
 \quad \textrm{and} \quad
@@ -275,7 +276,7 @@ The declarative power of \doop{} stems from the expressiveness of Datalog. Datal
 
 The aforementioned specialized computation is known as a \emph{fixpoint} computation. All valid Datalog rules are monotonic, i.e., can only reason about the inference of additional facts, and this is exploited by the underlying engine in order to efficiently compute new facts in a repeating fashion until knowledge from previous steps cannot be applied to infer anything new in the current step. Datalog programs are contained in the \texttt{PTime} complexity class, i.e., they can be computed in polynomial time, and vice versa, any polynomial algorithm can be implemented as a Datalog program. Additionally, because of the monotonic nature of rules, termination is always guaranteed.\footnote{We will later relax these constraints by adding language extensions that will push Datalog programs over the \texttt{PTime} class and might invalidate the termination guarantees offered by the language. We will do so in a principled way, allowing for greater flexibility on the algorithms that we can express.}
 
-A Datalog program is mainly a collection of rules with each rule contributing to a common knowledge base. Each rule has two parts (separated by ``\dlIf{}''); the \emph{rule-body}, on the right, that describes what conditions need to hold in order to infer something new, and the \emph{rule-head}, on the left, that describes what new knowledge is inferred each time. Both parts are collections of \emph{relations} that are conceptually similar to database tables. Relations can be connected to each other either via commas (``\code{,}''), denoting a logical \texttt{AND} connection similar to a database join, or via semicolons (``\code{;}''), denoting a logical \texttt{OR} connection. Finally, relations can be negated by prepending an exlamation mark (``\code{!}''). Negation is stratified: it is only applied to predicates that are either input predicates or whose computation can complete before the current rule's evaluation. We also permit multiple predicates in a rule head, as syntactic sugar for replicating the rule body.
+A Datalog program is mainly a collection of rules with each rule contributing to a common knowledge base. Each rule has two parts (separated by ``\dlIf{}''); the \emph{rule-body}, on the right, that describes what conditions need to hold in order to infer something new, and the \emph{rule-head}, on the left, that describes what new knowledge is inferred each time. Both parts are collections of \emph{relations} that are conceptually similar to database tables. Relations can be connected to each other either via commas (``\code{,}''), denoting a logical \texttt{AND} connection similar to a database join, or via semicolons (``\code{;}''), denoting a logical \texttt{OR} connection. Finally, relations can be negated by prepending an exclamation mark (``\code{!}''). Negation is stratified: it is only applied to predicates that are either input predicates or whose computation can complete before the current rule's evaluation. We also permit multiple predicates in a rule head, as syntactic sugar for replicating the rule body.
 
 A classic example is given below. \relname{Parent} represents the obvious parent relationship between individuals abstracted by the two arguments, whereas \relname{Ancestor} represents an ancestry relationship of any depth. 
 

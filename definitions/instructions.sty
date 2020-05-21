@@ -2,11 +2,11 @@
 
 \NewDocumentCommand{\instr}{ o m }{%
     \IfValueTF {#1}{\ensuremath{#1}:\ }{}
-    {\codehl{#2}}
+    {\code{#2}}
 }
 \NewDocumentCommand{\unknown}{ o m }{%
     \IfValueTF {#1}{\ensuremath{#1}:\ }{}
-    {\code{<unknown>}}
+    {\codeRAW{<unknown>}}
 }
 \newcommand{\obj}[1]{\ensuremath{\widehat{#1}}}
 \newcommand{\nextinstr}[2]{\ensuremath{#1 \xrightarrow{NEXT} #2}}

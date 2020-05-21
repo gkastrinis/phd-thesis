@@ -206,7 +206,7 @@ Notably, the intersection of two alias graphs can produce nodes with empty varia
 In this case, the empty note denotes that access paths \code{x.f} and \code{z.g} are still aliased in the intersection alias graph, even though they are no longer aliased with any single-variable access path.
 
 For upper bounds $n$, $v$, $e$ in the number of nodes, variables, and edges in the input alias graphs, respectively, the algorithm has a running time asymptotic bound of $O(n + v + e)$, i.e., linear in all
-quantities, if one assumes a practically constant-time indexing scheme from a variable to its node. (\textbf{Proof sketch}: Non-empty nodes are fewer than variables and only linear cost is incurred when combining non-empty nodes pair-wise, since each node has a distinct set of variables, used to index into any node that may intersect that set in the other alias graph. Empty nodes arise in the result and are only examined in the input if there is an edge into or out of them, therefore their number is below $e$. The number of edges in the output is at most that in the input---taken as the union of both input graphs).
+quantities, if one assumes a practically constant-time indexing scheme from a variable to its node. (\textbf{\emph{Proof sketch}}: Non-empty nodes are fewer than variables and only linear cost is incurred when combining non-empty nodes pair-wise, since each node has a distinct set of variables, used to index into any node that may intersect that set in the other alias graph. Empty nodes arise in the result and are only examined in the input if there is an edge into or out of them, therefore their number is below $e$. The number of edges in the output is at most that in the input---taken as the union of both input graphs).
 
 Empty nodes with no in-edges are only one instance of nodes that no longer encode useful access path aliasing. Such nodes should be garbage-collected for maximum efficiency, producing a normalized input. The node collection algorithm is as follows:
 
@@ -290,7 +290,7 @@ Figure~\ref{fig:must-data:time-chart} shows the performance effect of our optimi
 \label{fig:must-data:time-chart}
 \end{figure*}
 
-Note that the figure is log-scale. Across all benchmarks, the difference between the optimized implementations and the original is typically at least an order of magnitude and often close to two.  The speedup of the two optimized implementations (vs. the original) is also shown more explicitly in Figure~\ref{fig:must-data:speedup-chart}: over half the benchmarks enjoy speedups of over 20x for both the Java and the Datalog optimized implementation. The Java version of the data structure achieves a median speedup of 25.7x (min. 8.4x, max. 68.9x), while the Datalog version has a median speedup of 24.6x (min. 5.4x, max. 47.3x).  The analysis time typically drops from over ten minutes to under half a minute. 
+Note that the figure is log-scale. Across all benchmarks, the difference between the optimized implementations and the original is typically at least an order of magnitude and often close to two.  The speedup of the two optimized implementations (vs. the original) is also shown more explicitly in Figure~\ref{fig:must-data:speedup-chart}: over half the benchmarks enjoy speedups of over \nums{20x} for both the Java and the Datalog optimized implementation. The Java version of the data structure achieves a median speedup of \nums{25.7x} (min \bad{8.4x}, max \best{68.9x}), while the Datalog version has a median speedup of \nums{24.6x} (min \bad{5.4x}, max \best{47.3x}).  The analysis time typically drops from over ten minutes to under half a minute. 
 
 \begin{figure*}[htp]
 \centering
@@ -312,7 +312,7 @@ Furthermore, the setup explicitly downplays the benefits of our optimized data s
 
 
 \paragraphhead{Varying access-path length.}
-To further see the performance advantage of the optimized representation of must-alias information, one can vary the maximum access path length allowed for computations of the original, explicit (Datalog) implementation. Figure~\ref{fig:must-data:aplength-chart} shows how running time varies for maximum access path lengths of 2, 3 (same as in Figure~\ref{fig:must-data:time-chart}), 4 and 5. The numbers are for the xalan benchmark. The speedup readily grows to over 75x for an allowed access path length of 5. The optimized Datalog implementation is shown as a baseline although it should be (and is) largely unaffected by the change of maximum access path length.
+To further see the performance advantage of the optimized representation of must-alias information, one can vary the maximum access path length allowed for computations of the original, explicit (Datalog) implementation. Figure~\ref{fig:must-data:aplength-chart} shows how running time varies for maximum access path lengths of 2, 3 (same as in Figure~\ref{fig:must-data:time-chart}), 4 and 5. The numbers are for the xalan benchmark. The speedup readily grows to over \best{75x} for an allowed access path length of 5. The optimized Datalog implementation is shown as a baseline although it should be (and is) largely unaffected by the change of maximum access path length.
 
 \begin{figure*}[htp]
 \centering
