@@ -74,7 +74,7 @@ void main(String[] args) {
 }
 \end{javacode*}
 \end{subfigure}
-\caption{Code snippet to illustrate certain points of our algorithms.}
+\caption[Code snippet for illustrating the data structure algorithms]{Code snippet to illustrate certain points of our algorithms.}
 \label{fig:must-data:snippet}
 \end{figure}
 
@@ -146,7 +146,7 @@ For illustration, consider Figure~\ref{fig:must-data:alias-graph}, which shows t
 \begin{figure}[ht]
 \centering
 \includegraphics[trim={13mm 15mm 10mm 10mm},clip,width=0.7\linewidth]{assets/must-data/alias-graph.pdf}
-\caption{Example alias graph data structure.}
+\caption[Example alias graph data structure]{Example alias graph data structure.}
 \label{fig:must-data:alias-graph}
 \end{figure}
 
@@ -199,7 +199,7 @@ Notably, the intersection of two alias graphs can produce nodes with empty varia
 \begin{figure}[ht]
 \centering
 \includegraphics[trim={0mm 40mm 0mm 30mm},clip,width=0.9\linewidth]{assets/must-data/intersecting-alias-graphs.pdf}
-\caption{Intersecting alias graphs.}
+\caption[Alias graphs intersection]{Intersecting alias graphs.}
 \label{fig:must-data:intersection}
 \end{figure}
 
@@ -286,7 +286,7 @@ Figure~\ref{fig:must-data:time-chart} shows the performance effect of our optimi
 \begin{figure*}[htp]
 \centering
 \includegraphics[clip,width=0.77\linewidth, height=0.4275\linewidth]{assets/must-data/time.eps}
-\caption{Execution time (sec.) of the analysis. We only show the numbers for the Java and Datalog naive versions, to avoid crowding the chart.}
+\caption[Execution times for the Java and both Datalog versions]{Execution time (sec.) of the analysis. We only show the numbers for the Java and Datalog naive versions, to avoid crowding the chart.}
 \label{fig:must-data:time-chart}
 \end{figure*}
 
@@ -295,7 +295,7 @@ Note that the figure is log-scale. Across all benchmarks, the difference between
 \begin{figure*}[htp]
 \centering
 \includegraphics[clip,width=0.77\linewidth, height=0.4275\linewidth]{assets/must-data/speedup.eps}
-\caption{Speedup of the two analyses employing optimized data structure.}
+\caption[Speedups of employing the optimized data structure]{Speedups of employing the optimized data structure.}
 \label{fig:must-data:speedup-chart}
 \end{figure*}
 
@@ -304,7 +304,7 @@ It is not hard to see why the explicit representation is not competitive. Figure
 \begin{figure*}[htp]
 \centering
 \includegraphics[clip,width=\linewidth]{assets/must-data/pairs.eps}
-\caption{Number of pairs of (instruction-and-context qualified) access paths that must alias vs. analysis time.}
+\caption[Number of pairs of access paths vs. analysis time]{Number of pairs of (instruction-and-context qualified) access paths that must alias vs. analysis time.}
 \label{fig:must-data:pairs-chart}
 \end{figure*}
 
@@ -317,7 +317,7 @@ To further see the performance advantage of the optimized representation of must
 \begin{figure*}[htp]
 \centering
 \includegraphics[clip,width=\linewidth]{assets/must-data/length.eps}
-\caption{Execution time when varying maximum access-path length. Optimized Datalog running time given as a baseline.}
+\caption[Execution times when varying max access-path length]{Execution time when varying maximum access-path length. Optimized Datalog running time given as a baseline.}
 \label{fig:must-data:aplength-chart}
 \end{figure*}
 
@@ -327,7 +327,7 @@ To further see the performance advantage of the optimized representation of must
 \begin{figure*}[h!tp]
 \centering
 \includegraphics[clip,width=\linewidth]{assets/must-data/depth.eps}
-\caption{Execution time when varying maximum context depth.}
+\caption[Execution times when varying max context depth]{Execution time when varying maximum context depth.}
 \label{fig:must-data:ctxdepth-chart}
 \end{figure*}
 

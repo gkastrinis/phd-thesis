@@ -272,7 +272,7 @@ Therefore, a context-sensitive defensive analysis has to be, at a minimum, \emph
 
 We next present a rigorous model of our defensive analysis. The model is based upon the input domain and the minimal intermediate language presented in previous chapters---also presented here for clarity. The language can be straightforwardly enhanced with features such as arrays, static members and calls, exceptions, etc. The input program is assumed to be in a single-return-per-method form. We will use the following formalism, auxiliary functions and predicates throughout:
 
-\begin{figure*}[htp]
+\begin{figure}[htp]
 \begin{subfigure}{.45\textwidth}
 \begin{tabular}{l|l}
 \args{V} is a set of variables          & \code{v}, \code{u} \\
@@ -298,8 +298,8 @@ We next present a rigorous model of our defensive analysis. The model is based u
 \unknown[i]{}          & anything else \\
 \end{tabular}
 \end{subfigure}
-\caption[]{Input domains and common meta-variables used, as well as the instruction set of the intermediate language.}
-\end{figure*}
+\caption[Input domains and instruction set of the intermediate language]{Input domains and common meta-variables used, as well as the instruction set of the intermediate language.}
+\end{figure}
 
 
 \begin{itemize}
@@ -429,7 +429,7 @@ Figure~\ref{fig:sound:rules} shows the analysis specification, in terms of const
     }
     { \apout{i}{\code{ap}\subst{\formalarg{meth}{n}}{\actualarg{i}{n}}}{c}{\obj{o}} }
     \end{math}
-\caption{Inference Rules for Defensive Points-to Analysis.}
+\caption[Inference Rules for Defensive Points-to Analysis]{Inference Rules for Defensive Points-to Analysis.}
 \label{fig:sound:rules}
 \end{figure}
 
@@ -682,7 +682,7 @@ The analysis yields non-empty points-to sets for a significant portion of each p
 \begin{figure}[tbh]
 \centering
 \includegraphics[width=\linewidth]{assets/defensive/vars.pdf}
-\caption{Percentage of application variables (deemed reachable by baseline 2objH analysis) that have non-empty points-to sets for defensive analysis under some context and \ctxInit{} context (no assumptions). Intra-procedural sound points-to analysis (defensive minus the complex cases) shown as baseline. Arithmetic means are plotted as lines.}
+\caption[Percentage of application variables that have non-empty points-to sets]{Percentage of application variables (deemed reachable by baseline 2objH analysis) that have non-empty points-to sets for defensive analysis under some context and \ctxInit{} context (no assumptions). Intra-procedural sound points-to analysis (defensive minus the complex cases) shown as baseline. Arithmetic means are plotted as lines.}
 \label{fig:sound:coverage}
 \end{figure}
 
@@ -721,7 +721,7 @@ Figure~\ref{fig:sound:time} shows the running times of the analysis, plotted nex
 \begin{figure}[tbh]
 \centering
 \includegraphics[width=\linewidth]{assets/defensive/time.pdf}
-\caption{Running time (sec) of defensive analysis, with running time of 2objH (with unsound reflection handling) shown as a baseline. Labels are shown for defensive analysis only to avoid crowding the plot.}
+\caption[Execution time of defensive analysis vs. unsound baseline]{Execution time (sec) of defensive analysis, with running time of 2objH (with unsound reflection handling) shown as a baseline. Labels are shown for defensive analysis only to avoid crowding the plot.}
 \label{fig:sound:time}
 \end{figure}
 
@@ -734,7 +734,7 @@ Figure~\ref{fig:sound:devirt1} shows the virtual calls that defensive analysis d
 \begin{figure}[tbh]
 \centering
 \includegraphics[width=\linewidth]{assets/defensive/devirt1.pdf}
-\caption{Virtual call sites that are found to have receiver objects of a single type. These call sites can be soundly devirtualized. Numbers are shown as percentages of devirtualization achieved by unsound 2objH analysis.}
+\caption[Virtual call sites found with a single typed receiver objects]{Virtual call sites that are found to have receiver objects of a single type. These call sites can be soundly devirtualized. Numbers are shown as percentages of devirtualization achieved by unsound 2objH analysis.}
 \label{fig:sound:devirt1}
 \end{figure}
 
@@ -747,7 +747,7 @@ A compiler (JIT or AOT) author may (rightly) remark that the concurrency model o
 \begin{figure}[tbh]
 \centering
 \includegraphics[width=\linewidth]{assets/defensive/devirt2.pdf}
-\caption{Virtual call sites (percentage of 2objH) that are found to have receiver objects of a single type. Updates Figure~\ref{fig:sound:devirt1}, this time with soundness under a relaxed memory model.}
+\caption[Single typed, virtual call sites under a relaxed memory model]{Virtual call sites (percentage of 2objH) that are found to have receiver objects of a single type. Updates Figure~\ref{fig:sound:devirt1}, this time with soundness under a relaxed memory model.}
 \label{fig:sound:devirt2}
 \end{figure}
 
@@ -779,7 +779,7 @@ Finally, it is interesting to quantify the precision of the defensive analysis, 
 \multicolumn{4}{|r|}{\textbf{``2objH'' mean}} & \multicolumn{4}{c|}{1.51} \\
 \cline{1-8}
 \end{tabular}
-\caption[]{Average number of abstract objects pointed-by per variable, for variables for which both analyses compute results.}
+\caption[Avg. number of abstract objects pointed-by per variable]{Average number of abstract objects pointed-by per variable, for variables for which both analyses compute results.}
 \label{tab:sound:precision}
 \end{table*}
 

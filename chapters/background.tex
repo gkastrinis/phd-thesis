@@ -28,7 +28,7 @@ class B {
     }
 }
 \end{javacode}
-\caption{Code snippet for illustrating pointer analysis algorithms.}
+\caption[Code snippet for illustrating pointer analysis]{Code snippet for illustrating pointer analysis algorithms.}
 \label{fig:back:snippet}
 \end{figure}
 
@@ -62,7 +62,7 @@ As previously mentioned, a call-site-sensitive analysis uses method call sites (
 
 For instance, in the code snippet of Figure~\ref{fig:back:snippet}, a \emph{1-call-site-sensitive} analysis (unlike a context-insensitive analysis) will distinguish the two call-sites of method \code{foo} in lines 10 and 12. This results in an analysis that will treat \code{foo} separately in two cases: that of its formal argument, \code{arg}, pointing to anything \code{obj1} may point to, and that of \code{arg} pointing to anything \code{obj2} may point to.
 
-An equivalent mental model is that of two instances of method \code{foo} being analyzed---\code{foo\_COPY1} and \code{foo\_COPY2}. The invocation in line 10 leads to \code{foo\_COPY1}, whereas the one in line 12 leads to \code{foo\_COPY2}. After the analysis has concluded, if one is to query regarding method \code{foo}, information from both instances will be collapsed into as single answer-set. Therefore, following the reasoning of Section~\ref{sec:back:insens}, the analysis will infer, among others, that \vpt{foo\_COPY1::arg}{o1} and \vpt{foo\_COPY2::arg}{o2}, and as a result that \vpt{obj3}{o1} and \vpt{obj4}{o2}. As already mentioned, an implicit inference is that of \vpt{arg}{o1, o2}, regarding the unqualified analysis of method \code{foo}.
+An equivalent mental model is that of two instances of method \code{foo} being analyzed---\codeRAW{foo\_COPY1} and \codeRAW{foo\_COPY2}. The invocation in line 10 leads to \codeRAW{foo\_COPY1}, whereas the one in line 12 leads to \codeRAW{foo\_COPY2}. After the analysis has concluded, if one is to query regarding method \code{foo}, information from both instances will be collapsed into as single answer-set. Therefore, following the reasoning of Section~\ref{sec:back:insens}, the analysis will infer, among others, that \vpt{foo\_COPY1::arg}{o1} and \vpt{foo\_COPY2::arg}{o2}, and as a result that \vpt{obj3}{o1} and \vpt{obj4}{o2}. As already mentioned, an implicit inference is that of \vpt{arg}{o1, o2}, regarding the unqualified analysis of method \code{foo}.
 
 
 \subsection{Object Sensitivity}
@@ -116,7 +116,7 @@ because instructions are examined as if happening in any order.
 \section{Static Single Assignment Form}
 \label{sec:back:ssa}
 
-In compiler design, \emph{static single assignment form} (also known as SSA) is a property of an intermediate representation (IR) of the program in which every local variable is assigned only once. Existing local variables in the original source code are split into \emph{versions} (e.g., variable \code{x} might be split into \code{x\_1} and \code{x\_2}) with each version being assigned only once. At program points where the value of the original variable is read and there are multiple valid versions, as in the point where the branches of an \emph{if-else} statement merge, a \emph{phi-node} statement is used. This special statement bears the semantics of somehow ``choosing'' a specific variable version to read.
+In compiler design, \emph{static single assignment form} (also known as SSA) is a property of an intermediate representation (IR) of the program in which every local variable is assigned only once. Existing local variables in the original source code are split into \emph{versions} (e.g., variable \code{x} might be split into \codeRAW{x\_1} and \codeRAW{x\_2}) with each version being assigned only once. At program points where the value of the original variable is read and there are multiple valid versions, as in the point where the branches of an \emph{if-else} statement merge, a \emph{phi-node} statement is used. This special statement bears the semantics of somehow ``choosing'' a specific variable version to read.
 
 \begin{figure}[h]
 \begin{subfigure}{.45\textwidth}
@@ -125,7 +125,7 @@ if (...) x = 10;
 else x = 20;
 y = x;
 \end{javacode}
-\caption{Original source code}
+\caption*{Original source code}
 \end{subfigure}%
 \hfill
 \begin{subfigure}{.45\textwidth}
@@ -134,9 +134,9 @@ if (...) x_1 = 10;
 else x_2 = 20;
 y = phi(x_1, x_2);
 \end{javacode}
-\caption{The equivalent SSA form}
+\caption*{The equivalent SSA form}
 \end{subfigure}
-\caption{Example code before and after an SSA transformation}
+\caption[Code snippet illustrating SSA form]{Example code and equivalent SSA form.}
 \end{figure}
 
 In the context of static program analysis, SSA is often used to approximate the benefits of a flow-sensitive analysis, particularly pertaining to the handling of local variables. This is not the case for other, more complicated language features such as heap accesses and method invocations, but SSA provides an easy way to pick the low-hanging fruit.
@@ -152,7 +152,7 @@ x_2 = 2;
 \end{javacode*}
 \end{wrapfigure}
 
-The flow-\emph{insensitive} analysis of \ref{sec:back:flowSensitivity} will report quite different results when analyzing the SSA-form analogue of the example code (given on the side): ``\code{x\_1} has the value \code{1}'', ``\code{y} has the value \code{1}'', and ``\code{x\_2} has the value \code{2}''. The analysis is still examining instructions without taking order into account, and is unable to answer questions such as ``what is the value of variable \code{x} at the end of the method'' (whether the value of \code{x\_1} or \code{x\_2} is the final one), but nevertheless it has managed to reclaim some of the precision that was previously lost---e.g., regarding the value of variable \code{y}.
+The flow-\emph{insensitive} analysis of \ref{sec:back:flowSensitivity} will report quite different results when analyzing the SSA-form analogue of the example code (given on the side): ``\codeRAW{x\_1} has the value \code{1}'', ``\code{y} has the value \code{1}'', and ``\codeRAW{x\_2} has the value \code{2}''. The analysis is still examining instructions without taking order into account, and is unable to answer questions such as ``what is the value of variable \code{x} at the end of the method'' (whether the value of \codeRAW{x\_1} or \codeRAW{x\_2} is the final one), but nevertheless it has managed to reclaim some of the precision that was previously lost---e.g., regarding the value of variable \code{y}.
 
 
 
@@ -257,7 +257,7 @@ The term \emph{soundiness}, specific to the context of static program analysis, 
     \caption{Any \emph{soundy} analysis (blue) in relation to both ideals}
     \label{fig:back:soundness-f}
 \end{subfigure}
-\caption{Venn diagrams visualizing the relations of different static program analysis flavors to each other and to real behaviors}
+\caption[Venn diagrams visualizing different program analysis notions and flavors]{Venn diagrams visualizing the relations of different static program analysis flavors to each other and to real behaviors.}
 \label{fig:back:soundness}
 \end{figure}
 
@@ -309,14 +309,14 @@ The input language is a representative simplified intermediate language that mod
 \args{C} is a set of contexts \\
 \args{HC} is a set of heap contexts \\
 \end{tabular}
-\caption[]{The domain of our input intermediate language.}
+\caption[Input domains of the intermediate language]{The domain of our input intermediate language.}
 \label{fig:back:input-domain}
 \end{figure}
 
 The domain of our intermediate language (i.e., the different value sets that constitute the space of our computation) is presented in Figure~\ref{fig:back:input-domain} and the core instructions are abstracted away in the first six Datalog input relations presented in Figure~\ref{fig:back:input}. We explain the contents of our input relations in more detail below:
 
 \begin{itemize}
-\item \relname{Alloc} represents instructions for allocating an object \args{heap} on the heap, assigning it to variable \args{var} of method \args{inMeth}. We abstract heap objects by their allocation sites throughout the text, and for simplicity reasons, we name them just by using ``heap''. Additionally, note that every local variable is appropriately annotated by the exact method signature in which it is defined and is thus uniquely identified just by its name.
+\item \relname{Alloc} represents instructions for allocating an object \args{heap}\footnote{For brevity reasons, we will frequently refer to an abstract object allocated on the heap, simply as \emph{heap}.} on the heap, assigning it to variable \args{var} of method \args{inMeth}. We abstract heap objects by their allocation sites throughout the text, and for simplicity reasons, we name them just by using ``heap''. Additionally, note that every local variable is appropriately annotated by the exact method signature in which it is defined and is thus uniquely identified just by its name.
 
 \item \relname{Move} represents instructions for copying values between local variables \args{to} and \args{from}.
 
@@ -342,7 +342,7 @@ The domain of our intermediate language (i.e., the different value sets that con
 \rel{HeapType}{heap: H, type: T} \\
 \rel{LookUp}{type: T, sig: S, meth: M} \\            
 \end{tabular}
-\caption[]{The input Datalog relations describing the program under analysis.}
+\caption[Core Datalog input relations]{The input Datalog relations describing the program under analysis.}
 \label{fig:back:input}
 \end{figure}
 
@@ -380,7 +380,7 @@ The specification of our points-to analysis as well as the input language are in
 \cons{Merge}{heap: H, hctx: HC, invo: I, ctx: C}{?newCtx: C} \\
 \cons{MergeStatic}{invo: I, ctx: C}{?newCtx: C}
 \end{datalog}
-\caption[]{The core Datalog output relations and constructors of contexts.}
+\caption[Core Datalog output relations and constructors]{The core Datalog output relations and constructors of contexts.}
 \label{fig:back:output}
 \end{figure}
 
@@ -435,7 +435,7 @@ The specification of our points-to analysis as well as the input language are in
     \rel{SCall}{toMeth, invo, inMeth}, \\
     \rel{Reachable}{inMeth, callerCtx}.
 \end{datalog}
-\caption[]{Datalog rules for the points-to analysis and call-graph construction.}
+\caption[Core Datalog rules for the points-to analysis and call-graph construction]{Datalog rules for the points-to analysis and call-graph construction.}
 \label{fig:back:baserules}
 \end{figure}
 

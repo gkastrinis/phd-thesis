@@ -770,8 +770,8 @@ publications}\gdef\@lopfileinternal{#1}}
     \endgroup
 
     % % list of tables
-    % \listoftables
-    % \thispagestyle{empty}
+    \listoftables
+    \thispagestyle{empty}
 
     % preface page (english version only, OPTIONAL)
     % \ifprefacepage

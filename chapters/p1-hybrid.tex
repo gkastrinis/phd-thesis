@@ -8,7 +8,7 @@ Given such past experimental results, it would seem that exploring combinations 
 
 The question behind this chapter is whether the two kinds of context can be fruitfully combined, given how dissimilar they are. In order to address this question, we map the design space of \emph{hybrid} call-site- and object-sensitive analyses and describe the combinations that arise. Our work shows that the aforementioned conventional wisdom is false. This is one of the rare occasions when the combination of two ideas supplants both: hybrid-context sensitivity outperforms both object and call-site sensitivity in both precision and speed.
 
-Naive hybrid combinations, such as always maintaining as context \emph{both} call and allocation sites, do not pay off, due to extremely high cost. For instance, keeping one call-site and one allocation site as context, in all places, yields a very expensive analysis, on average 3.9x slower than a simple 1-object-sensitive analysis. Although such a combination will improve precision, it is still lacking in comparison to, for example, a 2-object-sensitive analysis.
+Naive hybrid combinations, such as always maintaining as context \emph{both} call and allocation sites, do not pay off, due to extremely high cost. For instance, keeping one call site and one allocation site as context, in all places, yields a very expensive analysis, on average 3.9x slower than a simple 1-object-sensitive analysis. Although such a combination will improve precision, it is still lacking in comparison to, for example, a 2-object-sensitive analysis.
 
 However, we find that more sophisticated hybrids are highly beneficial. Specifically, we show that we can switch per-language-feature between a combined context and an object-only context. For instance, contexts for static method calls are computed differently from contexts for dynamic method calls. This approach yields analyses with both low cost and high precision. Furthermore, adapting contexts per program feature defines a complex design space and allows even further optimization. Design choices arise, such as, how should the context adapt when a dynamic method call, or an object allocation are made inside a static method?
 
@@ -167,7 +167,7 @@ Our evaluation setting uses the LogicBlox Datalog engine, v.3.9.0, on a Xeon X56
 \begin{subfigure}[b]{0.45\textwidth}
 \includegraphics[width=\textwidth]{assets/hybrid/xalan.pdf}
 \end{subfigure}
-\caption{Graphical depiction of performance vs. precision metrics for eight of our benchmarks over all analyses. Lower is better on both axes. The Y axis is truncated for readability. Out-of-bounds points are included at lower Y values, with their real running time in parentheses.}
+\caption[Performance vs. precision metrics]{Graphical depiction of performance vs. precision metrics for eight of our benchmarks over all analyses. Lower is better on both axes. The Y axis is truncated for readability. Out-of-bounds points are included at lower Y values, with their real running time in parentheses.}
 \label{fig:hybrid:precision}
 \end{center}
 \end{figure*}
@@ -304,7 +304,7 @@ S-2type+H & & 7.74 & 49421 & 1276 & 948 & 238 & 20.5 & & 8.30 & 43269 & 1268 & 8
 
 \end{tabular}
 } % end scalebox
-\caption[]{Precision and performance metrics for all benchmarks and analyses, grouped by relevance. Continues in Table~\ref{tab:hybrid:results-b}.}
+\caption[Precision and performance experimental data]{Precision and performance metrics for all benchmarks and analyses, grouped by relevance. Continues in Table~\ref{tab:hybrid:results-b}.}
 \label{tab:hybrid:results-a}
 \end{table*}
 
@@ -384,7 +384,7 @@ S2type+H & & 6.10 & 43400 & 988 & 909 & \best{113} & \best{3.9} & & 7.16 & 50526
 \cline{1-15}
 \end{tabular}
 } % end scalebox
-\caption[]{Precision and performance metrics for all benchmarks and analyses, grouped by relevance. In all cases \textbf{lower is better}. Dash (-) entries are for analyses that did not terminate in 90mins. The 4 precision metrics shown are the average size of points-to sets (how many heap objects are computed to be pointed-to per-var), the number of edges in the computed call-graph, the number of virtual calls whose target cannot be disambiguated by the analysis, and the number of casts that cannot be statically shown safe by the analysis. Reference numbers (e.g., total reachable casts in the program) are shown in parentheses in the metric's heading. These numbers change little per-analysis. Performance is shown as running time and size of context-sensitive var-points-to data (the main platform-independent internal complexity metric). Best performance numbers per-analysis-group are \best{in bold}.}
+\caption[Precision and performance experimental data (cont'd)]{Precision and performance metrics for all benchmarks and analyses, grouped by relevance. In all cases \textbf{lower is better}. Dash (-) entries are for analyses that did not terminate in 90mins. The 4 precision metrics shown are the average size of points-to sets (how many heap objects are computed to be pointed-to per-var), the number of edges in the computed call-graph, the number of virtual calls whose target cannot be disambiguated by the analysis, and the number of casts that cannot be statically shown safe by the analysis. Reference numbers (e.g., total reachable casts in the program) are shown in parentheses in the metric's heading. These numbers change little per-analysis. Performance is shown as running time and size of context-sensitive var-points-to data (the main platform-independent internal complexity metric). Best performance numbers per-analysis-group are \best{in bold}.}
 \label{tab:hybrid:results-b}
 \end{table*}
 
@@ -399,7 +399,7 @@ Specifically, 1call, 1obj, and 2type+H are the fastest analyses in our set (for 
 \item \textbf{\emph{Uniform hybrid analyses.}}
 Recall that uniform hybrid analyses (U-1obj, U-2obj+H, U-2type+H) were defined to always keep a combination of object-sensitive and call-site-sensitive context. As a result, the analyses are more precise than their respective base analyses (1obj, 2obj+H, 2type+H), especially in the ``may-fail casts'' metric. However, this precision comes at great cost: uniform hybrid analyses are often 3x or more slower than their base analyses with twice as large, or more, context-sensitive points-to sets. U-1obj and U-2obj+H are plainly bad tradeoffs in the design space: for a slight increase in precision, the performance cost is heavy.
 
-U-2type+H is a bit more reasonable: it achieves more significant precision gains and its performance toll is often under \bad{2x} while still terminating comfortably for all our benchmarks. In fact, a surprising finding was that U-2type+H is a tempting alternative to 2obj+H for applications that need very high precision, given its good scalability. A possible explanation is due to the specific nature of type-sensitive analyses: the class in which a receiver object is allocated forms a good differentiator of behavior when combined with a call-site.
+U-2type+H is a bit more reasonable: it achieves more significant precision gains and its performance toll is often under \bad{2x} while still terminating comfortably for all our benchmarks. In fact, a surprising finding was that U-2type+H is a tempting alternative to 2obj+H for applications that need very high precision, given its good scalability. A possible explanation is due to the specific nature of type-sensitive analyses: the class in which a receiver object is allocated forms a good differentiator of behavior when combined with a call site.
 
 \item \textbf{\emph{1obj hybrids.}}
 We presented two selective hybrids of a 1-object-sensitive analysis: S$_A$-1obj (which keeps either an allocation site or a call-site as context, but not both) and S$_B$-1obj (which always keeps an allocation site as context and occasionally adds a call-site to it). They both turn out to be interesting analyses from a practical standpoint. The former is consistently faster than the base 1obj analysis, with roughly similar precision and occasionally (for the ``may-fail casts'' metric) higher precision. The size of context-sensitive points-to sets also confirms that this is a ``lighter'' analysis that is likely to cost less in any context. The S$_B$-1obj analysis is always more precise than 1obj (as is statically guaranteed) for a slight extra cost. Indeed, S$_B$-1obj is a good approximation of the uniform hybrid analysis, U-1obj, in terms of precision, for a fraction (typically less than a third) of the cost.

@@ -40,7 +40,7 @@ void main() {
 	a2.wrap();
 }
 \end{javacode}
-\caption{Code snippet for illustrating must-alias reasoning.}
+\caption[Code snippet for illustrating must-alias reasoning]{Code snippet for illustrating must-alias reasoning.}
 \label{fig:must-logic:snippet}
 \end{figure}
 
@@ -77,7 +77,7 @@ Figure~\ref{fig:must-logic:input-domain} demonstrates the needed alterations in 
 \begin{tabular}{l}
 \args{A} is an access path of the form \args{V}.(\args{F})* \\
 \end{tabular}
-\caption[]{Additions to the domain of our input intermediate language.}
+\caption[Additional input domains]{Additions to the domain of our input intermediate language.}
 \label{fig:must-logic:input-domain}
 \end{figure}
 
@@ -102,7 +102,7 @@ The last two input relations are somewhat more advanced. \altrelname{Resolved} i
 \altrel{Resolved}{var: V, type: T} \\
 \altrel{RootMethod}{meth: M} \\
 \end{tabular}
-\caption[]{The (altered) input Datalog relations describing the program under analysis.}
+\caption[Datalog input relations]{The (altered) input Datalog relations describing the program under analysis.}
 \label{fig:must-logic:input}
 \end{figure}
 
@@ -125,7 +125,7 @@ The other main computed relation represents intermediate results of the analysis
 \cons{UnprimeAP}{ap: A}{?newAp: A} \\
 \cons{NewContext}{invo: I, ctx: C}{?newCtx: C}
 \end{datalog}
-\caption[]{The core Datalog output relations and constructors of access paths and contexts.}
+\caption[Datalog output relations and constructors]{The core Datalog output relations and constructors of access paths and contexts.}
 \label{fig:must-logic:output}
 \end{figure}
 
@@ -181,7 +181,7 @@ The next four \relname{MustAlias} rules handle one instruction kind each: \relna
 \\
 \rel{MustAlias}{i, ctx, \_, \_} \dlIf{} \rel{MustAlias*}{i, ctx, \_, \_}.
 \end{datalog}
-\caption[]{The core, base Datalog rules for a model must-alias analysis.}
+\caption[Core Datalog rules for a must-alias analysis]{The core, base Datalog rules for a model must-alias analysis.}
 \label{fig:must-logic:baserules}
 \end{figure}
 
@@ -228,7 +228,7 @@ Crucially, the handling of a method return is the \emph{only} point where a cont
      \rel{MustAlias}{retInstr, \ctxAll{}, calleeAp1, calleeAp2}), \\
     \cons{UnprimeAP}{calleeAp1}{?ap1}, \cons{UnprimeAP}{calleeAp2}{?ap2}.
 \end{datalog}
-\caption[]{Datalog rules for inter-procedural propagation of alias pairs.}
+\caption[Datalog rules for inter-procedural propagation of alias pairs]{Datalog rules for inter-procedural propagation of alias pairs.}
 \label{fig:must-logic:propagationrules}
 \end{figure}
 
@@ -244,7 +244,7 @@ This powerful rule is responsible for much of the simplicity of our must-alias a
     \rel{MustAlias}{i, ctx, ap1, ap2}, \\
     \cons{AP}{ap1.fld}{?ap3}, \cons{AP}{ap2.fld}{?ap4}.
 \end{datalog}
-\caption[]{Datalog rule for access path extension.}
+\caption[Datalog rule for access path extension]{Datalog rule for access path extension.}
 \label{fig:must-logic:accesspathext}
 \end{figure}
 
@@ -258,7 +258,7 @@ The rule in Figure~\ref{fig:must-logic:framerules} determines how must-alias fac
     !\rel{Store}{i, \_, \_, \_}, !\rel{Call}{i, \_, \_}, \\
     (\dlforall{} \args{j}: \rel{Next}{j, i} \dlThen{} \rel{MustAlias}{j, ctx, ap1, ap2}).
 \end{datalog}
-\caption[]{Datalog frame rule propagating alias pairs from one instruction to the next.}
+\caption[Datalog frame rule for intra-procedural propagation of alias pairs]{Datalog frame rule propagating alias pairs from one instruction to the next.}
 \label{fig:must-logic:framerules}
 \end{figure}
 
