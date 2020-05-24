@@ -166,9 +166,23 @@ Any(P) := \bigcup_{e \in Executions} Behaviors(P, e)
 All(P) := \bigcap_{e \in Executions} Behaviors(P, e)
 \]
 
-Both sets are a mathematical ideal, an answer only an oracle could provide. But, for any realistic analysis such an endeavor is an undecidable problem. Thus, a practical static program analysis will aim to compute an approximation of one of the two sets. Under that definition, analyses are split mainly into two groups depending on the kind of approximation they try to achieve. On one hand, a \emph{may}-analysis is one that aims to \emph{over}-approximate $Any(P)$. On the other hand, a \emph{must}-analysis is one that aims to \emph{under}-approximate $All(P)$.
+Both sets are a mathematical ideal, an answer only an oracle could provide. But, for any realistic analysis such an endeavor is an undecidable problem. Thus, a practical static program analysis will aim to compute an approximation of one of the two sets. Under that definition, analyses are split mainly into two groups depending on the kind of approximation they try to achieve.
+On one hand, a \emph{may}-analysis is one that aims to \emph{over}-approximate $Any(P)$.
 \[
-May(P) \supseteq Any(P) \quad \textrm{and} \quad Must(P) \subseteq All(P)
+May(P) \supseteq Any(P)
+\]
+
+On the other hand, a \emph{must}-analysis is one that aims to \emph{under}-approximate. In many settings (e.g., when an analysis integrates static and dynamic reasoning as in \emph{dynamic-symbolic execution}), the aim is to under-approximate $Any(P)$. But, this is not always the case. For instance, in the setting of a static pointer or alias analysis, it is more favorable for practical approaches to aim towards an under-approximation of $All(P)$.
+
+%any practical approach will find it easier proving that a behavior holds for \emph{all} possible executions rather than that it holds for \emph{some}.
+%\footnote{This claim might seem counter-intuitive at first, but it is not baseless. Proving a behavior for all possible executions is more restrictive than doing so for some, hence }
+
+%\emph{under}-approximate $All(P)$.
+%\[
+%May(P) \supseteq Any(P) \quad \textrm{and} \quad Must(P) \subseteq All(P)
+%\]
+\[
+Any(P) \supseteq Must(P) \quad \textrm{and} \quad  Any(P) \supseteq All(P) \supseteq Must_{PT}(P) \footnote{Referring to the common approach of a must-(pointer-/alias-)analysis.}
 \]
 
 For the rest of this dissertation, unless otherwise noted, all described analyses aim to compute $May(P)$, i.e., they are may-analyses. This also reflects the fact that may-analyses comprise the norm in related literature.
@@ -237,13 +251,13 @@ The term \emph{soundiness}, specific to the context of static program analysis, 
 \end{subfigure}
 \begin{subfigure}{.47\textwidth}
     \includegraphics[scale=.45]{assets/background/venn-soundness-c.pdf}
-    \caption{Any sound-may analysis (green) in relation to $Any(P)$}
+    \caption{Any sound may-analysis (green) in relation to $Any(P)$}
     \label{fig:back:soundness-c}
 \end{subfigure}
 \hfill
 \begin{subfigure}{.47\textwidth}
     \includegraphics[scale=.45]{assets/background/venn-soundness-d.pdf}
-    \caption{Any sound-must analysis (red) in relation to $All(P)$}
+    \caption{Any sound (pointer) must-analysis (red) in relation to $All(P)$}
     \label{fig:back:soundness-d}
 \end{subfigure}
 \begin{subfigure}{.47\textwidth}

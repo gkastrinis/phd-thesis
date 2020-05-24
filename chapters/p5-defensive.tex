@@ -671,7 +671,7 @@ Since defensive analysis is a unique beast, it is indeed an interesting question
   
 We analyze, under JDK 1.7.0\_75, the DaCapo benchmark programs~\cite{oopsla:2006:Blackburn} v.2006-10-MR2 as well as v.9.12-Bach. The 9.12-Bach version contains several different programs, as well as more recent versions of some of the same programs. (We show results for all of the v.2006-10-MR2 benchmarks and for those of the v.9.12-Bach benchmarks that could be analyzed by the \doop{} framework in under 3 hours.) We also use the two non-Android benchmarks (NTI, jFlex) from the Julia set by Nikoli\'{c} and Spoto~\cite{ictac:2012:Nikolic}. We use the LogicBlox Datalog engine, v.3.10.14, on a Xeon E5-2667 v.2 3.3GHz machine with only one thread running at a time and 256GB of RAM.
 
-Defensive analysis is run with a 5-call-site-sensitive context (\emph{5def} for short). \bad{3} instances (of \nums{44} total) did not finish with the default precision in 3hrs: the 2objH baseline did not finish for jython and h2; xalan did not finish for the 5def analysis. In these cases we used lower precision: context-insensitive for the unsound analysis and 4-call-site-sensitive (\emph{4def}) for defensive. We use diacritical marks (* and \^{}) in the figures to remind the reader of the different analysis setting for these benchmarks.
+Defensive analysis is run with a 5-call-site-sensitive context (\emph{5def} for short). \bad{3} instances (of \nums{44} total) did not finish with the default precision in 3 hours: the 2objH baseline did not finish for jython and h2; xalan did not finish for the 5def analysis. In these cases we used lower precision: context-insensitive for the unsound analysis and 4-call-site-sensitive (\emph{4def}) for defensive. We use diacritical marks (* and \^{}) in the figures to remind the reader of the different analysis setting for these benchmarks.
 
 
 \paragraphhead{Coverage.}
@@ -721,7 +721,7 @@ Figure~\ref{fig:sound:time} shows the running times of the analysis, plotted nex
 \begin{figure}[tbh]
 \centering
 \includegraphics[width=\linewidth]{assets/defensive/time.pdf}
-\caption[Execution time of defensive analysis vs. unsound baseline]{Execution time (sec) of defensive analysis, with running time of 2objH (with unsound reflection handling) shown as a baseline. Labels are shown for defensive analysis only to avoid crowding the plot.}
+\caption[Execution time of defensive analysis vs. unsound baseline]{Execution time (in seconds) of defensive analysis, with running time of 2objH (with unsound reflection handling) shown as a baseline. Labels are shown for defensive analysis only to avoid crowding the plot.}
 \label{fig:sound:time}
 \end{figure}
 
