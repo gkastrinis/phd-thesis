@@ -173,14 +173,6 @@ May(P) \supseteq Any(P)
 \]
 
 On the other hand, a \emph{must}-analysis is one that aims to \emph{under}-approximate. In many settings (e.g., when an analysis integrates static and dynamic reasoning as in \emph{dynamic-symbolic execution}), the aim is to under-approximate $Any(P)$. But, this is not always the case. For instance, in the setting of a static pointer or alias analysis, it is more favorable for practical approaches to aim towards an under-approximation of $All(P)$.
-
-%any practical approach will find it easier proving that a behavior holds for \emph{all} possible executions rather than that it holds for \emph{some}.
-%\footnote{This claim might seem counter-intuitive at first, but it is not baseless. Proving a behavior for all possible executions is more restrictive than doing so for some, hence }
-
-%\emph{under}-approximate $All(P)$.
-%\[
-%May(P) \supseteq Any(P) \quad \textrm{and} \quad Must(P) \subseteq All(P)
-%\]
 \[
 Any(P) \supseteq Must(P) \quad \textrm{and} \quad  Any(P) \supseteq All(P) \supseteq Must_{PT}(P) \footnote{Referring to the common approach of a must-(pointer-/alias-)analysis.}
 \]
@@ -237,6 +229,10 @@ The term \emph{soundiness}, specific to the context of static program analysis, 
 
 \section{A Static Program Analysis Mind Map}
 
+Figure \ref{fig:back:soundness} attempts to shed some light on how different kinds of static program analysis relate to each other and to the mathematical ideals. Each set in figure \ref{fig:back:soundness-a} represents all behaviors exhibited under a single actual program execution. Any static program analysis will collapse different executions into a single set and will make claims about the given program in general. In figure \ref{fig:back:soundness-b}, the ideal $Any(P)$ is represented by the union of all sets and that of $Any(P)$ by the intersection, respectively. Any sound may-analysis will result in a superset of $Any(P)$ (figure \ref{fig:back:soundness-c}), whereas any sound must-(pointer-/alias-)analysis (i.e., $Must_{PT}(P)$) will result in a subset of $All(P)$ (figure \ref{fig:back:soundness-d}). Finally, any unsound analysis (figure \ref{fig:back:soundness-e}) will result in a set with no apparent properties; not entirely covering its appropriate mathematical ideal but also including unrelated elements. More specifically though, as illustrated in figure \ref{fig:back:soundness-f}, a soundy analysis will result in a set that starts as a superset of $Any(P)$ but misses some hard (i.e., costly) to over-approximate behaviors in well-known cases.
+
+Therefore, the nature of the algorithms described in Chapters~\ref{chapter:hybrid} and \ref{chapter:introspective} is loosely depicted in Figure~\ref{fig:back:soundness-f}. The analysis presented in Chapters~\ref{chapter:must-logic} and \ref{chapter:must-data} falls under what is depicted in Figure~\ref{fig:back:soundness-d}, whereas the analysis of Chapter~\ref{chapter:defensive} follows Figure~\ref{fig:back:soundness-c}.
+
 \begin{figure}[htb!]
 \begin{subfigure}{.47\textwidth}
     \includegraphics[scale=.45]{assets/background/venn-soundness-a.pdf}
@@ -257,7 +253,7 @@ The term \emph{soundiness}, specific to the context of static program analysis, 
 \hfill
 \begin{subfigure}{.47\textwidth}
     \includegraphics[scale=.45]{assets/background/venn-soundness-d.pdf}
-    \caption{Any sound (pointer) must-analysis (red) in relation to $All(P)$}
+    \caption{Any sound must-(pointer-/alias-)analysis (red) in relation to $All(P)$}
     \label{fig:back:soundness-d}
 \end{subfigure}
 \begin{subfigure}{.47\textwidth}
@@ -275,7 +271,6 @@ The term \emph{soundiness}, specific to the context of static program analysis, 
 \label{fig:back:soundness}
 \end{figure}
 
-Figure \ref{fig:back:soundness} attempts to shed some light on how different kinds of static program analysis relate to each other and to the mathematical ideals. Each set in figure \ref{fig:back:soundness-a} represents all behaviors exhibited under a single actual program execution. Any static program analysis will collapse different executions into a single set and will make claims about the given program in general. In figure \ref{fig:back:soundness-b}, the ideal $Any(P)$ is represented by the union of all sets and that of $Any(P)$ by the intersection, respectively. Any sound-may analysis will result in a superset of $Any(P)$ (figure \ref{fig:back:soundness-c}), whereas any sound-must analysis will result in a subset of $All(P)$ (figure \ref{fig:back:soundness-d}). Finally, any unsound analysis (figure \ref{fig:back:soundness-e}) will result in a set with no apparent properties; not entirely covering its appropriate mathematical ideal but also including unrelated elements. More specifically though, as illustrated in figure \ref{fig:back:soundness-f}, a soundy analysis will result in a set that starts as a superset of $Any(P)$ but misses some hard (i.e., costly) to over-approximate behaviors in well-known cases.
 
 
 \section{The \doop{} Framework}
