@@ -56,7 +56,7 @@ Another kind of context sensitivity, known as \emph{type sensitivity}, has also 
 A context-sensitive analysis has a second axis of parameterization besides context flavor---that of (max) context depth. Consequently, a common way to describe an analysis is using the following naming scheme: $X$-FLAVOR-sensitive+$Y$-heap, e.g., as in 3-call-site-sensitive+2-heap. Here FLAVOR denotes the kind of context information being employed, and, $X$ and $Y$ denote the context depth limits being used at invocation sites and at object allocations respectively. In the previous example the analysis is keeping track of the 3 most recent call-sites that led to the current method call, in order to annotate local variables. Similarly, the analysis is using the 2 most recent call-sites that led to the allocation site of an object to annotate the newly allocated object.
 
 
-\subsection{Call-Site Sensitivity (\texorpdfstring{$k$}{k}CFA)}
+\subsection{Call-Site Sensitivity (\texorpdfstring{$k$}{k}-CFA)}
 
 As previously mentioned, a call-site-sensitive analysis uses method call sites (i.e., labels of invocation instructions) as context elements. The analysis separates information on program expressions, such as local variables, per call-stack (i.e., sequence of $k$ most recent call-sites) that led to the current method call. Similarly, the analysis separates information on heap objects per call-stack that led to the object's allocation.
 
